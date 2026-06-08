@@ -1,0 +1,7 @@
+.DS_Store
+*.log
+.claude/
+node_modules/
+
+# 검증/디버그 오버레이 이미지
+guide-assets/_*
