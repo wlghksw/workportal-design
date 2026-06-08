@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ file_title }}</title>
+  </head>
+  <body style="margin:0;padding:0;background:#F7F3EF;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#F7F3EF;">
+      <tr>
+        <td align="center" style="padding:28px 16px;">
+          <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06);">
+            <!-- Header -->
+            <tr>
+              <td bgcolor="#FF8E53" style="background-color:#FF8E53;padding:26px 26px 22px 26px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td align="left" valign="top">
+                      <div style="font-family:Apple SD Gothic Neo,Malgun Gothic,맑은 고딕,sans-serif;font-size:11px;font-weight:700;letter-spacing:2.5px;color:#ffffff;opacity:0.95;">
+                        {{ header_badge }}
+                      </div>
+                      <div style="margin-top:12px;display:inline-block;background:#ffffff;color:#E85D4A;font-family:Apple SD Gothic Neo,Malgun Gothic,맑은 고딕,sans-serif;font-size:13px;font-weight:800;padding:7px 16px;border-radius:999px;">
+                        {{ issue_label }}
+                      </div>
+                      <div style="margin-top:12px;color:#ffffff;font-family:Apple SD Gothic Neo,Malgun Gothic,맑은 고딕,sans-serif;font-size:15px;font-weight:700;line-height:1.55;">
+                        {{ header_sub }}
+                      </div>
+                    </td>
+                    <td align="right" valign="top" style="padding-left:14px;">
+                      <div style="background:#ffffff;padding:10px 14px;border-radius:12px;line-height:0;">
+                        {{ header_logo_html }}
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <!-- Greeting -->
+            <tr>
+              <td style="padding:26px 28px 24px 28px;border-bottom:1px solid #F0E6DC;background:#FFFCFA;">
+                <div style="font-family:Apple SD Gothic Neo,Malgun Gothic,맑은 고딕,sans-serif;font-size:15px;color:#374151;line-height:1.85;">
+                  {{ greeting_html }}
+                </div>
+              </td>
+            </tr>
+
+            <!-- Featured -->
+            <tr>
+              <td style="padding:28px 28px 10px 28px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td width="4" bgcolor="#FF6B6B" style="background:#FF6B6B;font-size:0;line-height:0;">&nbsp;</td>
+                    <td style="padding-left:14px;font-family:Apple SD Gothic Neo,Malgun Gothic,맑은 고딕,sans-serif;font-size:20px;font-weight:800;color:#1f2937;line-height:1.35;letter-spacing:-0.02em;">
+                      🌟 이달의 추천강좌
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:0 28px 24px 28px;">
+                {{ featured_cover_html }}
+              </td>
+            </tr>
+
+            <!-- Cards 2x2 -->
+            <tr>
+              <td style="padding:8px 28px 12px 28px;background:#FAF7F4;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td width="4" bgcolor="#FF6B6B" style="background:#FF6B6B;font-size:0;line-height:0;">&nbsp;</td>
+                    <td style="padding-left:14px;font-family:Apple SD Gothic Neo,Malgun Gothic,맑은 고딕,sans-serif;font-size:20px;font-weight:800;color:#1f2937;line-height:1.35;letter-spacing:-0.02em;">
+                      📖 이번 달 읽어볼 콘텐츠
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:0 28px 28px 28px;background:#FAF7F4;">
+                <!-- CARDS_OUTLOOK -->
+              </td>
+            </tr>
+
+            <!-- CTA -->
+            <tr>
+              <td style="padding:0 28px 24px 28px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#FFF5EB;border:1px solid #F5E6D6;border-radius:14px;">
+                  <tr>
+                    <td style="padding:20px 22px;">
+                      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                        <tr>
+                          <td valign="middle" style="font-family:Apple SD Gothic Neo,Malgun Gothic,맑은 고딕,sans-serif;font-size:15px;color:#1f2937;line-height:1.55;">
+                            <strong style="font-size:16px;font-weight:800;color:#7A4A14;">{{ cta_title }}</strong>
+                            <div style="margin-top:6px;font-size:13px;color:#6b5b4f;line-height:1.65;">{{ cta_body }}</div>
+                          </td>
+                          <td align="right" valign="middle" width="108" style="padding-left:14px;">
+                            <a href="{{ cta_link }}" style="display:inline-block;background:#FF6B6B;color:#ffffff;text-decoration:none;font-family:Apple SD Gothic Neo,Malgun Gothic,맑은 고딕,sans-serif;font-size:14px;font-weight:800;padding:12px 18px;border-radius:999px;white-space:nowrap;">{{ cta_btn }}</a>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <!-- Footer -->
+            <tr>
+              <td style="padding:24px 28px 28px 28px;background:#FFF5EB;border-top:1px solid #F0E6DC;">
+                <div style="text-align:center;line-height:0;margin-bottom:16px;">
+                  {{ footer_logo_html }}
+                </div>
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:16px;">
+                  <tr>
+                    <td align="center" style="font-family:Apple SD Gothic Neo,Malgun Gothic,맑은 고딕,sans-serif;font-size:13px;line-height:2.2;">
+                      <a href="https://eduall-lab.com/portfolio/" style="color:#374151;text-decoration:none;font-weight:600;">포트폴리오</a>
+                      <span style="color:#d4d4d4;"> | </span>
+                      <a href="https://crayonschool.co.kr/courses/" style="color:#374151;text-decoration:none;font-weight:600;">크레용홈스쿨</a>
+                      <span style="color:#d4d4d4;"> | </span>
+                      <a href="https://blog.naver.com/kidsedutv" style="color:#374151;text-decoration:none;font-weight:600;">블로그</a>
+                      <span style="color:#d4d4d4;"> | </span>
+                      <a href="https://smartstore.naver.com/woorikizshop" style="color:#374151;text-decoration:none;font-weight:600;">우리키즈샵</a>
+                      <span style="color:#d4d4d4;"> | </span>
+                      <a href="https://eduall-lab.com/crayonschool_edu_gpteens/" style="color:#374151;text-decoration:none;font-weight:600;">AI교육과정</a>
+                    </td>
+                  </tr>
+                </table>
+                <div style="text-align:center;font-family:Apple SD Gothic Neo,Malgun Gothic,맑은 고딕,sans-serif;font-size:12px;color:#6b7280;line-height:1.75;">
+                  고객센터 070-4164-0041 · <a href="mailto:partner@kidsedutv.co.kr" style="color:#6b7280;text-decoration:underline;">partner@kidsedutv.co.kr</a>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

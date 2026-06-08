@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ file_title }}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #F7F3EF;
+      font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', '맑은 고딕', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      color: #1f2937;
+    }
+    .email-wrapper {
+      max-width: 600px;
+      margin: 30px auto;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.10);
+    }
+    .header {
+      background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 50%, #FFC04A 100%);
+      padding: 28px 28px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      position: relative;
+      z-index: 1;
+    }
+    .header-left {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .header-right {
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .header-company {
+      color: #fff;
+      font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', '맑은 고딕', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      line-height: 1.45;
+      letter-spacing: -0.02em;
+    }
+    .header::before {
+      content: '';
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 160px; height: 160px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 50%;
+    }
+    .header::after {
+      content: '';
+      position: absolute;
+      bottom: -50px; left: -30px;
+      width: 130px; height: 130px;
+      background: rgba(255,255,255,0.10);
+      border-radius: 50%;
+    }
+    .header-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.25);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+      position: relative;
+      z-index: 1;
+    }
+    .header-right .header-logo-link {
+      display: inline-block;
+      background: #fff;
+      padding: 8px 16px;
+      border-radius: 12px;
+      line-height: 0;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    }
+    .header-right .header-logo-link img {
+      height: 52px;
+      width: auto;
+      max-width: 220px;
+    }
+    .header-date {
+      display: inline-block;
+      background: #fff;
+      color: #FF6B6B;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 5px 16px;
+      border-radius: 20px;
+      position: relative;
+      z-index: 1;
+    }
+    .greeting {
+      background: #FFFCFA;
+      padding: 26px 32px 24px;
+      border-bottom: 1px solid #F0E6DC;
+    }
+    .greeting p {
+      font-size: 15px;
+      color: #374151;
+      line-height: 1.85;
+      margin: 0;
+    }
+    .greeting strong { color: #E85D4A; font-weight: 700; }
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 28px 32px 12px;
+      background: #fff;
+    }
+    .section-label .dot {
+      width: 4px;
+      min-height: 28px;
+      align-self: stretch;
+      border-radius: 2px;
+      background: #FF6B6B;
+      flex-shrink: 0;
+    }
+    .section-label .title {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #1f2937;
+      line-height: 1.35;
+    }
+    .featured {
+      background: #fff;
+      padding: 0 32px 28px;
+    }
+    .featured-card {
+      border-radius: 20px;
+      overflow: hidden;
+      position: relative;
+      background: linear-gradient(145deg, #FFC04A 0%, #FF8E53 45%, #FF6B6B 100%);
+      min-height: 280px;
+    }
+    .featured-cover {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      line-height: 0;
+    }
+    .featured-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+    }
+    .featured-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.06) 0%,
+        rgba(255, 220, 180, 0.14) 55%,
+        rgba(255, 160, 120, 0.18) 100%
+      );
+      pointer-events: none;
+    }
+    .featured-card-inner {
+      position: relative;
+      z-index: 2;
+      min-height: 280px;
+      padding: 28px 28px 26px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      gap: 6px;
+    }
+    .featured-card-inner::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 72%;
+      background: linear-gradient(
+        to top,
+        rgba(180, 70, 45, 0.88) 0%,
+        rgba(230, 110, 70, 0.5) 50%,
+        transparent 100%
+      );
+      z-index: -1;
+      border-radius: 0 0 18px 18px;
+    }
+    .featured-tag {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.92);
+      color: #c44a2e;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 12px;
+      border-radius: 20px;
+      width: fit-content;
+    }
+    .featured-title {
+      font-size: 22px;
+      font-weight: 900;
+      color: #fff;
+      line-height: 1.35;
+      margin-top: 6px;
+      text-shadow: 0 2px 10px rgba(100, 40, 20, 0.45);
+    }
+    .featured-desc {
+      font-size: 13px;
+      color: #fff;
+      line-height: 1.65;
+      margin-top: 2px;
+      text-shadow: 0 1px 8px rgba(100, 40, 20, 0.4);
+    }
+    .featured-meta {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    .featured-meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(255, 255, 255, 0.92);
+      color: #b84a28;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+    .featured-btn {
+      display: inline-block;
+      background: #fff;
+      color: #E85D4A;
+      font-size: 13px;
+      font-weight: 800;
+      padding: 10px 22px;
+      border-radius: 50px;
+      text-decoration: none;
+      margin-top: 18px;
+      width: fit-content;
+    }
+    .featured-emoji {
+      position: absolute;
+      right: 24px;
+      top: 20px;
+      z-index: 2;
+      font-size: 48px;
+      opacity: 0.25;
+      transform: rotate(12deg);
+      pointer-events: none;
+    }
+    .cards-section {
+      background: #FAF7F4;
+      padding: 8px 24px 28px;
+    }
+    .cards-section .section-label {
+      padding: 20px 8px 14px;
+      background: transparent;
+    }
+    .cards-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .cards-grid.cards-1 {
+      grid-template-columns: 1fr;
+      max-width: 340px;
+      margin: 0 auto;
+    }
+    .cards-grid.cards-3 .card:last-child,
+    .cards-grid.cards-5 .card:last-child {
+      grid-column: 1 / -1;
+      max-width: calc(50% - 7px);
+      margin: 0 auto;
+      width: 100%;
+    }
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      overflow: hidden;
+      text-decoration: none;
+      display: block;
+      border: 1px solid #E8DDD4;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    }
+    .card-thumb {
+      height: 150px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 44px;
+      position: relative;
+      overflow: hidden;
+    }
+    .card-thumb img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .card-thumb .thumb-fallback {
+      position: relative;
+      z-index: 1;
+    }
+    .thumb-coral   { background: linear-gradient(135deg, #FF6B6B, #FF8E53); }
+    .thumb-teal    { background: linear-gradient(135deg, #11998e, #38ef7d); }
+    .thumb-yellow  { background: linear-gradient(135deg, #F7971E, #FFD200); }
+    .thumb-blue    { background: linear-gradient(135deg, #4776E6, #8E54E9); }
+    .card-body { padding: 16px 18px 18px; }
+    .card-category {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .cat-coral  { color: #FF6B6B; }
+    .cat-teal   { color: #11998e; }
+    .cat-yellow { color: #F7971E; }
+    .cat-blue   { color: #4776E6; }
+    .card-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #1f2937;
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+    .card-excerpt {
+      font-size: 13px;
+      color: #5c5c5c;
+      line-height: 1.7;
+    }
+    .card-footer-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid #F0E6DC;
+    }
+    .card-read {
+      font-size: 12px;
+      font-weight: 700;
+      color: #9ca3af;
+    }
+    .card-arrow {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: #fff;
+    }
+    .arrow-coral  { background: #FF6B6B; }
+    .arrow-teal   { background: #11998e; }
+    .arrow-yellow { background: #F7971E; }
+    .arrow-blue   { background: #4776E6; }
+    .cta-section {
+      background: #fff;
+      padding: 0 32px 32px;
+    }
+    .cta-banner {
+      background: #FFF5EB;
+      border: 1px solid #F5E6D6;
+      border-radius: 14px;
+      padding: 22px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .cta-text { flex: 1; }
+    .cta-text p {
+      font-size: 13px;
+      color: #6b5b4f;
+      line-height: 1.65;
+      margin-top: 6px;
+    }
+    .cta-text strong {
+      display: block;
+      font-size: 16px;
+      font-weight: 800;
+      color: #7A4A14;
+      margin-bottom: 0;
+    }
+    .cta-btn {
+      display: inline-block;
+      background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+      padding: 11px 20px;
+      border-radius: 50px;
+      text-decoration: none;
+      white-space: nowrap;
+      box-shadow: 0 4px 14px rgba(255,107,107,0.35);
+    }
+    .footer {
+      background: #fff;
+      padding: 32px 24px 28px;
+      text-align: center;
+      border-top: 1px solid #eee;
+    }
+    .footer-brand {
+      display: block;
+      margin: 0 auto 20px;
+      line-height: 0;
+    }
+    .footer-brand img {
+      height: 56px;
+      width: auto;
+      max-width: 100%;
+    }
+    .footer-nav {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 4px 0;
+      padding: 14px 12px;
+      background: #f5f5f5;
+      border-radius: 8px;
+      margin: 0 auto;
+      max-width: 520px;
+    }
+    .footer-nav a {
+      color: #333;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      padding: 4px 10px;
+    }
+    .footer-nav a:hover { color: #FF6B6B; }
+    .footer-nav .sep {
+      color: #ccc;
+      font-size: 11px;
+      user-select: none;
+    }
+    .footer-copy {
+      margin-top: 18px;
+      font-size: 12px;
+      color: #6b7280;
+      line-height: 1.75;
+      line-height: 1.7;
+    }
+    .footer-copy a { color: #888; text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<div class="email-wrapper">
+
+  <div class="header">
+    <div class="header-inner">
+      <div class="header-left">
+        <span class="header-badge">{{ header_badge }}</span>
+        <div class="header-date">{{ issue_label }}</div>
+      </div>
+      <div class="header-right">
+        <p class="header-company">{{ header_sub }}</p>
+        {{ header_logo_html }}
+      </div>
+    </div>
+  </div>
+
+  <div class="greeting">
+    {{ greeting_html }}
+  </div>
+
+  <div class="section-label" style="background:#fff;">
+    <div class="dot" style="background:#FF6B6B;"></div>
+    <span class="title">🌟 이달의 추천강좌</span>
+  </div>
+
+  <div class="featured">
+    <div class="featured-card">
+      {{ featured_cover_html }}
+      <div class="featured-overlay"></div>
+      <span class="featured-emoji">{{ featured_emoji }}</span>
+      <div class="featured-card-inner">
+        <span class="featured-tag">{{ featured_tag }}</span>
+        <div class="featured-title">{{ featured_title }}</div>
+        <div class="featured-desc">{{ featured_desc }}</div>
+        <div class="featured-meta">{{ featured_meta }}</div>
+        <a href="{{ featured_link }}" class="featured-btn">{{ featured_btn }}</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="cards-section">
+    <div class="section-label">
+      <div class="dot" style="background:#4776E6;"></div>
+      <span class="title">📖 이번 달 읽어볼 콘텐츠</span>
+    </div>
+    <div class="cards-grid {{ cards_grid_modifier }}">
+<!-- CARDS -->
+    </div>
+  </div>
+
+  <div class="cta-section">
+    <div class="cta-banner">
+      <div class="cta-text">
+        <strong>{{ cta_title }}</strong>
+        <p>{{ cta_body }}</p>
+      </div>
+      <a href="{{ cta_link }}" class="cta-btn">{{ cta_btn }}</a>
+    </div>
+  </div>
+
+  <div class="footer">
+    {{ footer_logo_html }}
+    <nav class="footer-nav">
+      <a href="https://eduall-lab.com/portfolio/">포트폴리오</a>
+      <span class="sep">|</span>
+      <a href="https://crayonschool.co.kr/courses/">크레용홈스쿨</a>
+      <span class="sep">|</span>
+      <a href="https://blog.naver.com/kidsedutv">블로그</a>
+      <span class="sep">|</span>
+      <a href="https://smartstore.naver.com/woorikizshop">우리키즈샵</a>
+      <span class="sep">|</span>
+      <a href="https://eduall-lab.com/crayonschool_edu_gpteens/">AI교육과정</a>
+    </nav>
+    <div class="footer-copy">
+      고객센터 070-4164-0041 ·
+      <a href="mailto:partner@kidsedutv.co.kr">partner@kidsedutv.co.kr</a>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

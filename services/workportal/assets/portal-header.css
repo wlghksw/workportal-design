@@ -1,0 +1,198 @@
+/* 에듀올랩 통합 업무 포탈 — 공통 서비스 헤더 (메인 index.html site-header__row 와 동일) */
+:root {
+  --ph-bg: #f4f6fb;
+  --ph-surface: #ffffff;
+  --ph-surface2: #f8fafc;
+  --ph-border: #e2e8f0;
+  --ph-text: #0f172a;
+  --ph-text-muted: #64748b;
+  --ph-text-soft: #94a3b8;
+  --ph-primary: #2563eb;
+  --ph-primary-hover: #1d4ed8;
+  --ph-primary-soft: #eff6ff;
+  --ph-radius-sm: 10px;
+  --ph-layout-max: 1180px;
+}
+
+.site-header {
+  background: var(--ph-surface);
+  border-bottom: 1px solid var(--ph-border);
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  font-family: "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Apple SD Gothic Neo", system-ui, sans-serif;
+}
+
+.site-header__row {
+  max-width: var(--ph-layout-max);
+  margin: 0 auto;
+  padding: 16px 24px 12px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.site-header__spacer {
+  flex: 1 1 auto;
+  min-width: 12px;
+}
+
+.site-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.site-header__actions--wrap {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.site-header .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  text-decoration: none;
+  color: inherit;
+  flex-shrink: 0;
+}
+
+.site-header .brand__logo {
+  display: block;
+  height: 56px;
+  width: auto;
+  max-width: 200px;
+  object-fit: contain;
+  object-position: left center;
+  flex-shrink: 0;
+}
+
+.site-header .brand > .brand__sub {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ph-text);
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.site-header .topbar__user {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--ph-surface2);
+  border: 1px solid var(--ph-border);
+  color: var(--ph-text);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.site-header .topbar__btn {
+  padding: 8px 14px;
+  border-radius: var(--ph-radius-sm);
+  background: var(--ph-surface);
+  border: 1px solid var(--ph-border);
+  color: var(--ph-text);
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.15s;
+  cursor: pointer;
+  font-family: inherit;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.site-header .topbar__btn:hover {
+  color: var(--ph-primary);
+  border-color: #cbd5e1;
+  background: var(--ph-surface2);
+}
+
+.site-header [hidden] {
+  display: none !important;
+}
+
+/* 서브 앱: 포털 메인 검색·탭 없음 */
+.site-header--service .site-header__row {
+  padding-bottom: 16px;
+}
+
+/* 포털과 동일한 하위 네비 (뉴스레터 등) */
+.site-header .site-nav {
+  max-width: var(--ph-layout-max);
+  margin: 0 auto;
+  padding: 0 24px 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--ph-surface);
+}
+
+.site-header .site-nav__item {
+  position: relative;
+  padding: 12px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ph-text-muted);
+  border: 0;
+  background: none;
+  cursor: pointer;
+  transition: color 0.15s;
+  text-decoration: none;
+  font-family: inherit;
+}
+
+.site-header .site-nav__item:hover {
+  color: var(--ph-text);
+}
+
+.site-header .site-nav__item.is-active {
+  color: var(--ph-primary);
+  font-weight: 600;
+}
+
+.site-header .site-nav__item.is-active::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 0;
+  height: 2px;
+  background: var(--ph-primary);
+  border-radius: 2px 2px 0 0;
+}
+
+/* 앱 전용 보조 바 (입찰 동기화 등) */
+.site-header__meta {
+  max-width: var(--ph-layout-max);
+  margin: 0 auto;
+  padding: 0 24px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 720px) {
+  .site-header .brand__logo {
+    height: 46px;
+    max-width: 168px;
+  }
+  .site-header .brand > .brand__sub {
+    font-size: 15px;
+  }
+  .site-header__row {
+    flex-wrap: wrap;
+    padding: 12px 16px 10px;
+  }
+  .site-header__actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

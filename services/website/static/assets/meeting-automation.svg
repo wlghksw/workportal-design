@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#03121c;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0d5235;stop-opacity:0.5" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#00e5a0;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00b4d8;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="675" fill="url(#bg)"/>
+
+  <!-- Grid lines -->
+  <g stroke="#ffffff" stroke-opacity="0.04" stroke-width="1">
+    <line x1="0" y1="135" x2="1200" y2="135"/>
+    <line x1="0" y1="270" x2="1200" y2="270"/>
+    <line x1="0" y1="405" x2="1200" y2="405"/>
+    <line x1="0" y1="540" x2="1200" y2="540"/>
+    <line x1="240" y1="0" x2="240" y2="675"/>
+    <line x1="480" y1="0" x2="480" y2="675"/>
+    <line x1="720" y1="0" x2="720" y2="675"/>
+    <line x1="960" y1="0" x2="960" y2="675"/>
+  </g>
+
+  <!-- Title -->
+  <text x="600" y="100" font-family="monospace" font-size="13" fill="#00e5a0" fill-opacity="0.8" text-anchor="middle" letter-spacing="4">// MEETING AUTOMATION PIPELINE</text>
+
+  <!-- Pipeline nodes -->
+  <!-- Node 1: 녹음 -->
+  <rect x="60" y="240" width="170" height="140" rx="4" fill="none" stroke="#00e5a0" stroke-opacity="0.4" stroke-width="1"/>
+  <text x="145" y="290" font-family="monospace" font-size="10" fill="#00e5a0" fill-opacity="0.6" text-anchor="middle" letter-spacing="2">01 / INGEST</text>
+  <text x="145" y="332" font-size="28" text-anchor="middle" fill="#ffffff">🎙️</text>
+  <text x="145" y="362" font-family="sans-serif" font-size="14" fill="#ffffff" fill-opacity="0.9" text-anchor="middle" font-weight="600">회의 녹음</text>
+
+  <!-- Arrow 1 -->
+  <line x1="234" y1="310" x2="290" y2="310" stroke="url(#accent)" stroke-width="2" stroke-dasharray="6,3"/>
+  <polygon points="290,305 302,310 290,315" fill="#00e5a0"/>
+
+  <!-- Node 2: 청크 -->
+  <rect x="306" y="240" width="170" height="140" rx="4" fill="none" stroke="#00e5a0" stroke-opacity="0.3" stroke-width="1"/>
+  <text x="391" y="290" font-family="monospace" font-size="10" fill="#00e5a0" fill-opacity="0.6" text-anchor="middle" letter-spacing="2">02 / PROCESS</text>
+  <text x="391" y="332" font-size="28" text-anchor="middle" fill="#ffffff">✂️</text>
+  <text x="391" y="362" font-family="sans-serif" font-size="14" fill="#ffffff" fill-opacity="0.9" text-anchor="middle" font-weight="600">오디오 전처리</text>
+
+  <!-- Arrow 2 -->
+  <line x1="480" y1="310" x2="536" y2="310" stroke="url(#accent)" stroke-width="2" stroke-dasharray="6,3"/>
+  <polygon points="536,305 548,310 536,315" fill="#00e5a0"/>
+
+  <!-- Node 3: STT -->
+  <rect x="552" y="240" width="170" height="140" rx="4" fill="none" stroke="#00e5a0" stroke-opacity="0.3" stroke-width="1"/>
+  <text x="637" y="290" font-family="monospace" font-size="10" fill="#00e5a0" fill-opacity="0.6" text-anchor="middle" letter-spacing="2">03 / STT</text>
+  <text x="637" y="332" font-size="28" text-anchor="middle" fill="#ffffff">🔤</text>
+  <text x="637" y="362" font-family="sans-serif" font-size="14" fill="#ffffff" fill-opacity="0.9" text-anchor="middle" font-weight="600">Whisper STT</text>
+
+  <!-- Arrow 3 -->
+  <line x1="726" y1="310" x2="782" y2="310" stroke="url(#accent)" stroke-width="2" stroke-dasharray="6,3"/>
+  <polygon points="782,305 794,310 782,315" fill="#00e5a0"/>
+
+  <!-- Node 4: AI 요약 -->
+  <rect x="798" y="240" width="170" height="140" rx="4" fill="rgba(0,229,160,0.06)" stroke="#00e5a0" stroke-opacity="0.5" stroke-width="1.5"/>
+  <text x="883" y="290" font-family="monospace" font-size="10" fill="#00e5a0" fill-opacity="0.8" text-anchor="middle" letter-spacing="2">04 / SUMMARIZE</text>
+  <text x="883" y="332" font-size="28" text-anchor="middle" fill="#ffffff">🧠</text>
+  <text x="883" y="362" font-family="sans-serif" font-size="14" fill="#ffffff" fill-opacity="0.9" text-anchor="middle" font-weight="600">AI 회의록 생성</text>
+
+  <!-- Arrow 4 -->
+  <line x1="972" y1="310" x2="1028" y2="310" stroke="url(#accent)" stroke-width="2" stroke-dasharray="6,3"/>
+  <polygon points="1028,305 1040,310 1028,315" fill="#00e5a0"/>
+
+  <!-- Node 5: Teams -->
+  <rect x="1044" y="240" width="110" height="140" rx="4" fill="none" stroke="#00e5a0" stroke-opacity="0.3" stroke-width="1"/>
+  <text x="1099" y="290" font-family="monospace" font-size="10" fill="#00e5a0" fill-opacity="0.6" text-anchor="middle" letter-spacing="2">05 / SEND</text>
+  <text x="1099" y="332" font-size="28" text-anchor="middle" fill="#ffffff">📤</text>
+  <text x="1099" y="362" font-family="sans-serif" font-size="14" fill="#ffffff" fill-opacity="0.9" text-anchor="middle" font-weight="600">Teams</text>
+
+  <!-- Bottom stats -->
+  <text x="600" y="460" font-family="monospace" font-size="11" fill="#ffffff" fill-opacity="0.3" text-anchor="middle" letter-spacing="3">POWERED BY  OpenAI Whisper · Claude · GPT-4o · MS Teams Webhook</text>
+
+  <!-- Time saved indicator -->
+  <rect x="440" y="510" width="320" height="64" rx="4" fill="rgba(0,229,160,0.08)" stroke="#00e5a0" stroke-opacity="0.3" stroke-width="1"/>
+  <text x="600" y="538" font-family="monospace" font-size="11" fill="#00e5a0" fill-opacity="0.7" text-anchor="middle" letter-spacing="2">TIME SAVED PER MEETING</text>
+  <text x="600" y="562" font-family="sans-serif" font-size="18" fill="#ffffff" text-anchor="middle" font-weight="700">30~60분 → 5분 이내 자동 완성</text>
+</svg>

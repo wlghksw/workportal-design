@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>에듀올랩 (EduALLab) AI Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Outfit:wght@600;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="../../shared/portal-header.css?v=1" />
+  <style>
+    :root {
+      --bg-slate: #F8FAFC;
+      --bg-card: #FFFFFF;
+      --primary: #2563EB; /* Cobalt Blue */
+      --secondary: #0F172A; /* Deep Navy */
+      --accent: #F59E0B; /* Amber Orange */
+      --text-black: #1E293B; /* Ink Black */
+      --text-gray: #475569;
+      --border: rgba(15, 23, 42, 0.08);
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --shadow-premium: 0 10px 25px -5px rgba(15, 23, 42, 0.04), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg-slate);
+      color: var(--text-black);
+      font-family: 'Noto Sans KR', sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      /* 스크롤 방지 */
+    }
+
+
+    /* --- MAIN LAYOUT --- */
+    main {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 1.5rem;
+      padding: 1.5rem;
+      flex: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      border: none;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-premium);
+      overflow-y: auto;
+      /* 카드 내부 스크롤 */
+    }
+
+    .section-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--secondary);
+      margin-bottom: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .required-dot {
+      width: 5px;
+      height: 5px;
+      background: var(--primary);
+      border-radius: 50%;
+    }
+
+    /* --- LEFT COLUMN: INPUTS --- */
+    .input-side {
+      padding: 1.5rem;
+      gap: 1.5rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Category Grid */
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .category-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      cursor: pointer;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .category-card.active {
+      border-color: var(--secondary);
+      background: #f0f7fa;
+    }
+
+    .cat-icon {
+      font-size: 1.2rem;
+    }
+
+    .cat-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--secondary);
+    }
+
+    /* Drop Zone */
+    .drop-zone {
+      border: 2px dashed rgba(15, 23, 42, 0.15);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      text-align: center;
+      background: var(--bg-slate);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .drop-zone:hover {
+      border-color: var(--secondary);
+    }
+
+    .drop-text-main {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--secondary);
+      margin-bottom: 2px;
+    }
+
+    .drop-text-sub {
+      font-size: 0.75rem;
+      color: var(--text-gray);
+    }
+
+    /* File List */
+    .file-selected {
+      max-height: 120px;
+      overflow-y: auto;
+      margin-top: 10px;
+      background: #f9f9f9;
+      border-radius: 8px;
+    }
+
+    .file-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      border-bottom: 1px solid #eee;
+    }
+
+    /* Textarea */
+    .instructions-textarea {
+      width: 100%;
+      height: 80px;
+      padding: 0.8rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      resize: none;
+      outline: none;
+    }
+
+    .btn-generate {
+      background: var(--secondary);
+      color: #fff;
+      border: none;
+      padding: 1rem;
+      border-radius: var(--radius-md);
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .btn-generate:disabled {
+      opacity: 0.6;
+    }
+
+    /* --- RIGHT COLUMN: INFO & STATUS --- */
+    .info-side {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .status-card {
+      padding: 1.2rem;
+    }
+
+    .rules-box {
+      background: #fcfbf4;
+      border-radius: 10px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .rules-list {
+      list-style: none;
+      font-size: 0.75rem;
+      color: var(--text-gray);
+      line-height: 1.8;
+    }
+
+    .rules-list li::before {
+      content: '•';
+      color: var(--primary);
+      font-weight: bold;
+      margin-right: 8px;
+    }
+
+    /* Progress Steps */
+    .progress-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      margin-top: 10px;
+    }
+
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .step-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 1px solid #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      flex-shrink: 0;
+    }
+
+    .step.active {
+      color: var(--secondary);
+      font-weight: 700;
+    }
+
+    .step.active .step-icon {
+      border-color: var(--secondary);
+      background: #eef6f9;
+    }
+
+    .step.done {
+      color: #aaa;
+    }
+
+    .step.done .step-icon {
+      background: #e8f5e9;
+      border-color: #4caf50;
+      color: #4caf50;
+    }
+
+    /* Result Panel */
+    .result-panel {
+      display: none;
+      text-align: center;
+      padding: 1rem;
+      background: #eef9f5;
+      border-radius: 12px;
+      border: 1px solid #c8e6c9;
+    }
+
+    .result-panel.visible {
+      display: block;
+      animation: fadeIn 0.3s;
+    }
+
+    .btn-download {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 0.6rem 1.2rem;
+      background: #1E6B43;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(5px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* --- FOOTER/HOW-IT-WORKS (Side version) --- */
+    .how-it-works {
+      padding: 1.2rem;
+      flex: 1;
+    }
+
+    .how-step {
+      margin-bottom: 0.8rem;
+      display: flex;
+      gap: 10px;
+    }
+
+    .how-num {
+      font-family: 'Outfit';
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 1.1rem;
+    }
+
+    .how-text-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--secondary);
+    }
+
+    .how-text-desc {
+      font-size: 0.75rem;
+      color: var(--text-gray);
+      line-height: 1.4;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="site-header site-header--service">
+    <div class="site-header__row">
+      <a class="brand" href="https://portal.platformers.kr/">
+        <img class="brand__logo" src="../../shared/eduallab-logo.png" alt="에듀올랩" />
+        <span class="brand__sub">PPT·제안서</span>
+      </a>
+      <div class="site-header__spacer"></div>
+      <div class="site-header__actions">
+        <span class="topbar__user" id="portalHeaderUser" hidden></span>
+        <a class="topbar__btn" href="https://portal.platformers.kr/">워크포탈</a>
+        <button class="topbar__btn" type="button" id="portalHeaderLogout" hidden>로그아웃</button>
+      </div>
+    </div>
+  </header>
+  <script src="../../shared/portal-header.js?v=1" defer></script>
+
+  <main>
+    <section class="card input-side">
+      <div>
+        <div class="section-title"><span class="required-dot"></span>작업 모드</div>
+        <div class="category-grid" style="grid-template-columns: repeat(2, 1fr); margin-bottom: 0.5rem;">
+          <div class="category-card active" id="mode-new" onclick="selectMode('new')">
+            <span class="cat-icon">✨</span>
+            <div>
+              <div class="cat-title">신규 제안서 생성</div>
+            </div>
+          </div>
+          <div class="category-card" id="mode-append" onclick="selectMode('append')">
+            <span class="cat-icon">➕</span>
+            <div>
+              <div class="cat-title">기존 PPT에 추가 병합</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="category-selector-container">
+        <div class="section-title"><span class="required-dot"></span>제안서 유형</div>
+        <div class="category-grid">
+          <div class="category-card active" id="cat-proposal" onclick="selectCategory('proposal')">
+            <span class="cat-icon">🎨</span>
+            <div>
+              <div class="cat-title">B2B 제안서</div>
+            </div>
+          </div>
+          <div class="category-card" id="cat-report" onclick="selectCategory('report')">
+            <span class="cat-icon">📄</span>
+            <div>
+              <div class="cat-title">서면 보고서</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 신규 생성 모드용 파일 업로드 -->
+      <div id="upload-new-container">
+        <div class="section-title"><span class="required-dot"></span>파일 업로드</div>
+        <div class="drop-zone" onclick="document.getElementById('content-file').click()">
+          <input type="file" id="content-file" hidden multiple onchange="onFileSelect(this)" onclick="event.stopPropagation()">
+          <div class="drop-icon">📂</div>
+          <div class="drop-text-main">문서 및 이미지를 드래그하세요</div>
+          <div class="drop-text-sub" id="content-name-display">PDF, DOCX, XLSX, JPG 지원</div>
+        </div>
+        <div class="file-selected" id="content-selected">
+          <div id="file-list-items"></div>
+        </div>
+      </div>
+
+      <!-- 기존 PPT에 추가 병합 모드용 파일 업로드 -->
+      <div id="upload-append-container" style="display: none; gap: 0.8rem; flex-direction: column;">
+        <div>
+          <div class="section-title"><span class="required-dot"></span>기존 완성 PPTX 업로드</div>
+          <div class="drop-zone" id="drop-zone-base" onclick="document.getElementById('base-pptx-file').click()" style="padding: 1rem;">
+            <input type="file" id="base-pptx-file" hidden accept=".pptx" onchange="onBaseFileSelect(this)" onclick="event.stopPropagation()">
+            <div class="drop-icon" style="font-size: 1.4rem; margin-bottom: 2px;">📊</div>
+            <div class="drop-text-main" id="base-name-display" style="font-size: 0.8rem;">기존 PPTX 파일을 업로드하세요</div>
+            <div class="drop-text-sub" style="font-size: 0.7rem;">확장자 .pptx 파일만 지원</div>
+          </div>
+          <!-- 기존 PPTX 파일 선택 시 보여줄 개별 파일 디스플레이 카드 -->
+          <div class="file-selected" id="base-selected" style="margin-top: 10px; display: none;">
+            <div class="file-item">
+              <span id="base-selected-name" style="font-weight: 700; color: var(--secondary);"></span>
+              <span onclick="removeBaseFile()" style="cursor:pointer; color:#f44336">✕</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="section-title"><span class="required-dot"></span>추가할 원천 내용 문서들 업로드</div>
+          <div class="drop-zone" onclick="document.getElementById('append-files').click()" style="padding: 1.2rem;">
+            <input type="file" id="append-files" hidden multiple onchange="onAppendFilesSelect(this)" onclick="event.stopPropagation()">
+            <div class="drop-icon" style="font-size: 1.4rem; margin-bottom: 2px;">📂</div>
+            <div class="drop-text-main">추가할 분석 문서를 드래그하세요</div>
+            <div class="drop-text-sub" id="append-name-display" style="font-size: 0.7rem;">PDF, DOCX, XLSX, TXT 지원</div>
+          </div>
+          <div class="file-selected" id="append-selected">
+            <div id="append-file-list-items"></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-title">대상 고객군 <span style="font-size:0.75rem; font-weight:400; color:var(--text-gray);">(선택)</span></div>
+        <select id="target-audience" onchange="onAudienceChange(this)"
+          style="width:100%; padding:0.6rem 0.8rem; border:1px solid var(--border); border-radius:var(--radius-md);
+                 font-size:0.85rem; font-family:'Noto Sans KR',sans-serif; background:#fff;
+                 color:var(--text-black); outline:none; cursor:pointer;">
+          <option value="">-- 선택 안 함 (문서에서 자동 감지) --</option>
+          <option value="학교">학교 · 교육청</option>
+          <option value="방과후">방과후 · 늘봄학교</option>
+          <option value="돌봄">돌봄센터 · 지역아동센터</option>
+          <option value="지자체">지자체 · 공공기관</option>
+          <option value="학부모">학부모</option>
+          <option value="교육업체">교육업체 파트너</option>
+          <option value="투자">투자 · 사업계획</option>
+        </select>
+      </div>
+
+      <div>
+        <div class="section-title">추가 지시사항</div>
+        <textarea class="instructions-textarea" id="instructions"
+          placeholder="예: '데이터 위주로 구성해줘', '파스텔 톤 강조'"></textarea>
+      </div>
+
+      <button class="btn-generate" id="btn-generate" onclick="generate()">HTML 슬라이드 생성</button>
+    </section>
+
+    <section class="info-side">
+      <div class="card status-card">
+        <div class="section-title">수주 기획 및 디자인 규정</div>
+        <div class="rules-box" style="background: #f8fafc; border-radius: 10px; padding: 1rem; margin-bottom: 1rem;">
+          <ul class="rules-list">
+            <li>에듀올랩 그레이시 블루 (#F8FAFC) 캔버스</li>
+            <li>대기업 위탁/IR 규격 입체 섀도우 카드 매칭</li>
+            <li>AS-IS vs TO-BE 2단 설득 비교 카드 자동화</li>
+            <li>12자~22자 압축 명사형 종결어미 강제 통일</li>
+            <li>다크모드 및 시스템 이모지 사용 금지</li>
+          </ul>
+        </div>
+
+        <div class="section-title">생성 상태</div>
+        <div class="progress-steps" id="progress-section">
+          <div class="step" id="step-1">
+            <div class="step-icon">1</div>콘텐츠 및 이미지 정밀 분석
+          </div>
+          <div class="step" id="step-2">
+            <div class="step-icon">2</div>디자인 자산 기반 구조 설계
+          </div>
+          <div class="step" id="step-3">
+            <div class="step-icon">3</div>HTML 인라인 슬라이드 렌더링
+          </div>
+        </div>
+
+        <div class="result-panel" id="result-section">
+          <div style="font-size:1.5rem">🎉</div>
+          <div style="font-weight:700; color:#1E6B43; font-size:0.9rem">생성 완료!</div>
+          <a id="download-btn" class="btn-download" target="_blank">웹 슬라이드 열기 🚀</a>
+        </div>
+      </div>
+
+      <div class="card how-it-works">
+        <div class="section-title" style="margin-bottom:1rem">HOW IT WORKS</div>
+        <div class="how-step">
+          <div class="how-num">01</div>
+          <div>
+            <div class="how-text-title">멀티자료 분석</div>
+            <div class="how-text-desc">기획서와 교구 이미지를 통합 분석합니다.</div>
+          </div>
+        </div>
+        <div class="how-step">
+          <div class="how-num">02</div>
+          <div>
+            <div class="how-text-title">비전 매칭</div>
+            <div class="how-text-desc">이미지 기반으로 최적의 레이아웃을 배치합니다.</div>
+          </div>
+        </div>
+        <div class="how-step">
+          <div class="how-num">03</div>
+          <div>
+            <div class="how-text-title">독립형 HTML</div>
+            <div class="how-text-desc">별도 툴 없이 브라우저에서 즉시 프레젠테이션.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const state = { 
+      mode: 'new', // 'new' | 'append'
+      files: [], 
+      baseFile: null, 
+      appendFiles: [],
+      category: 'proposal',
+      targetAudience: ''
+    };
+
+    function onAudienceChange(select) {
+      const val = select.value;
+      if (val !== '' && val !== '투자') {
+        alert('아직 준비중입니다');
+        select.value = '';
+        state.targetAudience = '';
+      } else {
+        state.targetAudience = val;
+      }
+    }
+
+    function selectMode(mode) {
+      state.mode = mode;
+      document.querySelectorAll('#mode-new, #mode-append').forEach(card => card.classList.remove('active'));
+      
+      const newContainer = document.getElementById('upload-new-container');
+      const appendContainer = document.getElementById('upload-append-container');
+      const categorySelector = document.getElementById('category-selector-container');
+      const btn = document.getElementById('btn-generate');
+      
+      if (mode === 'new') {
+        document.getElementById('mode-new').classList.add('active');
+        newContainer.style.display = 'block';
+        appendContainer.style.display = 'none';
+        categorySelector.style.display = 'block'; // 신규 생성 시에는 유형 선택 가능
+        
+        if (state.category === 'proposal') {
+          btn.textContent = 'HTML 슬라이드 생성';
+        } else {
+          btn.textContent = '공식 서면 보고서 생성';
+        }
+      } else {
+        document.getElementById('mode-new').classList.remove('active');
+        document.getElementById('mode-append').classList.add('active');
+        newContainer.style.display = 'none';
+        appendContainer.style.display = 'flex';
+        categorySelector.style.display = 'none'; // 추가 병합은 항상 PPT 제안서 대상이므로 유형 선택 숨김
+        btn.textContent = '기존 PPT에 이어서 추가 생성';
+      }
+    }
+
+    const PORTAL_ACTIVITY_URL = 'https://portal.platformers.kr/api/activity';
+    function reportFeatureUse(action, label, detail) {
+      try {
+        fetch(PORTAL_ACTIVITY_URL, {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            service: 'ppt',
+            action: action,
+            label: label || undefined,
+            detail: detail != null && detail !== '' ? String(detail).slice(0, 500) : undefined,
+          }),
+        }).catch(function () {});
+      } catch (e) {}
+    }
+
+    function selectCategory(cat) {
+      state.category = cat;
+      document.querySelectorAll('#category-selector-container .category-card').forEach(card => card.classList.remove('active'));
+      
+      const btn = document.getElementById('btn-generate');
+      if (cat === 'proposal') {
+        document.getElementById('cat-proposal').classList.add('active');
+        btn.textContent = 'HTML 슬라이드 생성';
+      } else if (cat === 'report') {
+        document.getElementById('cat-report').classList.add('active');
+        btn.textContent = '공식 서면 보고서 생성';
+      }
+      reportFeatureUse('category_select', '유형 선택', cat);
+    }
+
+    function onFileSelect(input) {
+      const newFiles = Array.from(input.files);
+      state.files = [...state.files, ...newFiles];
+      renderFileList();
+      reportFeatureUse('upload', '파일 업로드', state.files.length + '개');
+    }
+
+    function renderFileList() {
+      const listContainer = document.getElementById('file-list-items');
+      listContainer.innerHTML = '';
+      state.files.forEach((f, i) => {
+        const item = document.createElement('div');
+        item.className = 'file-item';
+        item.innerHTML = `<span>📄 ${f.name}</span><span onclick="removeFile(${i})" style="cursor:pointer; color:#f44336">✕</span>`;
+        listContainer.appendChild(item);
+      });
+      document.getElementById('content-name-display').textContent = `${state.files.length}개 파일 선택됨`;
+    }
+
+    function removeFile(i) { 
+      state.files.splice(i, 1); 
+      renderFileList(); 
+    }
+
+    function onBaseFileSelect(input) {
+      if (input.files.length > 0) {
+        state.baseFile = input.files[0];
+        document.getElementById('base-name-display').textContent = '완성 PPTX 파일 교체하기';
+        document.getElementById('base-selected-name').textContent = `📊 ${state.baseFile.name}`;
+        document.getElementById('base-selected').style.display = 'block';
+      }
+    }
+
+    function removeBaseFile() {
+      state.baseFile = null;
+      document.getElementById('base-name-display').textContent = '기존 PPTX 파일을 업로드하세요';
+      document.getElementById('base-selected').style.display = 'none';
+      document.getElementById('base-pptx-file').value = '';
+    }
+
+    function onAppendFilesSelect(input) {
+      const newFiles = Array.from(input.files);
+      state.appendFiles = [...state.appendFiles, ...newFiles];
+      renderAppendFileList();
+    }
+
+    function renderAppendFileList() {
+      const listContainer = document.getElementById('append-file-list-items');
+      listContainer.innerHTML = '';
+      state.appendFiles.forEach((f, i) => {
+        const item = document.createElement('div');
+        item.className = 'file-item';
+        item.innerHTML = `<span>📄 ${f.name}</span><span onclick="removeAppendFile(${i})" style="cursor:pointer; color:#f44336">✕</span>`;
+        listContainer.appendChild(item);
+      });
+      document.getElementById('append-name-display').textContent = `${state.appendFiles.length}개 파일 선택됨`;
+    }
+
+    function removeAppendFile(i) { 
+      state.appendFiles.splice(i, 1); 
+      renderAppendFileList(); 
+    }
+
+    async function generate() {
+      const btn = document.getElementById('btn-generate');
+      btn.disabled = true;
+      btn.textContent = '분석 및 생성 중...';
+
+      // 이전 진행 상태 및 결과 리셋
+      document.querySelectorAll('.step').forEach(s => s.className = 'step');
+      document.getElementById('result-section').classList.remove('visible');
+
+      // 1단계 시작
+      document.getElementById('step-1').className = 'step active';
+
+      const formData = new FormData();
+      let apiUrl = '/api/generate';
+
+      if (state.mode === 'new') {
+        if (state.files.length === 0) {
+          alert('파일을 업로드해주세요.');
+          btn.disabled = false;
+          btn.textContent = state.category === 'report' ? '공식 서면 보고서 생성' : 'HTML 슬라이드 생성';
+          document.querySelectorAll('.step').forEach(s => s.className = 'step');
+          return;
+        }
+        state.files.forEach(file => {
+          formData.append('content_file', file);
+        });
+        formData.append('instructions', document.getElementById('instructions').value);
+        formData.append('category', state.category);
+        if (state.targetAudience) {
+          formData.append('target_audience', state.targetAudience);
+        }
+      } else { // append mode
+        if (!state.baseFile) {
+          alert('기존 PPTX 파일을 업로드해주세요.');
+          btn.disabled = false;
+          btn.textContent = '기존 PPT에 이어서 추가 생성';
+          document.querySelectorAll('.step').forEach(s => s.className = 'step');
+          return;
+        }
+        if (state.appendFiles.length === 0) {
+          alert('추가할 분석 문서를 하나 이상 업로드해주세요.');
+          btn.disabled = false;
+          btn.textContent = '기존 PPT에 이어서 추가 생성';
+          document.querySelectorAll('.step').forEach(s => s.className = 'step');
+          return;
+        }
+        formData.append('base_pptx', state.baseFile);
+        state.appendFiles.forEach(file => {
+          formData.append('content_file', file);
+        });
+        formData.append('instructions', document.getElementById('instructions').value);
+        formData.append('category', 'proposal'); // 추가 병합은 항상 제안서 슬라이드 형태
+        apiUrl = '/api/generate/append';
+      }
+
+      // 백엔드 처리 시간 차에 대비한 단계별 활성화 타이머
+      const step2Timeout = setTimeout(() => {
+        document.getElementById('step-1').className = 'step done';
+        document.getElementById('step-2').className = 'step active';
+      }, 3000);
+
+      const step3Timeout = setTimeout(() => {
+        document.getElementById('step-2').className = 'step done';
+        document.getElementById('step-3').className = 'step active';
+      }, 15000);
+
+      try {
+        const res = await fetch(apiUrl, {
+          method: 'POST',
+          body: formData
+        });
+
+        clearTimeout(step2Timeout);
+        clearTimeout(step3Timeout);
+
+        const contentType = res.headers.get('content-type') || '';
+
+        if (!res.ok) {
+          let errMsg = '슬라이드 생성 중 오류가 발생했습니다.';
+          if (contentType.includes('application/json')) {
+            try {
+              const errData = await res.json();
+              errMsg = errData.error || errMsg;
+            } catch (e) { }
+          } else {
+            try {
+              const rawText = await res.text();
+              console.error('Server Error (Non-JSON):', rawText);
+              if (rawText.includes('504') || rawText.includes('Gateway Timeout')) {
+                errMsg = '서버 시간 초과(Timeout)가 발생했습니다. 잠시 후 다시 시도해주세요.';
+              } else if (rawText.includes('502') || rawText.includes('Bad Gateway')) {
+                errMsg = '서버 게이트웨이 오류(Bad Gateway)가 발생했습니다. 서버가 켜져 있는지 확인해주세요.';
+              } else if (rawText.includes('500') || rawText.includes('Internal Server Error')) {
+                errMsg = '서버 내부 오류(500 Internal Error)가 발생했습니다. 서버 로그를 확인해주세요.';
+              }
+            } catch (e) { }
+          }
+          throw new Error(errMsg);
+        }
+
+        if (!contentType.includes('application/json')) {
+          const rawText = await res.text();
+          console.error('Server non-JSON Response:', rawText);
+          if (rawText.includes('504') || rawText.includes('Gateway Timeout')) {
+            throw new Error('서버 시간 초과(Timeout)가 발생했습니다. 다시 시도해주세요.');
+          }
+          throw new Error('서버가 올바르지 않은 응답(HTML)을 반환했습니다. 서버 연결 상태를 확인해주세요.');
+        }
+
+        const data = await res.json();
+
+        // 최종 완료 표시
+        document.getElementById('step-1').className = 'step done';
+        document.getElementById('step-2').className = 'step done';
+        document.getElementById('step-3').className = 'step done';
+
+        // 결과 영역 노출 및 링크 연동
+        const downloadBtn = document.getElementById('download-btn');
+        downloadBtn.href = data.redirect;
+        
+        if (state.mode === 'append') {
+          downloadBtn.textContent = '병합 완료된 에디터 열기 🚀';
+        } else if (state.category === 'report') {
+          downloadBtn.textContent = '상세 보고서 뷰어 열기 🚀';
+        } else {
+          downloadBtn.textContent = '웹 슬라이드 열기 🚀';
+        }
+        document.getElementById('result-section').classList.add('visible');
+
+        // 새 창으로 뷰어 자동 열기
+        window.open(data.redirect, '_blank');
+        reportFeatureUse('generate', state.category === 'report' ? '서면 보고서 생성' : '제안서 생성', data.redirect || '');
+
+      } catch (err) {
+        console.error(err);
+        alert(err.message || '요청 처리에 실패했습니다.');
+        document.querySelectorAll('.step').forEach(s => s.className = 'step');
+      } finally {
+        btn.disabled = false;
+        if (state.mode === 'append') {
+          btn.textContent = '기존 PPT에 이어서 추가 생성';
+        } else if (state.category === 'report') {
+          btn.textContent = '공식 서면 보고서 생성';
+        } else {
+          btn.textContent = 'HTML 슬라이드 생성';
+        }
+      }
+    }
+    try { reportFeatureUse('view', 'PPT 접속'); } catch (e) {}
+  </script>
+</body>
+
+</html>

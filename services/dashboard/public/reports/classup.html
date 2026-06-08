@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>클래스업 벤치마킹 리포트 | PLATFORMERS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&family=Outfit:wght@600;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.rawgit.com/evidenceprime/html-docx-js/master/dist/html-docx.js"></script>
+    <style>
+        :root {
+            --primary: #2563EB;
+            --secondary: #60A5FA;
+            --accent: #10B981;
+            --bg: #F0F7FF;
+            --white: #ffffff;
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+            --border: #BFDBFE;
+            --shadow: 0 8px 32px rgba(37,99,235,0.10);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: linear-gradient(135deg, #F0F7FF 0%, #DBEAFE 100%); color: var(--text-main); font-family: 'Pretendard', -apple-system, sans-serif; line-height: 1.8; padding: 40px 20px; }
+        .download-group { position: fixed; top: 20px; right: 20px; display: flex; gap: 10px; z-index: 1000; }
+        .btn-dl { border: none; padding: 10px 18px; border-radius: 6px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; color: white; font-size: 13px; transition: all 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .btn-dl:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        .btn-pdf { background: #e74c3c; }
+        .btn-word { background: #2b579a; }
+        .document { max-width: 940px; margin: 0 auto; background: var(--white); border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; }
+        header { background: linear-gradient(135deg, #2563EB 0%, #10B981 100%); padding: 52px 56px; color: white; }
+        .badge { display: inline-block; background: rgba(255,255,255,0.2); padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; letter-spacing: 1px; margin-bottom: 20px; }
+        header h1 { font-family: 'Outfit', sans-serif; font-size: 34px; font-weight: 800; margin-bottom: 10px; }
+        header p { font-size: 15px; opacity: 0.85; }
+        .meta-row { display: flex; gap: 30px; margin-top: 28px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.2); }
+        .meta-item { font-size: 13px; opacity: 0.85; }
+        .meta-item span { display: block; font-weight: 700; font-size: 15px; opacity: 1; }
+        .content { padding: 52px 56px; }
+        .section { margin-bottom: 52px; }
+        .section-title { font-size: 20px; font-weight: 800; color: var(--primary); margin-bottom: 24px; padding-bottom: 12px; border-bottom: 3px solid var(--secondary); display: flex; align-items: center; gap: 10px; }
+        .step-badge { background: var(--primary); color: white; width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; flex-shrink: 0; }
+
+        /* KPI */
+        .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+        .kpi-card { background: var(--bg); border-radius: 12px; padding: 20px; border: 1px solid var(--border); text-align: center; }
+        .kpi-card .num { font-size: 26px; font-weight: 800; color: var(--primary); }
+        .kpi-card .label { font-size: 12px; color: var(--text-sub); margin-top: 4px; }
+
+        /* 기능 카드 그리드 */
+        .feature-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px; }
+        .feature-card { background: var(--bg); border-radius: 12px; padding: 22px; border: 1px solid var(--border); border-top: 4px solid var(--primary); }
+        .feature-card h4 { font-size: 15px; font-weight: 700; margin-bottom: 10px; color: var(--primary); }
+        .feature-card ul { padding-left: 16px; }
+        .feature-card li { font-size: 13px; color: var(--text-sub); line-height: 1.8; }
+
+        /* 요금제 */
+        .plan-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+        .plan-card { border-radius: 14px; padding: 24px; border: 2px solid var(--border); }
+        .plan-card.featured { border-color: var(--primary); background: linear-gradient(135deg, #EFF6FF, #F0FDF4); }
+        .plan-card h4 { font-size: 15px; font-weight: 800; margin-bottom: 6px; }
+        .plan-card .price { font-size: 24px; font-weight: 800; color: var(--primary); margin-bottom: 4px; }
+        .plan-card .price-sub { font-size: 12px; color: var(--text-sub); margin-bottom: 12px; }
+        .plan-card ul { padding-left: 16px; }
+        .plan-card li { font-size: 13px; color: var(--text-sub); line-height: 1.8; }
+
+        /* 하이라이트 박스 */
+        .highlight-box { background: #ECFDF5; border-left: 5px solid #10B981; padding: 20px 24px; border-radius: 0 12px 12px 0; margin-bottom: 20px; }
+        .highlight-box h4 { font-size: 15px; font-weight: 800; color: #065F46; margin-bottom: 8px; }
+        .highlight-box p { font-size: 14px; color: #047857; line-height: 1.6; }
+
+        /* 테이블 */
+        table { width: 100%; border-collapse: collapse; font-size: 14px; margin-bottom: 24px; }
+        th { background: var(--primary); color: white; padding: 13px 16px; font-weight: 700; text-align: left; }
+        td { padding: 12px 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
+        tr:nth-child(even) td { background: var(--bg); }
+        tr:last-child td { border-bottom: none; }
+
+        /* 핵심 기능 분석 */
+        .core-cards { display: flex; flex-direction: column; gap: 16px; }
+        .core-card { background: var(--bg); border-radius: 14px; padding: 22px; border-left: 5px solid var(--primary); }
+        .core-card h4 { font-size: 15px; font-weight: 800; margin-bottom: 10px; color: var(--primary); }
+        .core-card p { font-size: 13px; color: var(--text-sub); line-height: 1.7; margin-top: 10px; }
+        .star-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; font-size: 13px; }
+        .star-row .label { width: 130px; color: var(--text-sub); font-weight: 600; }
+        .star-hi { color: #2563EB; font-weight: 800; }
+        .star-mid { color: #F59E0B; font-weight: 800; }
+        .star-lo { color: #10B981; font-weight: 800; }
+
+        /* 인사이트 */
+        .insight-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+        .insight-card { background: linear-gradient(135deg, #EFF6FF, #ECFDF5); border-radius: 14px; padding: 24px; border: 1px solid var(--border); }
+        .insight-card .num { width: 32px; height: 32px; background: var(--primary); color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; margin-bottom: 12px; }
+        .insight-card h4 { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+        .insight-card p { font-size: 13px; color: var(--text-sub); line-height: 1.6; }
+
+        footer { text-align: center; padding: 32px; background: var(--bg); border-top: 1px solid var(--border); font-size: 13px; color: var(--text-sub); }
+        @media print { body { background: white; padding: 0; } .document { box-shadow: none; border-radius: 0; } .download-group { display: none; } }
+    </style>
+</head>
+<body>
+    <div class="download-group">
+        <button class="btn-dl btn-pdf" onclick="downloadPDF()">📄 PDF</button>
+        <button class="btn-dl btn-word" onclick="downloadWord()">📝 Word</button>
+    </div>
+    <div class="document" id="report">
+        <header>
+            <div class="badge">ACADEMY ERP BENCHMARKING REPORT</div>
+            <h1>클래스업(ClassUp) 시스템 분석 리포트</h1>
+            <p>https://classup.io — 비로그인 전수 조사 결과 (1~4단계 완료)</p>
+            <div class="meta-row">
+                <div class="meta-item">조사일<span>2026-04-28</span></div>
+                <div class="meta-item">조사 대상<span>classup.io</span></div>
+                <div class="meta-item">서비스 유형<span>학원 운영 관리(ERP) SaaS</span></div>
+                <div class="meta-item">작성<span>Antigravity AI</span></div>
+            </div>
+        </header>
+
+        <div class="content">
+
+            <!-- 1단계 -->
+            <div class="section">
+                <h2 class="section-title"><span class="step-badge">1</span>서비스 정체성 및 구조 파악</h2>
+                <div class="kpi-grid">
+                    <div class="kpi-card"><div class="num">무료</div><div class="label">기본 플랜 시작가</div></div>
+                    <div class="kpi-card"><div class="num">키오스크</div><div class="label">태블릿 기반 무료 출결 단말기</div></div>
+                    <div class="kpi-card"><div class="num">토스Pay</div><div class="label">내장 간편 수납 시스템</div></div>
+                    <div class="kpi-card"><div class="num">학원 ERP</div><div class="label">출결+수납+소통 통합 관리</div></div>
+                </div>
+                <div class="highlight-box">
+                    <h4>🎯 클래스업은 LMS가 아닌 "학원 운영 자동화 ERP"입니다</h4>
+                    <p>수업 콘텐츠나 AI 학습 기능보다 <strong>출결 자동화, 원비 수납, 학부모 알림, 강사 관리</strong>에 특화된 학원 행정 플랫폼입니다. 핵심 가치는 "원장님이 직접 모든 것을 할 필요 없이, 학원 운영을 자동화"입니다.</p>
+                </div>
+                <table>
+                    <tr><th>메뉴</th><th>내용</th></tr>
+                    <tr><td>학원 소개</td><td>일반 학원 / 관리형 독서실 / 중·대형 학원별 맞춤 제안</td></tr>
+                    <tr><td>이용 금액</td><td>학생 수 기반 3단계 요금제 (Free / 29,000원 / 89,000원)</td></tr>
+                    <tr><td>도입 방법</td><td>앱 설치 → 학원 정보 등록 → 태블릿 키오스크 세팅 (30분 내 완료)</td></tr>
+                    <tr><td>고객 사례</td><td>영어학원, 수학학원, 태권도장, 독서실 등 다양한 유형 도입</td></tr>
+                    <tr><td>지식센터</td><td>기능별 상세 가이드 및 동영상 튜토리얼 제공</td></tr>
+                </table>
+            </div>
+
+            <!-- 2단계 -->
+            <div class="section">
+                <h2 class="section-title"><span class="step-badge">2</span>핵심 기능 역설계</h2>
+
+                <h3 style="font-size:15px; font-weight:700; margin-bottom:14px;">⚙️ 학원 운영 자동화 핵심 기능</h3>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>📲 태블릿 무료 키오스크 출결</h4>
+                        <ul>
+                            <li>별도 단말기 구매 없이 기존 태블릿 활용</li>
+                            <li>QR코드 / 카드 / 지문 출결 지원</li>
+                            <li>출석 즉시 학부모 카카오톡 알림 발송</li>
+                            <li>월별 출결 통계 자동 집계</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card">
+                        <h4>💰 원비 수납 자동화 (토스 연동)</h4>
+                        <ul>
+                            <li>토스(Toss) 연동 간편 결제</li>
+                            <li>월 자동이체 설정 가능</li>
+                            <li>미납 학생 자동 알림 발송</li>
+                            <li>수납 현황 대시보드 실시간 조회</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card">
+                        <h4>📢 학부모 소통 채널 통합</h4>
+                        <ul>
+                            <li>카카오톡 알림톡 자동 발송</li>
+                            <li>공지사항·가정통신문 일괄 발송</li>
+                            <li>상담 예약 및 일정 관리</li>
+                            <li>개인 연락처 비공개 유지</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card">
+                        <h4>📹 생활 관리 캠 (독서실 특화)</h4>
+                        <ul>
+                            <li>학습 현장 실시간 CCTV 스트리밍</li>
+                            <li>학부모 앱에서 자녀 모습 실시간 확인</li>
+                            <li>타임랩스 영상 자동 생성</li>
+                            <li>관리형 독서실의 핵심 마케팅 도구</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3 style="font-size:15px; font-weight:700; margin-bottom:14px; margin-top:8px;">💳 요금제 구조</h3>
+                <div class="plan-grid">
+                    <div class="plan-card">
+                        <h4>Free</h4>
+                        <div class="price">무료</div>
+                        <div class="price-sub">학생 30명 이하</div>
+                        <ul>
+                            <li>기본 출결 관리</li>
+                            <li>학부모 알림 기본 기능</li>
+                            <li>수납 관리 기본</li>
+                        </ul>
+                    </div>
+                    <div class="plan-card featured">
+                        <h4>Standard ⭐</h4>
+                        <div class="price">월 29,000원</div>
+                        <div class="price-sub">학생 수 무제한</div>
+                        <ul>
+                            <li>출결 키오스크 무제한</li>
+                            <li>토스 자동이체 연동</li>
+                            <li>미납 자동 알림</li>
+                            <li>학부모 앱 제공</li>
+                        </ul>
+                    </div>
+                    <div class="plan-card">
+                        <h4>Premium</h4>
+                        <div class="price">월 89,000원</div>
+                        <div class="price-sub">중·대형 학원</div>
+                        <ul>
+                            <li>생활 관리 캠 포함</li>
+                            <li>다수 강사 관리</li>
+                            <li>고급 통계 리포트</li>
+                            <li>전담 CS 지원</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3단계 -->
+            <div class="section">
+                <h2 class="section-title"><span class="step-badge">3</span>핵심 기능 분석 및 인사이트 도출</h2>
+                <div class="core-cards">
+                    <div class="core-card">
+                        <h4>📲 태블릿 무료 키오스크 — "BYOD 자동화"</h4>
+                        <div class="star-row"><span class="label">핵심도 (Core Value)</span><span class="star-hi">★★★★★</span></div>
+                        <div class="star-row"><span class="label">편의성 (Efficiency)</span><span class="star-hi">★★★★★</span></div>
+                        <div class="star-row"><span class="label">차별성 (Differentiation)</span><span class="star-hi">★★★★★</span></div>
+                        <p>별도 하드웨어 구매 없이 기존 태블릿만으로 출결 키오스크를 구현하는 BYOD 전략. 초기 도입 비용 제로. 출석과 동시에 학부모에게 카카오톡 알림을 자동 발송하는 것이 학원 운영의 가장 큰 페인포인트를 해결.</p>
+                    </div>
+                    <div class="core-card" style="border-left-color:#10B981">
+                        <h4>💰 토스 연동 원비 자동이체 — "미납 걱정 없는 학원"</h4>
+                        <div class="star-row"><span class="label">핵심도 (Core Value)</span><span class="star-hi">★★★★★</span></div>
+                        <div class="star-row"><span class="label">편의성 (Efficiency)</span><span class="star-hi">★★★★★</span></div>
+                        <div class="star-row"><span class="label">차별성 (Differentiation)</span><span class="star-hi">★★★★☆</span></div>
+                        <p>월말마다 원비를 수기로 수납하는 것이 학원 운영의 가장 큰 행정 부담. 토스 자동이체 연동으로 수납이 완전 자동화되며, 미납자에게 자동으로 알림을 보내 원장의 불편한 독촉 전화를 없앰.</p>
+                    </div>
+                    <div class="core-card" style="border-left-color:#F59E0B">
+                        <h4>📹 생활 관리 캠 — "보이는 신뢰"</h4>
+                        <div class="star-row"><span class="label">핵심도 (Core Value)</span><span class="star-hi">★★★★☆</span></div>
+                        <div class="star-row"><span class="label">편의성 (Efficiency)</span><span class="star-hi">★★★☆☆</span></div>
+                        <div class="star-row"><span class="label">차별성 (Differentiation)</span><span class="star-hi">★★★★★</span></div>
+                        <p>학부모가 앱에서 자녀의 학습 모습을 실시간으로 볼 수 있는 기능. 관리형 독서실·공부방 시장에서 압도적 경쟁 우위를 제공. "내 아이가 진짜 공부하는지"에 대한 학부모의 불안을 원천 해소.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4단계 -->
+            <div class="section">
+                <h2 class="section-title"><span class="step-badge">4</span>크레용스쿨을 위한 벤치마킹 인사이트</h2>
+                <div class="insight-cards">
+                    <div class="insight-card">
+                        <div class="num">1</div>
+                        <h4>교구재 대여 → 출결 연동 자동 알림</h4>
+                        <p>클래스업처럼 수강생이 배움터에 도착해 교구재를 수령할 때 자동으로 출석 처리되고, 학부모에게 알림이 발송되는 체계 구축. 교구재 대여 현황과 출결이 동시에 관리됨.</p>
+                    </div>
+                    <div class="insight-card">
+                        <div class="num">2</div>
+                        <h4>강사료 자동이체 시스템</h4>
+                        <p>수강생 원비 자동이체와 동일한 방식으로, 강사료도 월 강의 횟수 데이터를 기반으로 자동 계산 및 이체하는 파이프라인 구축. 현재 수동 정산 업무의 핵심 대안.</p>
+                    </div>
+                    <div class="insight-card">
+                        <div class="num">3</div>
+                        <h4>배움터 현장 실시간 모니터링</h4>
+                        <p>클래스업의 생활관리캠처럼, 크레용스쿨 배움터에 간단한 웹캠을 설치하고 학부모가 앱에서 수업 현장을 실시간 확인할 수 있는 기능. 원거리 배움터 품질 신뢰도 확보.</p>
+                    </div>
+                    <div class="insight-card">
+                        <div class="num">4</div>
+                        <h4>미수납 교구재 자동 독촉 알림</h4>
+                        <p>클래스업의 미납 자동 알림처럼, 교구재 반납 예정일이 지난 수강생에게 자동으로 카카오 알림톡을 발송하는 시스템. 담당자가 직접 연락하는 수작업 완전 제거.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <footer>
+            <p>본 보고서는 <strong>PLATFORMERS</strong>가 크레용스쿨 자동화 설계를 위해 작성한 벤치마킹 문서입니다.</p>
+            <p style="margin-top:6px;">© 2026 Platformers. All Rights Reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        function downloadPDF() {
+            const element = document.getElementById('report');
+            const opt = { margin: [0.4, 0.4], filename: '클래스업_벤치마킹_리포트.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true, logging: false }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }, pagebreak: { mode: ['avoid-all', 'css', 'legacy'] } };
+            const btns = document.querySelector('.download-group');
+            btns.style.display = 'none';
+            html2pdf().set(opt).from(element).save().then(() => { btns.style.display = 'flex'; });
+        }
+        function downloadWord() {
+            const content = document.getElementById('report').innerHTML;
+            const styles = document.querySelector('style').innerHTML;
+            const fullHtml = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>${styles}</style></head><body>${content}</body></html>`;
+            const converted = htmlDocx.asBlob(fullHtml, { orientation: 'portrait' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(converted);
+            link.download = '클래스업_벤치마킹_리포트.docx';
+            link.click();
+        }
+    </script>
+</body>
+</html>

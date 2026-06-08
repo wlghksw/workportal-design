@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>회의록 자동화 — 에듀올랩</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ASSET_BASE}}/theme-light.css?v=8">
+<link rel="stylesheet" href="../../shared/portal-header.css?v=1">
+</head>
+<body>
+<header class="site-header site-header--service">
+  <div class="site-header__row">
+    <a class="brand" href="https://portal.platformers.kr/">
+      <img class="brand__logo" src="../../shared/eduallab-logo.png" alt="에듀올랩" />
+      <span class="brand__sub">회의록 자동화</span>
+    </a>
+    <div class="site-header__spacer"></div>
+    <div class="site-header__actions">
+      <span class="topbar__user" id="portalHeaderUser" hidden></span>
+      <a class="topbar__btn" href="https://portal.platformers.kr/">워크포탈</a>
+      <button class="topbar__btn" type="button" id="portalHeaderLogout" hidden>로그아웃</button>
+    </div>
+  </div>
+</header>
+<script src="../../shared/portal-header.js?v=1" defer></script>
+<div class="app">
+  <div class="main">
+    <div class="sidebar">
+      <div class="sidebar-title" id="sidebarTitle">최근 회의</div>
+      <div id="meetingList"></div>
+    </div>
+    <div class="content">
+      <div class="meta-grid">
+        <div class="field">
+          <label>회의 제목</label>
+          <input type="text" id="title" placeholder="예: 4월 마케팅 전략 회의">
+        </div>
+        <div class="field">
+          <label>참석자 (쉼표 구분)</label>
+          <input type="text" id="participants" placeholder="예: 김철수, 이영희, 박민준">
+        </div>
+        <div class="field">
+          <label>Teams 공유 팀</label>
+          <select id="team">
+            <option value="">(기본: TEAMS_WEBHOOK_URL)</option>
+            <option value="교육개발">교육개발</option>
+            <option value="주문제작">주문제작</option>
+            <option value="영업마케팅">영업마케팅</option>
+            <option value="크레용스쿨">크레용스쿨</option>
+            <option value="플랫폼머즈">플랫폼머즈</option>
+            <option value="콘텐츠제작">콘텐츠 제작</option>
+            <option value="쇼핑몰">쇼핑몰</option>
+            <option value="일반업무" selected>일반업무</option>
+            <option value="디자인개발">디자인 개발</option>
+          </select>
+          <label style="margin-top:8px;display:flex;align-items:center;gap:8px;font-weight:500">
+            <input type="checkbox" id="postToTeams" checked>
+            Teams로 공유
+          </label>
+        </div>
+        <div class="field">
+          <label>날짜</label>
+          <input type="text" id="meetingDate" placeholder="예: 2026-04-30">
+        </div>
+        <div class="field">
+          <label>장소</label>
+          <input type="text" id="location" placeholder="예: 본사 3층 회의실">
+        </div>
+      </div>
+      <div class="tabs">
+        <button type="button" class="tab active" data-tab="record" onclick="switchTab('record')">🎙️ 직접 녹음</button>
+        <button type="button" class="tab" data-tab="live" hidden onclick="switchTab('live')">⚡ 실시간 회의록</button>
+        <button type="button" class="tab" data-tab="upload" onclick="switchTab('upload')">📁 파일 업로드</button>
+      </div>
+      <div class="files-section" id="filesSection" hidden>
+        <div class="section-label files-section__title">첨부된 녹음 파일</div>
+        <p class="files-section__hint">아래 순서대로 하나의 회의로 합쳐 처리합니다. 순서 변경·삭제 가능</p>
+        <div id="fileList" class="file-list"></div>
+        <div id="fileTotal" class="file-total"></div>
+      </div>
+      <div class="tab-panel active" id="panel-record">
+        <div class="rec-area record-zone" id="recArea">
+          <div class="rec-controls">
+            <button type="button" class="rec-btn" id="recBtn" aria-label="녹음 시작">🎙️</button>
+            <button type="button" class="rec-btn rec-btn--finish" id="recStopBtn" hidden aria-label="녹음 종료">⏹</button>
+          </div>
+          <div class="rec-hint" id="recHint">🎙️ 눌러 녹음 · ⏸ 일시정지 · ⏹ 종료 후 파일로 저장</div>
+          <div class="waveform">
+            <div class="wave-bar" style="height:8px"></div>
+            <div class="wave-bar" style="height:14px"></div>
+            <div class="wave-bar" style="height:20px"></div>
+            <div class="wave-bar" style="height:10px"></div>
+            <div class="wave-bar" style="height:24px"></div>
+            <div class="wave-bar" style="height:16px"></div>
+            <div class="wave-bar" style="height:8px"></div>
+            <div class="wave-bar" style="height:18px"></div>
+            <div class="wave-bar" style="height:22px"></div>
+            <div class="wave-bar" style="height:12px"></div>
+            <div class="wave-bar" style="height:28px"></div>
+            <div class="wave-bar" style="height:10px"></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px"><div class="rec-dot" id="recDot"></div><div class="rec-time" id="recTime">00:00</div></div>
+          <div class="annotation" id="micPermNote">녹음 시 브라우저에서 마이크 허용을 눌러주세요.</div>
+          <div class="rec-file" id="recFile"></div>
+          <p class="rec-file-scroll-hint" id="recFileScrollHint" hidden>↑ 위 「첨부된 녹음 파일」에서 확인·순서 조정</p>
+        </div>
+      </div>
+      <div class="tab-panel" id="panel-live" hidden>
+        <div class="rec-area record-zone" style="padding:16px">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+            <div>
+              <div class="section-label" style="margin:0 0 6px 0">회의 중 실시간 회의록</div>
+              <div class="annotation" style="margin:0">
+                5초 단위로 오디오를 전송해 전사/요약을 갱신합니다. (네트워크/비용 이슈가 있어 주기 조절 가능)
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button type="button" class="btn" id="liveStartBtn">실시간 시작</button>
+              <button type="button" class="btn ghost" id="liveStopBtn" disabled>중지</button>
+              <button type="button" class="btn ghost" id="liveRefreshBtn" disabled>지금까지 요약</button>
+              <button type="button" class="btn" id="liveFinalizeBtn" disabled>최종본 생성</button>
+            </div>
+          </div>
+          <div class="progress" id="liveProg" style="display:none;margin-top:12px">
+            <div class="bar-bg"><div class="bar" id="liveBar"></div></div>
+            <div class="status" id="liveStatus">준비 중...</div>
+          </div>
+          <div class="err" id="liveErr" style="display:none;margin-top:10px"></div>
+
+          <div class="tabs" style="margin-top:12px">
+            <button class="tab active" id="liveTabNotesBtn" type="button">노트</button>
+            <button class="tab" id="liveTabAiBtn" type="button">AI 요약</button>
+            <button class="tab" id="liveTabChatBtn" type="button">대화 기록</button>
+          </div>
+
+          <div class="tab-panel active" id="panel-live-notes">
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:12px">
+              <div class="transcript-box" style="margin:0;min-height:180px">
+                <div class="transcript-header">
+                  <div class="section-label" style="margin:0">요약</div>
+                  <div class="status-row"><div class="status-dot"></div><span id="liveMeta">세션 없음</span></div>
+                </div>
+                <pre class="notes" id="liveSummary" style="white-space:pre-wrap;margin:0">(요약 대기)</pre>
+              </div>
+              <div class="transcript-box" style="margin:0;min-height:180px">
+                <div class="transcript-header">
+                  <div class="section-label" style="margin:0">결정 사항</div>
+                  <div class="status-row"><div class="status-dot"></div><span id="liveDoneMeta">대기</span></div>
+                </div>
+                <pre class="notes" id="liveDone" style="white-space:pre-wrap;margin:0">- (대기)</pre>
+              </div>
+              <div class="transcript-box" style="margin:0;min-height:180px">
+                <div class="transcript-header">
+                  <div class="section-label" style="margin:0">열린 질문</div>
+                  <div class="status-row"><div class="status-dot"></div><span id="liveQuestionsMeta">대기</span></div>
+                </div>
+                <pre class="notes" id="liveQuestions" style="white-space:pre-wrap;margin:0">- (대기)</pre>
+              </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+              <div class="transcript-box" style="margin:0;max-height:360px;overflow:auto">
+                <div class="transcript-header">
+                  <div class="section-label" style="margin:0">안건</div>
+                  <div class="status-row"><div class="status-dot"></div><span id="liveAgendaMeta">대기</span></div>
+                </div>
+                <pre class="notes" id="liveAgenda" style="white-space:pre-wrap;margin:0">(대기)</pre>
+              </div>
+              <div class="transcript-box" style="margin:0;max-height:360px;overflow:auto">
+                <div class="transcript-header">
+                  <div class="section-label" style="margin:0">회의록 본문(초안/최종)</div>
+                  <div class="status-row"><div class="status-dot"></div><span id="liveDraftMeta">초안 대기</span></div>
+                </div>
+                <pre class="notes" id="liveDraft" style="white-space:pre-wrap;margin:0">(여기에 본문이 표시됩니다)</pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-panel" id="panel-live-ai">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+              <button type="button" class="btn ghost" id="aiQuickSummaryBtn">지금까지 요약</button>
+              <button type="button" class="btn ghost" id="aiDecisionActionBtn">결정/액션만</button>
+              <button type="button" class="btn ghost" id="aiRisksBtn">리스크/이슈</button>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;margin-top:10px">
+              <input id="aiPrompt" type="text" placeholder="예: 지금 논의에서 확정된 결정을 정리해줘" style="flex:1;min-width:220px" />
+              <button type="button" class="btn" id="aiAskBtn">질문</button>
+            </div>
+            <div class="transcript-box" style="margin:12px 0 0 0;max-height:420px;overflow:auto">
+              <div class="transcript-header">
+                <div class="section-label" style="margin:0">Copilot 응답</div>
+                <div class="status-row"><div class="status-dot"></div><span id="aiMeta">대기</span></div>
+              </div>
+              <pre class="notes" id="aiAnswer" style="white-space:pre-wrap;margin:0">(여기에 응답이 표시됩니다)</pre>
+            </div>
+          </div>
+
+          <div class="tab-panel" id="panel-live-chat">
+            <div class="transcript-box" style="margin-top:12px;max-height:640px;overflow:auto">
+              <div class="transcript-header">
+                <div class="section-label" style="margin:0">대화 기록(전사)</div>
+                <div class="status-row"><div class="status-dot"></div><span id="liveTranscriptMeta">대기</span></div>
+              </div>
+              <pre class="notes" id="liveTranscript" style="white-space:pre-wrap;margin:0">(아직 전사가 없습니다)</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-panel" id="panel-upload">
+        <div class="drop" id="drop">
+          <div class="drop-icon">📁</div>
+          <div class="drop-text">녹음 파일을 여기 끌어다 놓거나 클릭하세요 (여러 파일 가능)</div>
+          <div class="drop-hint">m4a · mp3 · wav · caf 등 · 회의가 중간에 멈췄다 재개되어 여러 파일이 생긴 경우 순서대로 추가하세요</div>
+        </div>
+      </div>
+      <input type="file" id="fileinput" accept="audio/*" multiple>
+
+      <button class="btn block" id="btn" disabled>회의록 생성 &amp; Teams 공유</button>
+      <div class="err" id="err"></div>
+      <div class="progress" id="prog">
+        <div class="bar-bg"><div class="bar" id="bar"></div></div>
+        <div class="status" id="status">준비 중...</div>
+      </div>
+      <div class="transcript-box result" id="result">
+        <div class="transcript-header">
+          <div class="section-label" style="margin:0">자동 생성된 회의록</div>
+          <div class="status-row"><div class="status-dot"></div>AI 처리 완료</div>
+        </div>
+        <div class="teams-badge">✅ Teams에 공유됨</div>
+        <div class="notes" id="notes"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const __MP_BASE={{MP_BASE}};
+const __MP_MAX_UPLOAD_MB={{MAX_UPLOAD_MB}};
+const __MP_UPLOAD_CAP_MB=(typeof __MP_MAX_UPLOAD_MB==='number'&&__MP_MAX_UPLOAD_MB>0)?__MP_MAX_UPLOAD_MB:1024;
+
+async function apiFetch(url, opts){
+  try{
+    return await fetch(url, {
+      mode: 'same-origin',
+      credentials: 'include',
+      redirect: 'follow',
+      ...opts,
+    });
+  }catch(e){
+    try{
+      if(err){
+        err.textContent='네트워크 오류(Failed to fetch)입니다. 로그인 만료/쿠키 차단/네트워크 문제일 수 있어요. 새로고침 후 포탈에 다시 로그인하고 재시도해주세요.';
+        err.style.display='block';
+      }
+    }catch(_e){}
+    throw e;
+  }
+}
+
+const PORTAL_ACTIVITY_URL='https://portal.platformers.kr/api/activity';
+function reportFeatureUse(action,label,detail){
+  try{
+    fetch(PORTAL_ACTIVITY_URL,{
+      method:'POST',
+      credentials:'include',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        service:'meeting',
+        action:action,
+        label:label||undefined,
+        detail:detail!=null&&detail!==''?String(detail).slice(0,500):undefined,
+      }),
+    }).catch(function(){});
+  }catch(_e){}
+}
+const drop=document.getElementById('drop'),fi=document.getElementById('fileinput'),
+      fileList=document.getElementById('fileList'),fileTotal=document.getElementById('fileTotal'),
+      filesSection=document.getElementById('filesSection'),
+      recFileScrollHint=document.getElementById('recFileScrollHint'),
+      btn=document.getElementById('btn'),
+      postToTeams=document.getElementById('postToTeams'),
+      prog=document.getElementById('prog'),bar=document.getElementById('bar'),
+      status=document.getElementById('status'),result=document.getElementById('result'),
+      notes=document.getElementById('notes'),err=document.getElementById('err'),
+      sidebarTitle=document.getElementById('sidebarTitle'),meetingList=document.getElementById('meetingList');
+let files=[];
+function fmtBytes(n){
+  if(n<1024)return n+' B';
+  if(n<1024*1024)return (n/1024).toFixed(1)+' KB';
+  if(n<1024*1024*1024)return (n/1024/1024).toFixed(1)+' MB';
+  return (n/1024/1024/1024).toFixed(2)+' GB';
+}
+const HISTORY_KEY='meeting_notes_history_v1';
+
+function fmtDateTime(ts){
+  const d=new Date(ts);
+  return d.toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
+}
+function loadHistory(){
+  try{
+    const raw=localStorage.getItem(HISTORY_KEY);
+    const list=raw?JSON.parse(raw):[];
+    return Array.isArray(list)?list:[];
+  }catch{return []}
+}
+function saveHistory(list){
+  try{ localStorage.setItem(HISTORY_KEY,JSON.stringify(list.slice(0,50))); }catch{}
+}
+let history=loadHistory();
+
+function deleteMeeting(id){
+  if(!id) return;
+  if(!confirm('이 회의 기록을 목록에서 삭제할까요?')) return;
+  history=history.filter(h=>h.id!==id);
+  saveHistory(history);
+  renderMeetings();
+}
+
+function renderMeetings(){
+  if(sidebarTitle) sidebarTitle.textContent='최근 회의';
+  if(!meetingList) return;
+  const source=history.slice(0,8);
+  if(!source.length){
+    meetingList.innerHTML='<div class="empty">저장된 회의 기록이 없습니다.</div>';
+    return;
+  }
+  meetingList.innerHTML=source.map((m,i)=>{
+    const title=(m.title||'제목 없는 회의').replace(/</g,'&lt;');
+    const badge=i===0?'<span class="badge badge-new">신규</span>':'<span class="badge badge-done">완료</span>';
+    const meta=fmtDateTime(m.createdAt)+(m.duration?(' · '+m.duration):'');
+    return '<div class="meeting-item '+(i===0?'active':'')+'" data-id="'+m.id+'">'
+      +'<div class="meeting-item__body">'
+      +'<div class="meeting-item-title">'+title+' '+badge+'</div>'
+      +'<div class="meeting-item-meta">'+meta+'</div>'
+      +'</div>'
+      +'<button type="button" class="meeting-item__del" data-del="'+m.id+'" title="기록 삭제" aria-label="기록 삭제">✕</button>'
+      +'</div>';
+  }).join('');
+  meetingList.querySelectorAll('[data-del]').forEach(btn=>{
+    btn.addEventListener('click',(ev)=>{
+      ev.preventDefault();
+      ev.stopPropagation();
+      deleteMeeting(btn.getAttribute('data-del'));
+    });
+  });
+  meetingList.querySelectorAll('.meeting-item').forEach(el=>{
+    el.addEventListener('click',()=>{
+      meetingList.querySelectorAll('.meeting-item').forEach(x=>x.classList.remove('active'));
+      el.classList.add('active');
+      const id=el.getAttribute('data-id');
+      const item=history.find(h=>h.id===id);
+      if(!item) return;
+      document.getElementById('title').value=item.title||'';
+      document.getElementById('participants').value=item.participants||'';
+      document.getElementById('team').value=item.team||'';
+      document.getElementById('meetingDate').value=item.meetingDate||'';
+      document.getElementById('location').value=item.location||'';
+      notes.textContent=item.noteText||'(회의록 없음)';
+      result.style.display='block';
+      status.textContent='기록을 불러왔습니다.';
+    });
+  });
+}
+
+if(drop && fi){
+  drop.onclick=()=>fi.click();
+  fi.onchange=e=>{addFiles(e.target.files); fi.value='';};
+  drop.ondragover=e=>{e.preventDefault();drop.classList.add('over')};
+  drop.ondragleave=()=>drop.classList.remove('over');
+  drop.ondrop=e=>{e.preventDefault();drop.classList.remove('over');addFiles(e.dataTransfer.files)};
+}
+function addFiles(list){
+  if(!list||!list.length)return;
+  for(let i=0;i<list.length;i++){
+    const f=list[i];
+    if(!f)continue;
+    if((f.size||0)===0){
+      if(err){
+        err.textContent='오류: "'+(f.name||'녹음 파일')+'" 용량이 0B입니다. 마이크 허용 후 다시 녹음하거나, 파일 업로드 탭을 이용해주세요.';
+        err.style.display='block';
+      }
+      continue;
+    }
+    files.push(f);
+  }
+  renderFileList();
+}
+function removeFile(i){files.splice(i,1);renderFileList();}
+function moveFile(i,dir){
+  const j=i+dir;
+  if(j<0||j>=files.length)return;
+  const tmp=files[i];files[i]=files[j];files[j]=tmp;
+  renderFileList();
+}
+function renderFileList(){
+  if(!fileList||!fileTotal)return;
+  if(!files.length){
+    if(filesSection) filesSection.hidden=true;
+    if(recFileScrollHint) recFileScrollHint.hidden=true;
+    fileList.innerHTML='';
+    fileTotal.textContent='';
+    fileTotal.style.display='none';
+    if(btn){
+      const shareOn = postToTeams ? !!postToTeams.checked : true;
+      btn.disabled=true;
+      btn.textContent=shareOn?'회의록 생성 & Teams 공유':'회의록 생성';
+    }
+    return;
+  }
+  if(filesSection) filesSection.hidden=false;
+  if(recFileScrollHint) recFileScrollHint.hidden=false;
+  fileList.style.display='flex';
+  let total=0;
+  fileList.innerHTML=files.map((f,i)=>{
+    total+=f.size||0;
+    const name=String(f.name||('파일 '+(i+1))).replace(/[<&>]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+    return '<div class="file-row">'
+      +'<div class="idx">'+String(i+1).padStart(2,'0')+'</div>'
+      +'<div class="meta"><div class="name">'+name+'</div><div class="size">'+fmtBytes(f.size||0)+'</div></div>'
+      +'<div class="actions">'
+        +'<button type="button" class="icon-btn" data-up="'+i+'"'+(i===0?' disabled':'')+' title="위로">↑</button>'
+        +'<button type="button" class="icon-btn" data-down="'+i+'"'+(i===files.length-1?' disabled':'')+' title="아래로">↓</button>'
+        +'<button type="button" class="icon-btn danger" data-rm="'+i+'" title="삭제">✕</button>'
+      +'</div>'
+    +'</div>';
+  }).join('');
+  fileList.querySelectorAll('[data-up]').forEach(el=>el.onclick=()=>moveFile(parseInt(el.getAttribute('data-up'),10),-1));
+  fileList.querySelectorAll('[data-down]').forEach(el=>el.onclick=()=>moveFile(parseInt(el.getAttribute('data-down'),10),1));
+  fileList.querySelectorAll('[data-rm]').forEach(el=>el.onclick=()=>removeFile(parseInt(el.getAttribute('data-rm'),10)));
+  fileTotal.style.display='block';
+  fileTotal.textContent='총 '+files.length+'개 · '+fmtBytes(total)+(files.length>=2?' · 위→아래 순서대로 합쳐서 처리합니다':'');
+  if(btn){
+    btn.disabled=false;
+    const shareOn = postToTeams ? !!postToTeams.checked : true;
+    const base = shareOn ? '회의록 생성 & Teams 공유' : '회의록 생성';
+    btn.textContent=files.length>=2?(base+' ('+files.length+'개 파일)'):base;
+  }
+  if(filesSection){
+    try{ filesSection.scrollIntoView({behavior:'smooth',block:'nearest'}); }catch(_e){}
+  }
+}
+
+if(postToTeams){
+  postToTeams.addEventListener('change',()=>{
+    try{
+      const teamSel=document.getElementById('team');
+      if(teamSel) teamSel.disabled=!postToTeams.checked;
+    }catch(_e){}
+    renderFileList();
+  });
+  try{
+    const teamSel=document.getElementById('team');
+    if(teamSel) teamSel.disabled=!postToTeams.checked;
+  }catch(_e){}
+}
+
+// ── 탭 전환 ──────────────────────────────────────────
+function switchTab(tab){
+  if(tab==='live') return;
+  document.querySelectorAll('.tabs .tab[data-tab]').forEach((t)=>{
+    t.classList.toggle('active', t.getAttribute('data-tab')===tab);
+  });
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  const panel=document.getElementById('panel-'+tab);
+  if(panel) panel.classList.add('active');
+}
+
+// ── 녹음 (일시정지·재개·종료) ─────────────────────────
+let mediaRecorder=null,recStream=null,audioChunks=[],recTrackEndedHandler=null;
+let recState='idle'; // idle | recording | paused
+let recElapsedMs=0,recSegmentStart=0,timerInterval=null;
+let lastRecDurationSeconds=0;
+let recHasAudioData=false,recDataWarnTimer=null,recNoDataAutoStopTimer=null;
+const micPermNote=document.getElementById('micPermNote');
+const recPauseSupported=typeof MediaRecorder!=='undefined'&&typeof MediaRecorder.prototype.pause==='function';
+
+const recBtn=document.getElementById('recBtn'),recStopBtn=document.getElementById('recStopBtn'),
+      recDot=document.getElementById('recDot'),recTime=document.getElementById('recTime'),
+      recHint=document.getElementById('recHint'),recFile=document.getElementById('recFile'),
+      recArea=document.getElementById('recArea');
+
+function fmtTime(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
+
+function meetingDurationLabel(data){
+  const fromServer=(data&&data.chunks&&data.chunkSeconds)?Number(data.chunks)*Number(data.chunkSeconds):0;
+  const sec=fromServer>0?fromServer:(lastRecDurationSeconds>0?lastRecDurationSeconds:recTotalSeconds());
+  return sec>0?fmtTime(sec):'';
+}
+
+function recTotalSeconds(){
+  let ms=recElapsedMs;
+  if(recState==='recording'&&recSegmentStart) ms+=Date.now()-recSegmentStart;
+  return Math.floor(ms/1000);
+}
+
+function tickRecClock(){
+  if(recTime) recTime.textContent=fmtTime(recTotalSeconds());
+}
+
+function startRecClock(){
+  clearInterval(timerInterval);
+  recSegmentStart=Date.now();
+  timerInterval=setInterval(tickRecClock,400);
+  tickRecClock();
+}
+
+function pauseRecClock(){
+  if(recState==='recording'&&recSegmentStart) recElapsedMs+=Date.now()-recSegmentStart;
+  recSegmentStart=0;
+  clearInterval(timerInterval);
+  timerInterval=null;
+  tickRecClock();
+}
+
+function resetRecClock(){
+  pauseRecClock();
+  recElapsedMs=0;
+  if(recTime) recTime.textContent='00:00';
+}
+
+function releaseRecStream(){
+  clearTimeout(recDataWarnTimer);
+  recDataWarnTimer=null;
+  clearTimeout(recNoDataAutoStopTimer);
+  recNoDataAutoStopTimer=null;
+  if(recStream){
+    const tr=recStream.getAudioTracks()[0];
+    if(tr&&recTrackEndedHandler){
+      tr.removeEventListener('ended',recTrackEndedHandler);
+      recTrackEndedHandler=null;
+    }
+    recStream.getTracks().forEach(t=>t.stop());
+    recStream=null;
+  }
+}
+
+async function refreshMicPermNote(){
+  if(!micPermNote) return;
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    micPermNote.textContent='이 브라우저는 마이크 녹음을 지원하지 않습니다. 파일 업로드 탭을 이용해주세요.';
+    return;
+  }
+  if(navigator.permissions&&navigator.permissions.query){
+    try{
+      const st=await navigator.permissions.query({name:'microphone'});
+      if(st.state==='granted') micPermNote.textContent='마이크 허용됨. 🎙️로 녹음을 시작하세요.';
+      else if(st.state==='denied') micPermNote.textContent='마이크가 차단되어 있습니다. 주소창 🔒 → 사이트 설정 → 마이크 허용 후 새로고침하세요.';
+      else micPermNote.textContent='녹음 시 브라우저에서 마이크 허용을 눌러주세요.';
+      st.onchange=()=>{ refreshMicPermNote(); };
+      return;
+    }catch(_e){}
+  }
+  micPermNote.textContent='녹음 시 브라우저에서 마이크 허용을 눌러주세요.';
+}
+refreshMicPermNote();
+
+function assertLiveMicTrack(stream){
+  const track=stream&&stream.getAudioTracks?stream.getAudioTracks()[0]:null;
+  if(!track) throw new Error('마이크 입력을 찾을 수 없습니다.');
+  if(track.readyState!=='live') throw new Error('마이크가 활성화되지 않았습니다. 장치 연결·권한을 확인해주세요.');
+  if(track.muted) throw new Error('마이크가 음소거 상태입니다. 시스템 설정에서 입력 장치를 확인해주세요.');
+  return track;
+}
+
+function bindRecTrackMonitor(track){
+  if(!track) return;
+  recTrackEndedHandler=()=>{
+    if(recState==='idle') return;
+    if(recHint) recHint.textContent='⚠️ 마이크 연결이 끊겼습니다. ⏹으로 종료한 뒤, 장치·권한을 확인하고 다시 녹음하세요.';
+    if(recFile) recFile.textContent='마이크 연결 끊김 — 저장된 데이터가 없을 수 있습니다.';
+    try{ finishRecSession(); }catch(_e){}
+  };
+  track.addEventListener('ended',recTrackEndedHandler);
+}
+
+function updateRecUi(){
+  if(!recBtn||!recArea) return;
+  recArea.classList.remove('recording','paused');
+  if(recStopBtn) recStopBtn.hidden=recState==='idle';
+
+  if(recState==='idle'){
+    recBtn.className='rec-btn';
+    recBtn.textContent='🎙️';
+    recBtn.setAttribute('aria-label','녹음 시작');
+    if(recDot) recDot.classList.remove('show');
+    if(recHint){
+      recHint.textContent=recPauseSupported
+        ? '🎙️ 녹음 · ⏸ 일시정지 · ⏹ 종료(한 파일로 저장)'
+        : '이 브라우저는 일시정지를 지원하지 않습니다. ⏹로 구간을 나눠 저장하세요.';
+    }
+    return;
+  }
+
+  if(recState==='recording'){
+    recArea.classList.add('recording');
+    recBtn.className='rec-btn rec-btn--pause';
+    recBtn.textContent='⏸';
+    recBtn.setAttribute('aria-label','일시정지');
+    if(recDot) recDot.classList.add('show');
+    if(recHint) recHint.textContent='녹음 중 — ⏸ 잠깐 멈춤 · ⏹ 끝내고 파일로 저장';
+    return;
+  }
+
+  if(recState==='paused'){
+    recArea.classList.add('paused');
+    recBtn.className='rec-btn rec-btn--resume';
+    recBtn.textContent='▶';
+    recBtn.setAttribute('aria-label','녹음 재개');
+    if(recDot) recDot.classList.remove('show');
+    if(recHint) recHint.textContent='일시정지 — ▶ 이어서 녹음 · ⏹ 끝내고 파일로 저장';
+  }
+}
+
+function onRecorderStop(){
+  const mime=mediaRecorder&&mediaRecorder.mimeType?mediaRecorder.mimeType:'audio/webm';
+  const blob=new Blob(audioChunks,{type:mime});
+  const ext=mime.includes('ogg')?'ogg':'webm';
+  const sec=recTotalSeconds();
+  lastRecDurationSeconds=sec;
+  audioChunks=[];
+  mediaRecorder=null;
+  resetRecClock();
+  recState='idle';
+  releaseRecStream();
+  updateRecUi();
+
+  if(blob.size===0||!recHasAudioData){
+    recHasAudioData=false;
+    if(recFile){
+      recFile.textContent='❌ 녹음 실패 — '+fmtTime(sec)+' 동안 타이머만 동작했고, 오디오 데이터가 없습니다 (0B).';
+    }
+    if(recHint){
+      recHint.textContent='마이크 허용(주소창 🔒), 입력 장치 연결을 확인한 뒤 🎙️로 다시 녹음하세요. 또는 파일 업로드 탭을 이용하세요.';
+    }
+    if(err){
+      err.textContent='녹음 파일이 비어 있습니다. 브라우저에서 마이크를 허용했는지, 회의 중 마이크가 끊기지 않았는지 확인해주세요.';
+      err.style.display='block';
+    }
+    refreshMicPermNote();
+    return;
+  }
+
+  recHasAudioData=false;
+  const f=new File([blob],'recording-'+Date.now()+'.'+ext,{type:mime});
+  addFiles([f]);
+  if(recFile){
+    recFile.textContent='✅ 녹음 완료 — '+fmtTime(sec)+' / 파일 목록에 추가됨 ('+files.length+'개) · '+fmtBytes(f.size);
+  }
+  if(recHint){
+    recHint.textContent='저장됨. 같은 회의를 이어 녹음하려면 🎙️ · 끝나면 아래에서 회의록 생성';
+  }
+}
+
+async function beginRecSession(){
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    throw new Error('이 브라우저는 마이크 녹음을 지원하지 않습니다.');
+  }
+  recStream=await navigator.mediaDevices.getUserMedia({audio:true});
+  const track=assertLiveMicTrack(recStream);
+  bindRecTrackMonitor(track);
+  const mimeType=['audio/webm;codecs=opus','audio/webm','audio/ogg'].find(m=>MediaRecorder.isTypeSupported(m))||'';
+  if(!mimeType&&typeof MediaRecorder==='undefined'){
+    releaseRecStream();
+    throw new Error('MediaRecorder를 사용할 수 없습니다. Chrome/Edge 최신 버전을 권장합니다.');
+  }
+  mediaRecorder=new MediaRecorder(recStream,mimeType?{mimeType}:{});
+  audioChunks=[];
+  recHasAudioData=false;
+  clearTimeout(recDataWarnTimer);
+  clearTimeout(recNoDataAutoStopTimer);
+  mediaRecorder.ondataavailable=e=>{
+    if(e.data.size>0){
+      audioChunks.push(e.data);
+      recHasAudioData=true;
+    }
+  };
+  mediaRecorder.onstop=onRecorderStop;
+  mediaRecorder.start(1000);
+  recDataWarnTimer=setTimeout(()=>{
+    if(recState!=='idle'&&!recHasAudioData&&recHint){
+      recHint.textContent='⚠️ 오디오가 들어오지 않습니다. 마이크 허용·입력 장치를 확인하세요. (계속 0B이면 ⏹ 후 다시 시도)';
+    }
+  },3000);
+  recNoDataAutoStopTimer=setTimeout(()=>{
+    if(recState!=='idle'&&!recHasAudioData){
+      if(recHint) recHint.textContent='❌ 오디오 데이터가 없어 자동으로 중단합니다. 마이크 허용·입력 장치를 확인 후 다시 녹음하세요.';
+      try{ finishRecSession(); }catch(_e){}
+    }
+  },12000);
+  recState='recording';
+  if(recFile) recFile.textContent='';
+  if(err) err.style.display='none';
+  startRecClock();
+  updateRecUi();
+  refreshMicPermNote();
+  reportFeatureUse('record_start','녹음 시작');
+}
+
+async function onRecMainClick(){
+  try{
+    if(recState==='idle'){
+      resetRecClock();
+      await beginRecSession();
+      return;
+    }
+    if(recState==='recording'){
+      if(recPauseSupported&&mediaRecorder&&mediaRecorder.state==='recording'){
+        mediaRecorder.pause();
+        pauseRecClock();
+        recState='paused';
+        updateRecUi();
+      }else{
+        await finishRecSession();
+      }
+      return;
+    }
+    if(recState==='paused'){
+      if(mediaRecorder&&mediaRecorder.state==='paused'){
+        mediaRecorder.resume();
+        recState='recording';
+        startRecClock();
+        updateRecUi();
+      }
+    }
+  }catch(e){
+    if(recHint) recHint.textContent='마이크 접근 오류: '+e.message;
+    recState='idle';
+    releaseRecStream();
+    updateRecUi();
+  }
+}
+
+async function finishRecSession(){
+  pauseRecClock();
+  if(mediaRecorder&&mediaRecorder.state!=='inactive'){
+    try{
+      if(typeof mediaRecorder.requestData==='function') mediaRecorder.requestData();
+    }catch(_e){}
+    try{ mediaRecorder.stop(); }catch(_e){}
+  }else{
+    recState='idle';
+    releaseRecStream();
+    updateRecUi();
+  }
+}
+
+if(recBtn) recBtn.addEventListener('click',()=>{ onRecMainClick(); });
+if(recStopBtn) recStopBtn.addEventListener('click',(ev)=>{
+  ev.preventDefault();
+  finishRecSession();
+});
+updateRecUi();
+const CHUNK_SIZE=500*1024;
+async function uploadInChunks(f,onProg){
+  const total=Math.ceil(f.size/CHUNK_SIZE);
+  const uid=(crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2)).replace(/-/g,'');
+  const ext=(f.name.split('.').pop()||'bin').replace(/[^a-zA-Z0-9]/g,'');
+  for(let i=0;i<total;i++){
+    const blob=f.slice(i*CHUNK_SIZE,Math.min((i+1)*CHUNK_SIZE,f.size));
+    const fd=new FormData();
+    fd.append('uploadId',uid);fd.append('chunkIndex',String(i));
+    fd.append('totalChunks',String(total));fd.append('ext',ext);
+    fd.append('chunk',blob,'chunk');
+    const r=await apiFetch(__MP_BASE+'/meeting-notes/upload-chunk',{method:'POST',body:fd});
+    if(!r.ok){const d=await r.json().catch(()=>({}));throw new Error(d.error||'청크 업로드 실패 ('+r.status+')');}
+    onProg(i+1,total);
+  }
+  return uid;
+}
+btn.onclick=async()=>{
+  if(!files.length)return;
+  reportFeatureUse('upload','회의 녹취 업로드', (files.length||0)+'개 파일');
+  const shareOn = postToTeams ? !!postToTeams.checked : true;
+  const maxMb=__MP_UPLOAD_CAP_MB;
+  for(const f of files){
+    if((f.size||0)===0){
+      err.textContent='오류: "'+f.name+'" 용량이 0B입니다. 빈 녹음은 처리할 수 없습니다. 다시 녹음하거나 다른 파일을 선택해주세요.';
+      err.style.display='block';
+      return;
+    }
+    const mb=f.size/1024/1024;
+    if(mb>maxMb){
+      err.textContent='오류: \"'+f.name+'\" 파일이 너무 큽니다 ('+mb.toFixed(1)+'MB). 개별 파일은 '+maxMb+'MB 이하여야 합니다. MAX_UPLOAD_MB를 올리거나 파일을 더 작게 나눠 주세요.';
+      err.style.display='block';
+      return;
+    }
+  }
+  btn.disabled=true;err.style.display='none';result.style.display='none';
+  prog.style.display='block';bar.style.width='3%';status.textContent='파일 업로드 중...';
+  const t=document.getElementById('title').value.trim();
+  const p=document.getElementById('participants').value.trim();
+  const team=document.getElementById('team')?.value?.trim()||'';
+  const d=document.getElementById('meetingDate').value.trim();
+  const loc=document.getElementById('location').value.trim();
+  try{
+    const uploadIds=[];
+    const totalFiles=files.length;
+    for(let fi=0;fi<totalFiles;fi++){
+      const cur=files[fi];
+      const id=await uploadInChunks(cur,(doneC,totalC)=>{
+        const filePart=(fi+doneC/totalC)/totalFiles;
+        bar.style.width=Math.round(filePart*15+3)+'%';
+        status.textContent='파일 업로드 중... ('+(fi+1)+'/'+totalFiles+' · '+doneC+'/'+totalC+')';
+      });
+      uploadIds.push(id);
+    }
+    bar.style.width='20%';status.textContent='처리 시작 중...';
+    const fd=new FormData();
+    uploadIds.forEach(uid=>fd.append('uploadIds[]',uid));
+    if(t)fd.append('title',t);
+    if(p)fd.append('participants',p);
+    if(team)fd.append('team',team);
+    if(d)fd.append('meetingDate',d);
+    if(loc)fd.append('location',loc);
+    fd.append('postToTeams', shareOn ? '1' : '0');
+    const createResp=await apiFetch(__MP_BASE+'/meeting-notes/jobs',{method:'POST',body:fd});
+    const createData=await createResp.json().catch(()=>({}));
+    if(!createResp.ok || !createData.jobId){
+      if(createResp.status===524){
+        throw new Error('Cloudflare 타임아웃(524)입니다. 잠시 후 다시 시도하거나 파일을 더 작게 나눠주세요.');
+      }
+      throw new Error(createData.error||('요청 실패 ('+createResp.status+')'));
+    }
+    const jobId=createData.jobId;
+    let done=false;
+    const startedAt=Date.now();
+    while(!done){
+      await new Promise(r=>setTimeout(r,1500));
+      const stResp=await apiFetch(__MP_BASE+'/meeting-notes/jobs/'+jobId);
+      const st=await stResp.json().catch(()=>({}));
+      if(!stResp.ok) throw new Error(st.error||('상태 조회 실패 ('+stResp.status+')'));
+      if(st.status==='queued'){
+        bar.style.width='12%'; status.textContent='대기열에 등록됨...';
+      }else if(st.status==='processing'){
+        if(st.progress?.stage==='chunked'){
+          bar.style.width='20%'; status.textContent='오디오 분할 중...';
+        }else if(st.progress?.stage==='stt'){
+          const total=st.progress.total||1, d=st.progress.done||0;
+          bar.style.width=Math.max(22,Math.min(72,Math.round((d/total)*50+22)))+'%';
+          status.textContent='음성을 텍스트로 변환 중... ('+d+'/'+total+')';
+        }else if(st.progress?.stage==='summarize'){
+          bar.style.width='82%'; status.textContent='회의록 생성 중...';
+        }else if(st.progress?.stage==='teams'){
+          bar.style.width='92%'; status.textContent='Teams 공유 처리 중...';
+        }else{
+          const sec=Math.floor((Date.now()-startedAt)/1000);
+          status.textContent='처리 중... ('+sec+'초)';
+        }
+      }else if(st.status==='completed'){
+        const data=st.result||{};
+        bar.style.width='100%'; status.textContent='완료!';
+        notes.textContent=data.noteText||'(회의록 없음)';
+        if(Array.isArray(data.qualityWarnings) && data.qualityWarnings.length){
+          notes.textContent = '[품질 경고]\n- '+data.qualityWarnings.join('\n- ')+'\n\n'+notes.textContent;
+        }
+        result.style.display='block';
+        const item={
+          id:String(Date.now()),
+          title:t||'제목 없는 회의',
+          participants:p||'',
+          team:team||'',
+          meetingDate:d||'',
+          location:loc||'',
+          noteText:data.noteText||'',
+          duration:meetingDurationLabel(data),
+          createdAt:Date.now()
+        };
+        history=[item,...history];
+        saveHistory(history);
+        renderMeetings();
+        setTimeout(()=>{prog.style.display='none'},900);
+        reportFeatureUse('ai_summary','AI 회의 요약', (t||'제목 없음'));
+        done=true;
+      }else if(st.status==='failed'){
+        throw new Error(st.error||'작업 실패');
+      }
+    }
+  }catch(e){
+    const msg=String(e.message||'알 수 없는 오류');
+    err.textContent='오류: '+msg;
+    err.style.display='block';
+    prog.style.display='none';
+  }
+  btn.disabled=false;
+};
+renderMeetings();
+try{ reportFeatureUse('view','회의록 접속'); }catch(_e){}
+
+// ── 실시간 회의록 (Live) ─────────────────────────────
+let liveSessionId='';
+let liveStream=null;
+let liveRecorder=null;
+let liveState='idle'; // idle | running
+let liveLastSentAt=0;
+let liveInFlight=0;
+const LIVE_TIMESLICE_MS=5000;
+
+const liveStartBtn=document.getElementById('liveStartBtn');
+const liveStopBtn=document.getElementById('liveStopBtn');
+const liveRefreshBtn=document.getElementById('liveRefreshBtn');
+const liveFinalizeBtn=document.getElementById('liveFinalizeBtn');
+const liveTabNotesBtn=document.getElementById('liveTabNotesBtn');
+const liveTabAiBtn=document.getElementById('liveTabAiBtn');
+const liveTabChatBtn=document.getElementById('liveTabChatBtn');
+const panelLiveNotes=document.getElementById('panel-live-notes');
+const panelLiveAi=document.getElementById('panel-live-ai');
+const panelLiveChat=document.getElementById('panel-live-chat');
+const liveProg=document.getElementById('liveProg');
+const liveBar=document.getElementById('liveBar');
+const liveStatus=document.getElementById('liveStatus');
+const liveErr=document.getElementById('liveErr');
+const liveTranscript=document.getElementById('liveTranscript');
+const liveDraft=document.getElementById('liveDraft');
+const liveSummary=document.getElementById('liveSummary');
+const liveDone=document.getElementById('liveDone');
+const liveWillDo=document.getElementById('liveWillDo'); // legacy (unused in Teams-like view)
+const liveQuestions=document.getElementById('liveQuestions');
+const liveAgenda=document.getElementById('liveAgenda');
+const liveMeta=document.getElementById('liveMeta');
+const liveDraftMeta=document.getElementById('liveDraftMeta');
+const liveDoneMeta=document.getElementById('liveDoneMeta');
+const liveWillMeta=document.getElementById('liveWillMeta');
+const liveTranscriptMeta=document.getElementById('liveTranscriptMeta');
+const liveQuestionsMeta=document.getElementById('liveQuestionsMeta');
+const liveAgendaMeta=document.getElementById('liveAgendaMeta');
+
+const aiQuickSummaryBtn=document.getElementById('aiQuickSummaryBtn');
+const aiDecisionActionBtn=document.getElementById('aiDecisionActionBtn');
+const aiRisksBtn=document.getElementById('aiRisksBtn');
+const aiPrompt=document.getElementById('aiPrompt');
+const aiAskBtn=document.getElementById('aiAskBtn');
+const aiAnswer=document.getElementById('aiAnswer');
+const aiMeta=document.getElementById('aiMeta');
+
+function switchLiveTab(tab){
+  // tab: notes | ai | chat
+  const map=[
+    {btn:liveTabNotesBtn,panel:panelLiveNotes,key:'notes'},
+    {btn:liveTabAiBtn,panel:panelLiveAi,key:'ai'},
+    {btn:liveTabChatBtn,panel:panelLiveChat,key:'chat'},
+  ];
+  map.forEach(e=>{
+    if(e.btn) e.btn.classList.toggle('active',e.key===tab);
+    if(e.panel) e.panel.classList.toggle('active',e.key===tab);
+  });
+}
+
+function setLiveError(msg){
+  if(!liveErr) return;
+  if(msg){
+    liveErr.textContent='오류: '+msg;
+    liveErr.style.display='block';
+  }else{
+    liveErr.textContent='';
+    liveErr.style.display='none';
+  }
+}
+function setLiveProgress(pct,txt){
+  if(liveProg) liveProg.style.display='block';
+  if(liveBar) liveBar.style.width=Math.max(2,Math.min(100,Math.round(pct)))+'%';
+  if(liveStatus) liveStatus.textContent=txt||'처리 중...';
+}
+function setLiveButtons(){
+  const running=liveState==='running';
+  if(liveStartBtn) liveStartBtn.disabled=running;
+  if(liveStopBtn) liveStopBtn.disabled=!running;
+  if(liveRefreshBtn) liveRefreshBtn.disabled=!liveSessionId;
+  if(liveFinalizeBtn) liveFinalizeBtn.disabled=!liveSessionId;
+  if(aiAskBtn) aiAskBtn.disabled=!liveSessionId;
+}
+
+function applyLiveDraft(draft){
+  if(!draft) return;
+  const summary=(draft.summary||'').trim();
+  const done=(draft.done||'').trim();
+  const willDo=(draft.willDo||'').trim();
+  const openQuestions=(draft.openQuestions||'').trim();
+  const agenda=(draft.agenda||'').trim();
+  if(liveSummary) liveSummary.textContent=summary||'(요약 대기)';
+  if(liveDone) liveDone.textContent=done||'- (대기)';
+  if(liveWillDo) liveWillDo.textContent=willDo||'- (대기)';
+  if(liveQuestions) liveQuestions.textContent=openQuestions||'- (대기)';
+  if(liveAgenda) liveAgenda.textContent=agenda||'(대기)';
+  if(liveDoneMeta) liveDoneMeta.textContent=done?('갱신됨'):('대기');
+  if(liveWillMeta) liveWillMeta.textContent=willDo?('갱신됨'):('대기');
+  if(liveQuestionsMeta) liveQuestionsMeta.textContent=openQuestions?('갱신됨'):('대기');
+  if(liveAgendaMeta) liveAgendaMeta.textContent=agenda?('갱신됨'):('대기');
+  if(liveDraft && typeof draft.noteText==='string' && draft.noteText.trim()){
+    liveDraft.textContent=draft.noteText;
+    if(liveDraftMeta) liveDraftMeta.textContent='본문 갱신됨';
+  }
+}
+
+async function liveStart(){
+  try{
+    setLiveError('');
+    setLiveProgress(6,'세션 생성 중...');
+    const t=document.getElementById('title').value.trim();
+    const p=document.getElementById('participants').value.trim();
+    const d=document.getElementById('meetingDate').value.trim();
+    const loc=document.getElementById('location').value.trim();
+    const resp=await apiFetch(__MP_BASE+'/meeting-notes/live/start',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({locale:'ko-KR',title:t,participants:p,meetingDate:d,location:loc}),
+    });
+    const data=await resp.json().catch(()=>({}));
+    if(!resp.ok || !data.sessionId) throw new Error(data.error||('세션 생성 실패 ('+resp.status+')'));
+    liveSessionId=data.sessionId;
+    if(liveMeta) liveMeta.textContent='세션 '+liveSessionId.slice(0,6)+'… · 전사 대기';
+    if(liveDraftMeta) liveDraftMeta.textContent='초안 대기';
+    if(liveTranscript) liveTranscript.textContent='(아직 전사가 없습니다)';
+    if(liveDraft) liveDraft.textContent='(여기에 본문이 표시됩니다)';
+    if(liveTranscriptMeta) liveTranscriptMeta.textContent='대기';
+    if(liveSummary) liveSummary.textContent='(요약 대기)';
+    if(liveDone) liveDone.textContent='- (대기)';
+    if(liveWillDo) liveWillDo.textContent='- (대기)';
+    if(liveQuestions) liveQuestions.textContent='- (대기)';
+    if(liveAgenda) liveAgenda.textContent='(대기)';
+    if(aiAnswer) aiAnswer.textContent='(여기에 응답이 표시됩니다)';
+    if(aiMeta) aiMeta.textContent='대기';
+    setLiveButtons();
+
+    setLiveProgress(12,'마이크 권한 요청...');
+    liveStream=await navigator.mediaDevices.getUserMedia({audio:true});
+    const mimeType=['audio/webm;codecs=opus','audio/webm','audio/ogg'].find(m=>window.MediaRecorder&&MediaRecorder.isTypeSupported(m))||'';
+    liveRecorder=new MediaRecorder(liveStream,mimeType?{mimeType}:{});
+    liveRecorder.ondataavailable=async(e)=>{
+      try{
+        if(!e.data||!e.data.size) return;
+        if(!liveSessionId) return;
+        // Backpressure: if too many requests in-flight, drop this chunk to keep UI responsive.
+        if(liveInFlight>=2) return;
+        liveInFlight++;
+        liveLastSentAt=Date.now();
+        setLiveProgress(18,'전사 처리 중...');
+        const fd=new FormData();
+        fd.append('sessionId',liveSessionId);
+        fd.append('audio',e.data,'live-'+Date.now()+'.webm');
+        const r=await apiFetch(__MP_BASE+'/meeting-notes/live/chunk',{method:'POST',body:fd});
+        const j=await r.json().catch(()=>({}));
+        if(!r.ok) throw new Error(j.error||('전사 실패 ('+r.status+')'));
+        const seg=j.segmentText||'';
+        const draft=j.draft||{};
+        if(seg){
+          if(liveTranscript){
+            const prev=liveTranscript.textContent||'';
+            const next=(prev&&prev!=='(아직 전사가 없습니다)')?(prev+'\n\n'+seg):seg;
+            liveTranscript.textContent=next;
+          }
+          if(liveMeta) liveMeta.textContent='세션 '+liveSessionId.slice(0,6)+'… · 전사 '+(j.transcriptChars||0)+'자';
+          if(liveTranscriptMeta) liveTranscriptMeta.textContent='전사 '+(j.transcriptChars||0)+'자';
+        }
+        applyLiveDraft(draft);
+        setLiveProgress(30,'대기 중... (전사/요약 자동 갱신)');
+      }catch(err){
+        setLiveError(err.message||String(err));
+      }finally{
+        liveInFlight=Math.max(0,liveInFlight-1);
+      }
+    };
+    liveRecorder.start(LIVE_TIMESLICE_MS);
+    liveState='running';
+    setLiveButtons();
+    setLiveProgress(22,'실시간 전사 시작됨');
+    reportFeatureUse('live_start','실시간 회의록 시작');
+  }catch(e){
+    setLiveError(e.message||String(e));
+    liveStop(true);
+  }
+}
+
+function liveStop(silent){
+  try{
+    liveState='idle';
+    if(liveRecorder && liveRecorder.state!=='inactive'){
+      try{ liveRecorder.stop(); }catch(_e){}
+    }
+    liveRecorder=null;
+    if(liveStream){
+      liveStream.getTracks().forEach(t=>t.stop());
+      liveStream=null;
+    }
+    setLiveButtons();
+    if(!silent) setLiveProgress(8,'중지됨. 최종본 생성 가능');
+    reportFeatureUse('live_stop','실시간 회의록 중지');
+  }catch(_e){}
+}
+
+async function liveRefresh(){
+  if(!liveSessionId) return;
+  try{
+    setLiveError('');
+    setLiveProgress(55,'지금까지 요약 갱신 중...');
+    const r=await apiFetch(__MP_BASE+'/meeting-notes/live/'+encodeURIComponent(liveSessionId)+'/refresh',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({}),
+    });
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(j.error||('요약 갱신 실패 ('+r.status+')'));
+    applyLiveDraft(j.draft||{});
+    setLiveProgress(35,'갱신 완료. 계속 전사 중...');
+    reportFeatureUse('live_refresh','지금까지 요약');
+  }catch(e){
+    setLiveError(e.message||String(e));
+  }
+}
+
+async function liveFinalize(){
+  if(!liveSessionId) return;
+  try{
+    setLiveError('');
+    setLiveProgress(70,'최종 회의록 생성 중...');
+    const r=await apiFetch(__MP_BASE+'/meeting-notes/live/'+encodeURIComponent(liveSessionId)+'/finalize',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({}),
+    });
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(j.error||('최종본 생성 실패 ('+r.status+')'));
+    const result=j.result||{};
+    applyLiveDraft({
+      summary: result.summary||'',
+      done: result.done||'',
+      willDo: result.willDo||'',
+      openQuestions: '',
+      agenda: result.agenda||'',
+      noteText: result.noteText||'',
+    });
+    if(liveDraftMeta) liveDraftMeta.textContent='최종본 생성 완료';
+    setLiveProgress(100,'완료!');
+    reportFeatureUse('live_finalize','실시간 회의록 최종본 생성');
+  }catch(e){
+    setLiveError(e.message||String(e));
+  }
+}
+
+async function aiAsk(promptText){
+  if(!liveSessionId) return;
+  const q=String(promptText||'').trim();
+  if(!q) return;
+  try{
+    setLiveError('');
+    if(aiMeta) aiMeta.textContent='답변 생성 중...';
+    if(aiAnswer) aiAnswer.textContent='(생성 중...)';
+    const r=await apiFetch(__MP_BASE+'/meeting-notes/live/'+encodeURIComponent(liveSessionId)+'/ask',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({prompt:q}),
+    });
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(j.error||('질문 실패 ('+r.status+')'));
+    if(aiAnswer) aiAnswer.textContent=(j.answer||'').trim()||'(빈 응답)';
+    if(aiMeta) aiMeta.textContent='완료';
+    reportFeatureUse('ai_ask','AI 요약 질문', q.slice(0,80));
+  }catch(e){
+    if(aiMeta) aiMeta.textContent='오류';
+    setLiveError(e.message||String(e));
+  }
+}
+
+if(liveTabNotesBtn) liveTabNotesBtn.addEventListener('click',()=>switchLiveTab('notes'));
+if(liveTabAiBtn) liveTabAiBtn.addEventListener('click',()=>switchLiveTab('ai'));
+if(liveTabChatBtn) liveTabChatBtn.addEventListener('click',()=>switchLiveTab('chat'));
+switchLiveTab('notes');
+
+if(aiQuickSummaryBtn) aiQuickSummaryBtn.addEventListener('click',()=>aiAsk('지금까지 회의 내용을 5줄 이내로 요약해줘. 결정/열린 질문/다음 행동을 분리해서.'));
+if(aiDecisionActionBtn) aiDecisionActionBtn.addEventListener('click',()=>aiAsk('지금까지 확정된 결정과 액션 아이템만 bullet로 정리해줘. 담당/기한이 전사에 있으면 포함해줘.'));
+if(aiRisksBtn) aiRisksBtn.addEventListener('click',()=>aiAsk('지금 논의에서 남아있는 리스크/이슈/불확실한 점을 bullet로 정리해줘.'));
+if(aiAskBtn) aiAskBtn.addEventListener('click',()=>aiAsk(aiPrompt?aiPrompt.value:''));
+if(aiPrompt) aiPrompt.addEventListener('keydown',(e)=>{ if(e.key==='Enter'){ e.preventDefault(); aiAsk(aiPrompt.value); }});
+
+if(liveStartBtn) liveStartBtn.addEventListener('click',()=>liveStart());
+if(liveStopBtn) liveStopBtn.addEventListener('click',()=>liveStop(false));
+if(liveRefreshBtn) liveRefreshBtn.addEventListener('click',()=>liveRefresh());
+if(liveFinalizeBtn) liveFinalizeBtn.addEventListener('click',()=>liveFinalize());
+setLiveButtons();
+</script>
+</body>
+</html>

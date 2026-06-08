@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>클래스팅 벤치마킹 리포트 | PLATFORMERS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&family=Outfit:wght@600;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.rawgit.com/evidenceprime/html-docx-js/master/dist/html-docx.js"></script>
+    <style>
+        :root {
+            --primary: #5B67F8;
+            --secondary: #8B95FF;
+            --accent: #00D2B4;
+            --bg: #f5f6ff;
+            --white: #ffffff;
+            --text-main: #1a1a2e;
+            --text-sub: #636e72;
+            --border: #dde0ff;
+            --shadow: 0 8px 32px rgba(91,103,248,0.10);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(135deg, #f5f6ff 0%, #e8eaff 100%);
+            color: var(--text-main);
+            font-family: 'Pretendard', -apple-system, sans-serif;
+            line-height: 1.8; padding: 40px 20px;
+        }
+        .download-group { position: fixed; top: 20px; right: 20px; display: flex; gap: 10px; z-index: 1000; }
+        .btn-dl { border: none; padding: 10px 18px; border-radius: 6px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; color: white; font-size: 13px; transition: all 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .btn-dl:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        .btn-pdf { background: #e74c3c; }
+        .btn-word { background: #2b579a; }
+        .document { max-width: 940px; margin: 0 auto; background: var(--white); border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; }
+        header { background: linear-gradient(135deg, #5B67F8 0%, #00D2B4 100%); padding: 52px 56px; color: white; }
+        .badge { display: inline-block; background: rgba(255,255,255,0.2); padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; letter-spacing: 1px; margin-bottom: 20px; }
+        header h1 { font-family: 'Outfit', sans-serif; font-size: 34px; font-weight: 800; margin-bottom: 10px; }
+        header p { font-size: 15px; opacity: 0.85; }
+        .meta-row { display: flex; gap: 30px; margin-top: 28px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.2); }
+        .meta-item { font-size: 13px; opacity: 0.85; }
+        .meta-item span { display: block; font-weight: 700; font-size: 15px; opacity: 1; }
+        .content { padding: 52px 56px; }
+        .section { margin-bottom: 52px; }
+        .section-title { font-size: 20px; font-weight: 800; color: var(--primary); margin-bottom: 24px; padding-bottom: 12px; border-bottom: 3px solid var(--secondary); display: flex; align-items: center; gap: 10px; }
+        .step-badge { background: var(--primary); color: white; width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; flex-shrink: 0; }
+
+        /* KPI 카드 */
+        .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+        .kpi-card { background: var(--bg); border-radius: 12px; padding: 20px; border: 1px solid var(--border); text-align: center; }
+        .kpi-card .num { font-size: 28px; font-weight: 800; color: var(--primary); }
+        .kpi-card .label { font-size: 12px; color: var(--text-sub); margin-top: 4px; }
+
+        /* 3자 플랫폼 (교사/학생/학부모) */
+        .triad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+        .triad-card { background: var(--bg); border-radius: 14px; padding: 22px; border: 1px solid var(--border); }
+        .triad-card .role { font-size: 12px; font-weight: 700; color: white; background: var(--primary); display: inline-block; padding: 3px 10px; border-radius: 20px; margin-bottom: 10px; }
+        .triad-card h4 { font-size: 15px; font-weight: 700; margin-bottom: 10px; }
+        .triad-card ul { padding-left: 16px; }
+        .triad-card li { font-size: 13px; color: var(--text-sub); line-height: 1.8; }
+
+        /* 테이블 */
+        table { width: 100%; border-collapse: collapse; font-size: 14px; margin-bottom: 24px; }
+        th { background: var(--primary); color: white; padding: 13px 16px; font-weight: 700; text-align: left; }
+        td { padding: 12px 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
+        tr:nth-child(even) td { background: var(--bg); }
+        tr:last-child td { border-bottom: none; }
+
+        /* AI 기능 하이라이트 */
+        .ai-highlight { background: linear-gradient(135deg, #f0f2ff, #e8fff9); border-left: 5px solid var(--primary); padding: 20px 24px; border-radius: 0 12px 12px 0; margin-bottom: 16px; }
+        .ai-highlight h4 { font-size: 15px; font-weight: 800; color: var(--primary); margin-bottom: 8px; }
+        .ai-highlight p { font-size: 14px; color: var(--text-sub); line-height: 1.6; }
+
+        /* 핵심 기능 분석 */
+        .star-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; font-size: 13px; }
+        .star-row .label { width: 130px; color: var(--text-sub); font-weight: 600; }
+        .star-hi { color: #5B67F8; font-weight: 800; }
+        .star-mid { color: #FFD700; font-weight: 800; }
+        .star-lo { color: #00b894; font-weight: 800; }
+        .core-cards { display: flex; flex-direction: column; gap: 16px; }
+        .core-card { background: var(--bg); border-radius: 14px; padding: 22px; border-left: 5px solid var(--primary); }
+        .core-card h4 { font-size: 15px; font-weight: 800; margin-bottom: 10px; color: var(--primary); }
+        .core-card p { font-size: 13px; color: var(--text-sub); line-height: 1.7; margin-top: 10px; }
+
+        /* 인사이트 */
+        .insight-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+        .insight-card { background: linear-gradient(135deg, #eef0ff, #f5f6ff); border-radius: 14px; padding: 24px; border: 1px solid var(--border); }
+        .insight-card .num { width: 32px; height: 32px; background: var(--primary); color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; margin-bottom: 12px; }
+        .insight-card h4 { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+        .insight-card p { font-size: 13px; color: var(--text-sub); line-height: 1.6; }
+
+        /* 요금제 */
+        .plan-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .plan-card { border-radius: 14px; padding: 24px; border: 2px solid var(--border); }
+        .plan-card.featured { border-color: var(--primary); background: linear-gradient(135deg, #f0f2ff, #f5f6ff); }
+        .plan-card h4 { font-size: 16px; font-weight: 800; margin-bottom: 6px; }
+        .plan-card .price { font-size: 22px; font-weight: 800; color: var(--primary); margin-bottom: 12px; }
+        .plan-card ul { padding-left: 16px; }
+        .plan-card li { font-size: 13px; color: var(--text-sub); line-height: 1.8; }
+
+        footer { text-align: center; padding: 32px; background: var(--bg); border-top: 1px solid var(--border); font-size: 13px; color: var(--text-sub); }
+        @media print { body { background: white; padding: 0; } .document { box-shadow: none; border-radius: 0; } .download-group { display: none; } }
+    </style>
+</head>
+<body>
+    <div class="download-group">
+        <button class="btn-dl btn-pdf" onclick="downloadPDF()">📄 PDF</button>
+        <button class="btn-dl btn-word" onclick="downloadWord()">📝 Word</button>
+    </div>
+    <div class="document" id="report">
+        <header>
+            <div class="badge">AI LMS BENCHMARKING REPORT</div>
+            <h1>클래스팅(Classting) 시스템 분석 리포트</h1>
+            <p>https://www.classting.com — 비로그인 전수 조사 결과 (1~4단계 완료)</p>
+            <div class="meta-row">
+                <div class="meta-item">조사일<span>2026-04-28</span></div>
+                <div class="meta-item">조사 대상<span>classting.com</span></div>
+                <div class="meta-item">서비스 유형<span>B2B/B2G AI 교육 LMS</span></div>
+                <div class="meta-item">작성<span>Antigravity AI</span></div>
+            </div>
+        </header>
+
+        <div class="content">
+
+            <!-- 1단계: 서비스 개요 -->
+            <div class="section">
+                <h2 class="section-title"><span class="step-badge">1</span>서비스 정체성 및 구조 파악</h2>
+                <div class="kpi-grid">
+                    <div class="kpi-card"><div class="num">4,600+</div><div class="label">도입 학교 수</div></div>
+                    <div class="kpi-card"><div class="num">91.5%</div><div class="label">AI 학습 성취도 예측 정확도</div></div>
+                    <div class="kpi-card"><div class="num">3-Way</div><div class="label">교사·학생·학부모 통합 플랫폼</div></div>
+                    <div class="kpi-card"><div class="num">AI 튜터</div><div class="label">RAG 기반 개인 AI 튜터</div></div>
+                </div>
+                <p style="margin-bottom:16px; color:var(--text-sub);">클래스팅은 <strong>전국 4,600개 이상의 학교</strong>가 도입한 대한민국 대표 B2B/B2G AI 교육 플랫폼입니다. 단순 LMS를 넘어 <strong>AI 기반 지식 추적(CLST 엔진)</strong>으로 학생 개개인의 학습 성취도를 예측하고 개인 맞춤형 학습 경험을 제공합니다.</p>
+                <table>
+                    <tr><th>메뉴</th><th>내용</th></tr>
+                    <tr><td>적용 대상</td><td>학교(K-12), 학원/교육기관, 기업 교육</td></tr>
+                    <tr><td>주요 기능</td><td>AI 학습, 클래스 관리, 과제, 클래스톡(소통), AI 리포트</td></tr>
+                    <tr><td>유용한 자료</td><td>교사 가이드, 학부모/학생 가이드, 연구 자료, 블로그</td></tr>
+                    <tr><td>요금제</td><td>무료(Basic) / 유료(Pro / Enterprise) 3단계</td></tr>
+                </table>
+            </div>
+
+            <!-- 2단계: 3자 플랫폼 구조 -->
+            <div class="section">
+                <h2 class="section-title"><span class="step-badge">2</span>3자 통합 플랫폼 — 교사·학생·학부모</h2>
+                <div class="triad-grid">
+                    <div class="triad-card">
+                        <div class="role">👩‍🏫 교사</div>
+                        <h4>클래스 운영 허브</h4>
+                        <ul>
+                            <li>클래스 생성 및 학생 초대</li>
+                            <li>게시물·과제·퀴즈 출제</li>
+                            <li>AI 글쓰기 자동 첨삭</li>
+                            <li>실시간 학습 현황 대시보드</li>
+                            <li>AI 리포트로 학생별 약점 파악</li>
+                            <li>AI 생성형 실습 샌드박스 제공</li>
+                        </ul>
+                    </div>
+                    <div class="triad-card" style="border-color:#00D2B4">
+                        <div class="role" style="background:#00D2B4">🎓 학생</div>
+                        <h4>AI 튜터 개인 학습</h4>
+                        <ul>
+                            <li>RAG 기반 AI 튜터와 1:1 대화 학습</li>
+                            <li>지식 레이더 차트로 강약점 시각화</li>
+                            <li>과제 제출 및 피드백 수신</li>
+                            <li>AI 러닝으로 맞춤 문제 풀이</li>
+                            <li>생성형 AI 실습 (안전한 샌드박스)</li>
+                        </ul>
+                    </div>
+                    <div class="triad-card" style="border-color:#FFD700">
+                        <div class="role" style="background:#e6ac00">👨‍👩‍👧 학부모</div>
+                        <h4>클래스톡 소통 채널</h4>
+                        <ul>
+                            <li>교사와 안심번호 채팅/무료통화</li>
+                            <li>자녀 학습 현황 실시간 확인</li>
+                            <li>공지사항·학교 소식 수신</li>
+                            <li>개인정보 보호 (번호 비공개)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3 style="font-size:16px; font-weight:700; margin-bottom:14px;">💰 요금제 구조</h3>
+                <div class="plan-grid">
+                    <div class="plan-card">
+                        <h4>Basic (무료)</h4>
+                        <div class="price">무료</div>
+                        <ul>
+                            <li>클래스 생성 및 학생 관리</li>
+                            <li>게시물, 과제, 퀴즈 기본 기능</li>
+                            <li>클래스톡 소통 기능</li>
+                            <li>AI 학습 기능 제한적 사용</li>
+                        </ul>
+                    </div>
+                    <div class="plan-card featured">
+                        <h4>Pro / Enterprise ⭐</h4>
+                        <div class="price">맞춤 견적</div>
+                        <ul>
+                            <li>AI 튜터 무제한 이용</li>
+                            <li>AI 글쓰기 첨삭 무제한</li>
+                            <li>학교 전체 학습 분석 대시보드</li>
+                            <li>전담 CS 매니저 지원</li>
+                            <li>학교 커스터마이징 지원</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3단계: 핵심 AI 기능 분석 -->
+            <div class="section">
+                <h2 class="section-title"><span class="step-badge">3</span>핵심 AI 기능 분석 및 인사이트 도출</h2>
+
+                <div class="ai-highlight">
+                    <h4>🤖 CLST 지식 추적 엔진 — 클래스팅의 핵심 기술</h4>
+                    <p>학생이 문제를 풀 때마다 AI가 학습 상태를 실시간 업데이트합니다. 91.5%의 정확도로 학습 성취도를 예측하며, 학생 개개인에게 최적화된 다음 학습 콘텐츠를 자동으로 추천합니다. 단순 성적 기록이 아닌 "지금 어떤 개념을 모르는가"를 파악하는 것이 핵심입니다.</p>
+                </div>
+
+                <div class="core-cards">
+                    <div class="core-card">
+                        <h4>🤖 RAG 기반 AI 튜터 (개인 맞춤 학습)</h4>
+                        <div class="star-row"><span class="label">핵심도 (Core Value)</span><span class="star-hi">★★★★★</span></div>
+                        <div class="star-row"><span class="label">편의성 (Efficiency)</span><span class="star-hi">★★★★★</span></div>
+                        <div class="star-row"><span class="label">차별성 (Differentiation)</span><span class="star-hi">★★★★★</span></div>
+                        <p>강사가 없는 시간에도 학생이 질문하면 AI가 즉시 개인 맞춤형 답변 제공. 단순 챗GPT 연동이 아닌 학교 교과 과정 기반의 RAG(검색 증강 생성) 방식으로 오답을 최소화.</p>
+                    </div>
+                    <div class="core-card" style="border-left-color:#00D2B4">
+                        <h4>💬 클래스톡 (교사-학생-학부모 통합 소통)</h4>
+                        <div class="star-row"><span class="label">핵심도 (Core Value)</span><span class="star-hi">★★★★★</span></div>
+                        <div class="star-row"><span class="label">편의성 (Efficiency)</span><span class="star-hi">★★★★★</span></div>
+                        <div class="star-row"><span class="label">차별성 (Differentiation)</span><span class="star-hi">★★★★☆</span></div>
+                        <p>교사-학부모 간 개인 전화번호를 노출하지 않는 안심번호 채팅 및 무료통화 기능. 카카오톡이나 문자 대신 플랫폼 내에서 모든 소통을 완결짓는 강력한 락인(Lock-in) 기능.</p>
+                    </div>
+                    <div class="core-card" style="border-left-color:#FFD700">
+                        <h4>📊 AI 학습 리포트 (지식 레이더 차트)</h4>
+                        <div class="star-row"><span class="label">핵심도 (Core Value)</span><span class="star-hi">★★★★☆</span></div>
+                        <div class="star-row"><span class="label">편의성 (Efficiency)</span><span class="star-hi">★★★★★</span></div>
+                        <div class="star-row"><span class="label">차별성 (Differentiation)</span><span class="star-hi">★★★★☆</span></div>
+                        <p>학생 개개인의 영역별 강점/약점을 육각형 레이더 차트로 시각화. "국어 75점"이 아닌 "문법 약함, 독해 강함"처럼 구체적인 인사이트 제공으로 학부모 만족도 극대화.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4단계: 크레용스쿨 인사이트 -->
+            <div class="section">
+                <h2 class="section-title"><span class="step-badge">4</span>크레용스쿨을 위한 벤치마킹 인사이트</h2>
+                <div class="insight-cards">
+                    <div class="insight-card">
+                        <div class="num">1</div>
+                        <h4>AI 보조 강사(에이전트) 도입</h4>
+                        <p>강사가 없는 시간에도 수강생이 교구재 활용법·코딩 문제를 질문하면 AI가 즉시 답변하는 RAG 기반 에이전트 구축. 크레용스쿨 커리큘럼 기반으로 학습.</p>
+                    </div>
+                    <div class="insight-card">
+                        <div class="num">2</div>
+                        <h4>진로 분석 → 지식 레이더 차트 시각화</h4>
+                        <p>현재 커리언트 데이터를 단순 텍스트 리포트로만 제공하는 것을 클래스팅처럼 영역별 강점/약점 레이더 차트로 시각화. 학부모 상담 자료로 즉시 활용 가능.</p>
+                    </div>
+                    <div class="insight-card">
+                        <div class="num">3</div>
+                        <h4>강사-학부모 통합 소통 채널</h4>
+                        <p>현재 카카오톡·문자로 분산된 소통을 클래스팅 클래스톡 모델처럼 시스템 내 채널로 통합. 개인정보 보호 + 소통 이력 보관 + 알림톡 자동 발송 연계 가능.</p>
+                    </div>
+                    <div class="insight-card">
+                        <div class="num">4</div>
+                        <h4>AI 글쓰기 첨삭 → AI 코딩 피드백</h4>
+                        <p>클래스팅의 AI 글쓰기 첨삭처럼, 크레용스쿨 수강생이 만든 코딩·로봇 결과물 사진을 AI가 분석하여 "잘한 점 + 개선점"을 자동 제공하는 피드백 시스템 도입.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <footer>
+            <p>본 보고서는 <strong>PLATFORMERS</strong>가 크레용스쿨 자동화 설계를 위해 작성한 벤치마킹 문서입니다.</p>
+            <p style="margin-top:6px;">© 2026 Platformers. All Rights Reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        function downloadPDF() {
+            const element = document.getElementById('report');
+            const opt = { margin: [0.4, 0.4], filename: '클래스팅_벤치마킹_리포트.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true, logging: false }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }, pagebreak: { mode: ['avoid-all', 'css', 'legacy'] } };
+            const btns = document.querySelector('.download-group');
+            btns.style.display = 'none';
+            html2pdf().set(opt).from(element).save().then(() => { btns.style.display = 'flex'; });
+        }
+        function downloadWord() {
+            const content = document.getElementById('report').innerHTML;
+            const styles = document.querySelector('style').innerHTML;
+            const fullHtml = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>${styles}</style></head><body>${content}</body></html>`;
+            const converted = htmlDocx.asBlob(fullHtml, { orientation: 'portrait' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(converted);
+            link.download = '클래스팅_벤치마킹_리포트.docx';
+            link.click();
+        }
+    </script>
+</body>
+</html>

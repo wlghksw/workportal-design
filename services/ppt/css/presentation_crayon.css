@@ -1,0 +1,446 @@
+/* ==========================================================================
+   MIRI Premium Presentation Design System (Source 2 + Source 3 Fusion)
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+
+:root {
+  /* ── 소스 2 & 3 통합 컬러 가이드 ── */
+  --miri-yellow: #FFD54F;       /* 시그니처 포인트 옐로우 */
+  --miri-dark-yellow: #FFB300;  /* 그라데이션 및 강조용 */
+  --miri-charcoal: #1A1A1A;     /* 메인 다크 배경 및 타이포그래피 */
+  --miri-light-grey: #F8F9FA;   /* 소스 3 스타일의 부드러운 타일 배경 */
+  --miri-border-color: #EEEEEE; /* 분할선 및 테두리 */
+  
+  /* ── 소스 3의 핵심: 부드러운 라운드 값 정의 ── */
+  --radius-large: 30px;         /* 슬라이드 내부 메인 카드/이미지용 */
+  --radius-medium: 16px;        /* 일반 타일 및 버튼용 */
+
+  /* ── 기존 변수들과의 호환 맵핑 ── */
+  --primary: var(--miri-yellow);
+  --primary-hover: var(--miri-dark-yellow);
+  --primary-light: rgba(255, 213, 79, 0.08);
+  --secondary: var(--miri-charcoal);
+  --accent: var(--miri-dark-yellow);
+  --accent-blue: #3B82F6;
+  
+  --bg-card: #FFFFFF;
+  --bg-ivory: #FFFFFF;          /* MIRI의 세련된 순백색 배경 적용 */
+  
+  --text-primary: var(--miri-charcoal);
+  --text-secondary: #333333;
+  --text-muted: #94A3B8;
+  
+  --success: #10B981;
+  --warning: #F59E0B;
+  --danger: #EF4444;
+
+  --radius-xs: 8px;
+  --radius-sm: 12px;
+  --radius-md: var(--radius-medium);
+  --radius-lg: var(--radius-large);
+  --radius-xl: var(--radius-large);
+  --radius-full: 9999px;
+
+  /* ── 슬라이드 기본 16:9 규격 ── */
+  --slide-w: 1280px;
+  --slide-h: 720px;
+  --slide-zoom: 0.85;
+}
+
+/* ── 전역 초기화 ── */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Noto Sans KR', 'Pretendard', sans-serif;
+  background-color: var(--miri-charcoal); /* 뒷 배경은 깊은 차콜로 슬라이드가 돋보이게 처리 */
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── 1. 슬라이드 기본 규격 및 소스 2 '옐로우 바' 디자인 ── */
+.slide {
+  width: var(--slide-w);
+  height: var(--slide-h);
+  zoom: var(--slide-zoom, 1);
+  background-color: #FFFFFF;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 60px 80px;
+  box-sizing: border-box;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.04);
+  border-radius: var(--radius-large);
+  page-break-after: always;
+  break-after: page;
+  flex-shrink: 0;
+}
+
+/* 소스 2의 시그니처: 왼쪽 수직 포인트 바 */
+.slide::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 12px;
+  height: 100%;
+  background-color: var(--miri-yellow);
+  z-index: 10;
+}
+
+/* 소스 2의 은은한 글로우(Glow) 배경 효과 */
+.bg-glow-accent {
+  position: absolute;
+  bottom: -150px;
+  right: -150px;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(255, 213, 79, 0.12) 0%, rgba(255, 255, 255, 0) 70%);
+  z-index: 0;
+  pointer-events: none; /* 텍스트 선택 방해 금지 */
+}
+
+.slide > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* faint grid lines decoration */
+.grid-deco {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(26, 26, 26, 0.01) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(26, 26, 26, 0.01) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── PDF 인쇄 설정 ── */
+@media print {
+  @page {
+    size: 297mm 167.06mm;
+    margin: 0;
+  }
+  body {
+    background: none !important;
+    background-color: transparent;
+    margin: 0;
+    padding: 0;
+  }
+  .deck {
+    gap: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .slide {
+    width: 100vw !important;
+    height: 100vh !important;
+    box-shadow: none;
+    page-break-after: always;
+    break-after: page;
+    border-radius: 0 !important;
+    zoom: 1 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  * {
+    font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif !important;
+    letter-spacing: normal !important;
+  }
+}
+
+/* ── 2. 타이포그래피 양식 (맥킨지 & 소스 3 스타일) ── */
+.heading-1 {
+  font-family: 'Noto Sans KR', 'Pretendard', sans-serif;
+  font-size: 46px;
+  font-weight: 700;
+  color: var(--miri-charcoal);
+  margin: 0 0 45px 0;
+  padding-bottom: 15px;
+  border-bottom: 4px solid var(--miri-yellow); /* 타이틀 하단 포인트 바 */
+  width: fit-content;
+  max-width: 1000px;
+  letter-spacing: -0.5px;
+}
+
+.hero-display {
+  font-family: 'Outfit', 'Noto Sans KR', sans-serif;
+  font-size: 56px;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -1.5px;
+  color: var(--miri-charcoal);
+}
+
+.heading-2 {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--miri-charcoal);
+}
+
+.body-md {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.7;
+  color: #333333;
+}
+
+.body-sm {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: #555555;
+}
+
+/* ── 3. 소스 3 스타일: 라운드 타일형 그리드 레이아웃 ── */
+.slide-content-flex {
+  display: flex;
+  gap: 40px;
+  flex: 1;
+  position: relative;
+  z-index: 1;
+  align-items: stretch;
+}
+
+.content-body {
+  flex: 1.2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.slide-image-wrapper {
+  flex: 0.8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 소스 3 스타일: 라운드 이미지 마스킹 */
+.slide-image-wrapper img, .rounded-img-box {
+  border-radius: var(--radius-large) !important; /* 30px 대형 라운드 */
+  overflow: hidden;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.08);
+  border: 1px solid var(--miri-border-color);
+  max-width: 100%;
+  max-height: 420px;
+  object-fit: contain;
+}
+
+/* 소스 3 특유의 둥근 모서리가 들어간 세련된 콘텐츠 박스 */
+.card-base, .info-tile {
+  background-color: var(--miri-light-grey);
+  border: 1px solid var(--miri-border-color) !important;
+  border-radius: var(--radius-medium) !important; /* 16px 라운드 */
+  padding: 30px 24px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.card-base:hover, .info-tile:hover {
+  transform: translateY(-5px); /* 양식에 생동감을 주는 마우스 오버 효과 */
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+}
+
+/* 카드 배경 호버 데코 소거 (MIRI는 미니멀 타일) */
+.card-base::after {
+  display: none;
+}
+
+.card-feature {
+  border-radius: var(--radius-medium);
+  padding: 28px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.02);
+  transition: transform 0.3s ease;
+}
+.card-feature:hover {
+  transform: translateY(-5px);
+}
+
+/* B2B 프리미엄 카드 배경 팔레트 — eduallab_design_assets.md 기준 */
+/* AI가 지정한 color_class가 그대로 CSS와 연결됩니다. */
+.card-feature-yellow { background-color: #FEF3C7; color: var(--miri-charcoal); border-top: 4px solid #F59E0B; }  /* Amber Light — ROI/비용혜택 */
+.card-feature-coral  { background-color: #EEF2FF; color: var(--miri-charcoal); border-top: 4px solid #4F46E5; }  /* Indigo Light — 기술력/차별역량 */
+.card-feature-teal   { background-color: #F1F5F9; color: var(--miri-charcoal); border-top: 4px solid #64748B; }  /* Slate Light — 인프라/운영안정성 */
+.card-feature-rose   { background-color: #E0F2FE; color: var(--miri-charcoal); border-top: 4px solid #0284C7; }  /* Sky Light — 이러닝플랫폼 */
+.card-feature-mint   { background-color: #D1FAE5; color: var(--miri-charcoal); border-top: 4px solid #059669; }  /* Emerald Light — 운영자동화/파트너십 */
+
+/* ── 4. 소스 2 스타일: 정갈한 데이터 테이블 양식 ── */
+.comparison-table, .curriculum-table, .data-table {
+  width: 100%;
+  border-collapse: collapse;
+  z-index: 1;
+  border-radius: var(--radius-medium);
+  overflow: hidden;
+  border: 1px solid var(--miri-border-color);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+}
+
+.comparison-table th, .curriculum-table th, .data-table th {
+  background-color: var(--miri-charcoal) !important;
+  color: #FFFFFF !important;
+  padding: 16px 20px;
+  font-size: 16px;
+  text-align: left;
+  font-weight: 700;
+  border-bottom: 2px solid var(--miri-yellow);
+}
+
+.comparison-table td, .curriculum-table td, .data-table td {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--miri-border-color);
+  font-size: 15px;
+  color: #333333;
+  background-color: #FFFFFF;
+}
+
+.comparison-table tr:last-child td, .curriculum-table tr:last-child td, .data-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* 소스 2 스타일의 강조 셀 (연한 노란색 배경) */
+.comparison-table td.highlight-cell, 
+.curriculum-table td.highlight-cell, 
+.data-table td.highlight-cell {
+  background-color: rgba(255, 213, 79, 0.08) !important;
+  font-weight: 700;
+}
+
+/* ── 기타 프리미엄 컴포넌트 동기화 ── */
+.premium-list-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 16.5px;
+  line-height: 1.6;
+  color: #333333;
+}
+.premium-list-item::before {
+  content: '✓';
+  font-weight: 900;
+  font-size: 13px;
+  color: var(--miri-charcoal);
+  background: var(--primary-light);
+  border: 1px solid rgba(255, 213, 79, 0.35);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.brand-mark {
+  position: absolute;
+  top: 32px;
+  left: 80px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0.8;
+  z-index: 10;
+}
+.brand-mark-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, var(--miri-yellow) 0%, var(--miri-dark-yellow) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 900;
+  color: var(--miri-charcoal);
+  font-size: 14px;
+}
+.brand-mark-text {
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--miri-charcoal);
+}
+
+.slide-tag {
+  display: inline-block;
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--miri-dark-yellow);
+  margin-bottom: 12px;
+}
+
+.period-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--miri-yellow) 0%, var(--miri-dark-yellow) 100%);
+  color: var(--miri-charcoal) !important;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: 12px;
+  width: 50px;
+  height: 24px;
+  border-radius: var(--radius-full);
+}
+
+.page-number {
+  position: absolute;
+  bottom: 32px;
+  right: 80px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+}
+
+.kpi-mega {
+  font-family: 'Outfit', sans-serif;
+  font-size: 86px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -2.5px;
+  margin-bottom: 12px;
+}
+.kpi-mega.primary {
+  color: var(--miri-charcoal);
+  border-bottom: 6px solid var(--miri-yellow);
+  width: fit-content;
+}
+
+/* 뱃지 */
+.badge {
+  display: inline-flex;
+  padding: 5px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.4;
+  border-radius: var(--radius-full);
+  letter-spacing: 0.5px;
+}
+.badge-tag-yellow { background-color: rgba(255, 213, 79, 0.15); color: #8F6B00; border: 1px solid rgba(255, 213, 79, 0.2); }
+.badge-tag-blue   { background-color: #F0F4F8; color: var(--miri-charcoal); border: 1px solid rgba(26, 26, 26, 0.15); }

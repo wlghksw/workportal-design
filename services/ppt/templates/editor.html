@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>에듀올랩 (EduALLab) AI Editor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Outfit:wght@400;600;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../../shared/portal-header.css?v=1" />
+  <style>
+    :root {
+      --primary: #2563EB; /* Cobalt Blue */
+      --primary-hover: #1D4ED8;
+      --secondary: #0F172A; /* Deep Navy */
+      --secondary-dark: #020617; /* Slate Black */
+      --accent: #F59E0B; /* Amber Orange */
+      --bg-slate: #F8FAFC;
+      --bg-card: #FFFFFF;
+      --text-black: #1E293B;
+      --text-muted: #64748B;
+      --border: rgba(15, 23, 42, 0.08);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: #1a1a1a;
+      /* 어두운 백그라운드로 프리뷰 대조 극대화 */
+      color: var(--text-black);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .doc-type-badge {
+      background: var(--secondary);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    .editor-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      text-decoration: none;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: var(--secondary-dark);
+      box-shadow: 0 4px 14px rgba(255, 192, 0, 0.35);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: rgba(33, 94, 128, 0.08);
+      color: var(--secondary-dark);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(33, 94, 128, 0.15);
+      transform: translateY(-1px);
+    }
+
+    /* ── MAIN CONTAINER ── */
+    .editor-container {
+      display: grid;
+      grid-template-columns: 360px 240px 1fr;
+      /* 3-Pane Layout */
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* Collapsed Editor Sidebar State */
+    .editor-container.collapsed {
+      grid-template-columns: 0px 0px 1fr;
+    }
+
+    /* ── PANE 1: AI CHAT SIDEBAR ── */
+    .pane-chat {
+      background: var(--bg-card);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+
+    .pane-title {
+      padding: 18px 20px;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--secondary-dark);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Tab Switcher */
+    .tabs-header {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      background: #fcfcfc;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 12px;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-align: center;
+      transition: var(--transition);
+      border-bottom: 2px solid transparent;
+    }
+
+    .tab-btn.active {
+      color: var(--secondary);
+      border-bottom-color: var(--secondary);
+      background: var(--bg-card);
+    }
+
+    /* Chat Messages Box */
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: #f8fafc;
+    }
+
+    .chat-bubble {
+      max-width: 85%;
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      font-size: 13px;
+      line-height: 1.5;
+      word-break: break-all;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+    }
+
+    .chat-bubble-user {
+      align-self: flex-end;
+      background: var(--secondary);
+      color: #ffffff;
+      border-bottom-right-radius: 4px;
+    }
+
+    .chat-bubble-ai {
+      align-self: flex-start;
+      background: var(--bg-card);
+      color: var(--text-black);
+      border-bottom-left-radius: 4px;
+      border: 1px solid var(--border);
+    }
+
+    /* Chat Input Form */
+    .chat-input-area {
+      padding: 16px;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .chat-textarea {
+      width: 100%;
+      height: 70px;
+      padding: 10px;
+      font-family: inherit;
+      font-size: 13px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      resize: none;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .chat-textarea:focus {
+      border-color: var(--secondary);
+      box-shadow: 0 0 0 3px rgba(33, 94, 128, 0.1);
+    }
+
+    .chat-send-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .page-indicator-pill {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--secondary);
+      background: rgba(33, 94, 128, 0.08);
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    .btn-send {
+      background: var(--secondary);
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-send:hover {
+      background: var(--secondary-dark);
+    }
+
+    .btn-send:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Manual Edit Form Pane */
+    .pane-manual-form {
+      padding: 20px;
+      flex: 1;
+      overflow-y: auto;
+      display: none;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--secondary-dark);
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 10px;
+      font-size: 13px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .form-input:focus {
+      border-color: var(--secondary);
+    }
+
+    .form-select {
+      width: 100%;
+      padding: 10px;
+      font-size: 13px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background-color: #fff;
+      outline: none;
+    }
+
+    /* ── PANE 2: IMAGE LIBRARY SIDEBAR ── */
+    .pane-library {
+      background: #fafafa;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+
+    .library-grid {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .image-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .image-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+      border-color: var(--secondary);
+    }
+
+    .image-card-img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      display: block;
+      background-color: #f1f5f9;
+    }
+
+    .image-card-info {
+      padding: 8px 10px;
+    }
+
+    .image-card-tag {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--secondary);
+      margin-bottom: 2px;
+      word-break: break-all;
+    }
+
+    .image-card-desc {
+      font-size: 10.5px;
+      color: var(--text-muted);
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ── PANE 3: MAIN PREVIEW PANEL ── */
+    .pane-preview {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      position: relative;
+      background: #2b2b2b;
+    }
+
+    .preview-header {
+      height: 48px;
+      background: #202020;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+    }
+
+    .preview-title {
+      font-size: 12px;
+      color: #999;
+      font-weight: 500;
+    }
+
+    .preview-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .preview-iframe-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 30px;
+      overflow: auto;
+      position: relative;
+    }
+
+    /* Real-time Iframe scaling */
+    .preview-iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: transparent;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      border-radius: var(--radius-sm);
+      opacity: 1;
+      transition: opacity 0.25s ease-in-out;
+    }
+
+    .preview-iframe.loading {
+      opacity: 0.2;
+    }
+
+    /* ── ZOOM & NAVIGATION BOTTOM PANEL ── */
+    .preview-footer-nav {
+      height: 54px;
+      background: #202020;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      z-index: 10;
+    }
+
+    .nav-pill {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
+    }
+
+    .nav-pill:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .nav-pill:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .nav-counter {
+      color: #ccc;
+      font-size: 13px;
+      font-weight: 500;
+      min-width: 60px;
+      text-align: center;
+    }
+
+    /* ── LOADING AI SPINNER ── */
+    .ai-spinner-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(26, 26, 26, 0.7);
+      backdrop-filter: blur(4px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .ai-spinner-overlay.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid rgba(255, 192, 0, 0.1);
+      border-left-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    .ai-spinner-text {
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="site-header site-header--service">
+    <div class="site-header__row">
+      <a class="brand" href="https://portal.platformers.kr/">
+        <img class="brand__logo" src="../../shared/eduallab-logo.png" alt="에듀올랩" />
+        <span class="brand__sub">PPT·제안서</span>
+      </a>
+      <div class="site-header__actions site-header__actions--wrap editor-header-actions">
+      <span class="doc-type-badge" id="categoryBadge">B2B 제안서</span>
+      <button class="btn btn-secondary" onclick="toggleEditorSidebar()">🖥️ 에디터 켜기/끄기</button>
+      <a href="/viewer/raw/{{ session_id }}" target="_blank" class="btn btn-secondary">💻 발표자 모드 (Full Screen)</a>
+      <button class="btn btn-secondary" id="pdfPrintBtn" onclick="printPreviewIframe()" style="display: none;">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"
+          style="margin-top:-1px;">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M6.72 13.821V21m0 0-3-3m3 3 3-3M19 12a7 7 0 1 1-14 0c0-2.143 1.053-4.04 2.667-5.2M12 3v11.25" />
+        </svg>
+        <span>📥 PDF로 저장</span>
+      </button>
+      <a href="" id="premiumDownloadBtn" class="btn btn-primary" style="display: none; background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); color: white; box-shadow: 0 4px 14px rgba(217, 119, 6, 0.35);">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="margin-top:-1px;">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v12m0 0l-3.75-3.75M12 15l3.75-3.75M19.5 19.5h-15" />
+        </svg>
+        <span>⭐ 프리미엄 PPTX 다운로드 (Adobe)</span>
+      </a>
+      <a href="" id="downloadBtn" class="btn btn-primary">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"
+          style="margin-top:-1px;">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+        </svg>
+        <span>다운로드</span>
+      </a>
+      <span class="topbar__user" id="portalHeaderUser" hidden></span>
+      <a class="topbar__btn" href="https://portal.platformers.kr/">워크포탈</a>
+      <button class="topbar__btn" type="button" id="portalHeaderLogout" hidden>로그아웃</button>
+    </div>
+    </div>
+  </header>
+  <script src="../../shared/portal-header.js?v=1" defer></script>
+
+  <!-- MAIN CONTAINER (3-Pane Layout) -->
+  <div class="editor-container" id="editorContainer">
+
+    <!-- PANE 1: EDIT TOOLBAR -->
+    <section class="pane-chat">
+      <div class="pane-title">
+        <span>✨ AI 기획 어시스턴트</span>
+        <span class="page-indicator-pill" id="activePagePill">1 페이지 편집 중</span>
+      </div>
+
+      <!-- Editor Mode Tabs -->
+      <div class="tabs-header">
+        <button class="tab-btn active" id="tabChatBtn" onclick="switchTab('chat')">💬 AI 대화식 수정</button>
+        <button class="tab-btn" id="tabFormBtn" onclick="switchTab('form')">⚙️ 직접 수동 수정</button>
+      </div>
+
+      <!-- Tab A: AI Conversational Chat -->
+      <div class="chat-messages" id="chatMessagesBox">
+        <div class="chat-bubble chat-bubble-ai">
+          안녕하세요! ㈜에듀올랩 (EduALLab) AI B2B 수주 기획 비서입니다. 우측에서 수정하고 싶은 페이지를 선택하거나 이동하신 뒤, 변경 요구사항을 입력해 주세요.<br><br>
+          예: *"3페이지 텍스트 요약하고 3단 카드로 바꿔줘"*
+        </div>
+      </div>
+
+      <div class="chat-input-area" id="chatInputSection">
+        <textarea class="chat-textarea" id="chatInputText" placeholder="AI에게 리디자인 및 콘텐츠 수정 명령어를 작성하세요..."></textarea>
+        <div class="chat-send-row">
+          <button class="btn-send" id="btnSendChat" onclick="sendChatEdit()">수정 요청 🚀</button>
+        </div>
+      </div>
+
+      <!-- Tab B: Manual Input Form (Zero-cost Local Editing) -->
+      <div class="pane-manual-form" id="manualFormBox">
+        <div id="slidesFormFields">
+          <div class="form-group">
+            <label class="form-label">슬라이드 대제목 (Title)</label>
+            <input type="text" class="form-input" id="formTitleInput">
+          </div>
+          <div class="form-group">
+            <label class="form-label">슬라이드 부제목 (Subtitle)</label>
+            <input type="text" class="form-input" id="formSubtitleInput">
+          </div>
+          <div class="form-group">
+            <label class="form-label">슬라이드 카테고리 태그 (Tag)</label>
+            <input type="text" class="form-input" id="formTagInput">
+          </div>
+          <div class="form-group">
+            <label class="form-label">슬라이드 레이아웃 형태 (Layout Type)</label>
+            <select class="form-select" id="formLayoutSelect">
+              <option value="title">title (표지)</option>
+              <option value="full_text">full_text (일반 텍스트 본문)</option>
+              <option value="card_grid">card_grid (그리드 카드)</option>
+              <option value="split_v">split_v (좌텍스트/우이미지)</option>
+              <option value="timeline_process">timeline_process (가로 프로세스)</option>
+              <option value="data_focus">data_focus (KPI 수치강조)</option>
+              <option value="comparison">comparison (비교 테이블)</option>
+              <option value="catalog_grid">catalog_grid (B2B 카탈로그 표)</option>
+              <option value="curriculum_table">curriculum_table (커리큘럼 차시 표)</option>
+              <option value="supply_pricing">supply_pricing (공급 단가 견적)</option>
+              <option value="split_table_images">split_table_images (커리큘럼 표+우이미지)</option>
+              <option value="pricing_table_cards">pricing_table_cards (견적표+우단가카드)</option>
+              <option value="closing">closing (마무리 표지)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">본문 요점 목록 (Main Points - 줄바꿈으로 구분)</label>
+            <textarea class="chat-textarea" id="formPointsInput" style="height:100px;"></textarea>
+          </div>
+          <button class="btn btn-primary" style="width:100%; justify-content:center;" onclick="saveManualForm()">로컬 직접
+            저장</button>
+        </div>
+
+        <div id="reportFormFields" style="display:none;">
+          <div class="form-group">
+            <label class="form-label">보고서 본문 (Markdown 포맷 수정)</label>
+            <textarea class="chat-textarea" id="formReportMarkdownInput"
+              style="height:400px; font-family:monospace; font-size:12px; line-height:1.5;"></textarea>
+          </div>
+          <button class="btn btn-primary" style="width:100%; justify-content:center;" onclick="saveManualForm()">로컬 직접
+            저장</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANE 2: SESSION IMAGE LIBRARY -->
+    <section class="pane-library">
+      <div class="pane-title">
+        <span>📂 이미지 라이브러리</span>
+      </div>
+      <div class="library-grid" id="imageLibraryGrid">
+        <!-- JS로 동적 추가 -->
+      </div>
+    </section>
+
+    <!-- PANE 3: DOCUMENT PREVIEW -->
+    <section class="pane-preview">
+      <div class="preview-header">
+        <span class="preview-title" id="previewTitleDisplay">세션 프리뷰 캔버스</span>
+        <div class="preview-controls">
+          <span style="color:#666; font-size:11.5px;">*스크롤하거나 아래 버튼을 통해 편집할 페이지를 타겟팅하세요.</span>
+        </div>
+      </div>
+
+      <!-- Real-time iframe to render the raw HTML output -->
+      <div class="preview-iframe-wrapper">
+        <iframe src="/viewer/raw/{{ session_id }}" class="preview-iframe" id="previewIframe"
+          onload="onIframeLoad()"></iframe>
+      </div>
+
+      <!-- Dynamic navigation bar to target page and sync with iframe -->
+      <div class="preview-footer-nav" id="editorNavigationFooter">
+        <button class="nav-pill" id="btnPrevPage" onclick="changeActivePage(-1)">◀ 이전 페이지</button>
+        <span class="nav-counter" id="pageCounterDisplay">1 / 1</span>
+        <button class="nav-pill" id="btnNextPage" onclick="changeActivePage(1)">다음 페이지 ▶</button>
+      </div>
+
+      <!-- AI SPIN LOADING OVERLAY -->
+      <div class="ai-spinner-overlay" id="aiSpinner">
+        <div class="spinner"></div>
+        <div class="ai-spinner-text" id="spinnerText">GPT-5.4-mini가 제안서를 정교하게 다듬는 중...</div>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    const sessionId = "{{ session_id }}";
+    let activePage = 1;
+    let totalPages = 1;
+    let sessionData = null;
+    let isAILoading = false;
+
+    // ── ON LOAD INITIALIZATION ──
+    document.addEventListener("DOMContentLoaded", async () => {
+      await loadSessionData();
+    });
+
+    // ── API: LOAD SESSION DATA ──
+    async function loadSessionData() {
+      try {
+        const res = await fetch(`/api/session/${sessionId}`);
+        if (!res.ok) throw new Error("세션 정보를 가져올 수 없습니다.");
+
+        const payload = await res.json();
+        sessionData = payload.data;
+
+        // 1. 카테고리에 따른 화면 셋팅
+        const category = sessionData.category;
+        const downloadBtn = document.getElementById("downloadBtn");
+        const premiumDownloadBtn = document.getElementById("premiumDownloadBtn");
+
+        if (category === "report") {
+          document.getElementById("categoryBadge").textContent = "서면 보고서";
+          document.getElementById("activePagePill").style.display = "none";
+          document.getElementById("editorNavigationFooter").style.display = "none";
+          document.getElementById("tabFormBtn").textContent = "⚙️ 보고서 본문 직수정";
+
+          document.getElementById("slidesFormFields").style.display = "none";
+          document.getElementById("reportFormFields").style.display = "block";
+
+          downloadBtn.href = `/download/docx/${sessionId}`;
+          downloadBtn.querySelector("span").textContent = "Word (.docx) 다운로드";
+
+          // PDF 인쇄 버튼 숨김
+          document.getElementById("pdfPrintBtn").style.display = "none";
+          premiumDownloadBtn.style.display = "none";
+
+          // 보고서 마크다운 데이터 채우기
+          if (sessionData.report_data) {
+            document.getElementById("formReportMarkdownInput").value = sessionData.report_data.markdown || "";
+          }
+        } else {
+          document.getElementById("categoryBadge").textContent = "B2B 제안서";
+
+          downloadBtn.href = `/download/pptx/${sessionId}`;
+          downloadBtn.querySelector("span").textContent = "PowerPoint (.pptx) 다운로드";
+
+          // 프리미엄 다운로드 버튼 노출 및 링크 연동
+          premiumDownloadBtn.href = `/download/premium-pptx/${sessionId}`;
+          premiumDownloadBtn.style.display = "inline-flex";
+
+          // PDF 인쇄 버튼 노출
+          document.getElementById("pdfPrintBtn").style.display = "inline-flex";
+
+          // 페이지 카운트 설정
+          totalPages = sessionData.slides_data.slides.length;
+          updatePageCounter();
+          loadActiveSlideFormData();
+        }
+
+        // 2. 이미지 라이브러리 채우기 (중앙 패널)
+        renderImageLibrary(sessionData.images || []);
+
+        // 3. 대화 히스토리 그리기
+        renderChatHistory(sessionData.chat_history || []);
+
+      } catch (err) {
+        console.error(err);
+        alert("세션 정보를 로드하는 데 실패했습니다. 홈페이지에서 다시 생성해주세요.");
+      }
+    }
+
+    // ── RENDERS ──
+    function renderImageLibrary(images) {
+      const grid = document.getElementById("imageLibraryGrid");
+      grid.innerHTML = "";
+
+      if (!images || images.length === 0) {
+        grid.innerHTML = '<div style="padding:20px; font-size:12px; color:#888; text-align:center;">추출된 이미지 자산이 없습니다.</div>';
+        return;
+      }
+
+      images.forEach(img => {
+        const card = document.createElement("div");
+        card.className = "image-card";
+        card.onclick = () => suggestImageInsert(img.tag);
+
+        // 이미지 경로 변환
+        let imgSrc = img.url || img.path || "";
+
+        card.innerHTML = `
+          <img src="${imgSrc}" class="image-card-img" onerror="this.src='/static/img/header_bg.png'">
+          <div class="image-card-info">
+            <div class="image-card-tag">[${img.tag}]</div>
+            <div class="image-card-desc" title="${img.description || ''}">${img.description || '교안 이미지'}</div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function renderChatHistory(history) {
+      const box = document.getElementById("chatMessagesBox");
+
+      // 첫 환영 멘트는 보존
+      box.innerHTML = `
+        <div class="chat-bubble chat-bubble-ai">
+          안녕하세요! 크레용스쿨 AI 기획 어시스턴트입니다. 우측에서 수정하고 싶은 페이지를 선택하거나 쳐다보신 뒤, 변경 사항을 입력해 주세요.<br><br>
+          예: *"3페이지 텍스트 요약하고 3단 카드로 바꿔줘"*
+        </div>
+      `;
+
+      if (!history || history.length === 0) return;
+
+      history.forEach(msg => {
+        const bubble = document.createElement("div");
+        bubble.className = `chat-bubble chat-bubble-${msg.role === 'user' ? 'user' : 'ai'}`;
+        bubble.innerHTML = msg.content.replace(/\n/g, "<br>");
+        box.appendChild(bubble);
+      });
+
+      // 스크롤 최하단 이동
+      box.scrollTop = box.scrollHeight;
+    }
+
+    // 슬라이드 클릭 시 수동 폼에 데이터 로드
+    function loadActiveSlideFormData() {
+      if (!sessionData || !sessionData.slides_data) return;
+
+      const slides = sessionData.slides_data.slides;
+      const target = slides.find(s => s.page === activePage);
+      if (!target) return;
+
+      document.getElementById("formTitleInput").value = target.title || "";
+      document.getElementById("formSubtitleInput").value = target.subtitle || "";
+      document.getElementById("formTagInput").value = target.tag || "";
+      document.getElementById("formLayoutSelect").value = target.layout_type || "full_text";
+
+      // 요점 리스트 채우기
+      const points = target.content && target.content.main_points ? target.content.main_points : [];
+      document.getElementById("formPointsInput").value = points.join("\n");
+
+      // 🔒 기존 원본 슬라이드 락(Lock) 및 수정 제어 적용
+      const isBase = !!target.is_base_slide;
+      const activePill = document.getElementById("activePagePill");
+      const chatInput = document.getElementById("chatInputText");
+      const sendChatBtn = document.getElementById("btnSendChat");
+      const manualSaveBtn = document.querySelector("#manualFormBox button");
+
+      // 입력 폼 필드 배열
+      const formFields = [
+        document.getElementById("formTitleInput"),
+        document.getElementById("formSubtitleInput"),
+        document.getElementById("formTagInput"),
+        document.getElementById("formLayoutSelect"),
+        document.getElementById("formPointsInput")
+      ];
+
+      if (isBase) {
+        // 배지 및 알림 UI 반영
+        activePill.textContent = "🔒 기존 슬라이드 " + activePage + " (원본 보존)";
+        activePill.style.background = "rgba(244, 67, 54, 0.12)";
+        activePill.style.color = "#d32f2f";
+
+        // AI 채팅 수정 컨트롤 락
+        chatInput.disabled = true;
+        chatInput.placeholder = "기존 원본 슬라이드는 수정이 제한됩니다. 뒤이어 이어서 추가 생성된 신규 AI 슬라이드를 선택해 주세요.";
+        sendChatBtn.disabled = true;
+
+        // 수동 수정 폼 컨트롤 락
+        formFields.forEach(field => { if (field) field.disabled = true; });
+        if (manualSaveBtn) {
+          manualSaveBtn.disabled = true;
+          manualSaveBtn.textContent = "기존 원본 슬라이드 수정 불가";
+        }
+      } else {
+        // 배지 복구
+        activePill.textContent = activePage + " 페이지 편집 중";
+        activePill.style.background = "rgba(33, 94, 128, 0.08)";
+        activePill.style.color = "var(--secondary)";
+
+        // AI 채팅 수정 컨트롤 잠금 해제
+        chatInput.disabled = false;
+        chatInput.placeholder = "AI에게 리디자인 및 콘텐츠 수정 명령어를 작성하세요...";
+        sendChatBtn.disabled = false;
+
+        // 수동 수정 폼 잠금 해제
+        formFields.forEach(field => { if (field) field.disabled = false; });
+        if (manualSaveBtn) {
+          manualSaveBtn.disabled = false;
+          manualSaveBtn.textContent = "로컬 직접 저장";
+        }
+      }
+    }
+
+    // ── DYNAMIC PAGE NAVIGATION ──
+    function changeActivePage(offset) {
+      if (isAILoading) return;
+
+      const newPage = activePage + offset;
+      if (newPage < 1 || newPage > totalPages) return;
+
+      activePage = newPage;
+      updatePageCounter();
+      loadActiveSlideFormData();
+
+      // Iframe 스크롤 시키기
+      try {
+        const iframe = document.getElementById("previewIframe");
+        const doc = iframe.contentDocument || iframe.contentWindow.document;
+        const slides = doc.querySelectorAll(".slide");
+        if (slides && slides[activePage - 1]) {
+          slides[activePage - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      } catch (e) {
+        console.warn("Iframe 크로스도메인 또는 돔 미완성으로 스크롤 실패: ", e);
+      }
+    }
+
+    function updatePageCounter() {
+      document.getElementById("pageCounterDisplay").textContent = `${activePage} / ${totalPages}`;
+      document.getElementById("activePagePill").textContent = `${activePage} 페이지 편집 중`;
+
+      document.getElementById("btnPrevPage").disabled = (activePage === 1);
+      document.getElementById("btnNextPage").disabled = (activePage === totalPages);
+    }
+
+    // ── TAB SWITCHER ──
+    function switchTab(tab) {
+      if (tab === 'chat') {
+        document.getElementById("tabChatBtn").classList.add("active");
+        document.getElementById("tabFormBtn").classList.remove("active");
+
+        document.getElementById("chatMessagesBox").style.display = "flex";
+        document.getElementById("chatInputSection").style.display = "flex";
+        document.getElementById("manualFormBox").style.display = "none";
+      } else {
+        document.getElementById("tabChatBtn").classList.remove("active");
+        document.getElementById("tabFormBtn").classList.add("active");
+
+        document.getElementById("chatMessagesBox").style.display = "none";
+        document.getElementById("chatInputSection").style.display = "none";
+        document.getElementById("manualFormBox").style.display = "block";
+      }
+    }
+
+    // 이미지 카드 클릭 시 챗 단축 템플릿 완성
+    function suggestImageInsert(tag) {
+      if (isAILoading) return;
+      switchTab('chat');
+      const textInput = document.getElementById("chatInputText");
+
+      if (sessionData && sessionData.category === "report") {
+        textInput.value = `이 보고서 적절한 위치에 [${tag}] 이미지를 추가하고 관련 문맥 설명을 보강해줘.`;
+      } else {
+        textInput.value = `${activePage}페이지에 [${tag}] 이미지를 매칭하고 관련 내용을 조화롭게 리디자인해줘.`;
+      }
+      textInput.focus();
+    }
+
+    // 에디터 끄기/켜기 토글
+    function toggleEditorSidebar() {
+      const container = document.getElementById("editorContainer");
+      container.classList.toggle("collapsed");
+    }
+
+    // ── API: AI CHAT EDIT ──
+    async function sendChatEdit() {
+      const input = document.getElementById("chatInputText");
+      const message = input.value.trim();
+      if (!message || isAILoading) return;
+
+      input.value = "";
+      isAILoading = true;
+      setLoadingState(true, "GPT-5.4-mini가 제안서를 정교하게 다듬는 중...");
+
+      // 사용자 메시지 임시 추가
+      appendLocalMessage("user", message);
+
+      try {
+        const response = await fetch(`/api/session/${sessionId}/chat`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            active_page: activePage,
+            message: message
+          })
+        });
+
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || "AI 편집 도중 오류가 발생했습니다.");
+
+        appendLocalMessage("assistant", result.chat_response);
+
+        // 프리뷰 iframe 갱신
+        reloadPreview();
+
+        // 세션 정보 리로드 (메모리 최신화)
+        await loadSessionData();
+
+      } catch (err) {
+        console.error(err);
+        appendLocalMessage("assistant", `❌ 에러 발생: ${err.message}`);
+      } finally {
+        isAILoading = false;
+        setLoadingState(false);
+      }
+    }
+
+    // ── API: MANUAL FORM SAVE (Zero-cost Local Editing) ──
+    async function saveManualForm() {
+      if (isAILoading) return;
+      isAILoading = true;
+      setLoadingState(true, "변경 사항을 저장하고 프리뷰를 리빌드 중...");
+
+      let postPayload = {};
+      const category = sessionData.category;
+
+      if (category === "report") {
+        const mdText = document.getElementById("formReportMarkdownInput").value;
+        postPayload = {
+          category: "report",
+          data: {
+            ...sessionData.report_data,
+            markdown: mdText
+          }
+        };
+      } else {
+        // 기존 슬라이드 정보 추출 복사
+        const slides = [...sessionData.slides_data.slides];
+        const targetIdx = slides.findIndex(s => s.page === activePage);
+
+        if (targetIdx !== -1) {
+          const ptInput = document.getElementById("formPointsInput").value;
+          const points = ptInput.split("\n").map(p => p.trim()).filter(p => p.length > 0);
+
+          slides[targetIdx] = {
+            ...slides[targetIdx],
+            title: document.getElementById("formTitleInput").value,
+            subtitle: document.getElementById("formSubtitleInput").value,
+            tag: document.getElementById("formTagInput").value,
+            layout_type: document.getElementById("formLayoutSelect").value,
+            content: {
+              ...slides[targetIdx].content,
+              main_points: points
+            }
+          };
+        }
+
+        postPayload = {
+          category: "proposal",
+          data: {
+            ...sessionData.slides_data,
+            slides: slides
+          }
+        };
+      }
+
+      try {
+        const res = await fetch(`/api/session/${sessionId}/save`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(postPayload)
+        });
+
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.error || "수동 저장 실패");
+
+        // 프리뷰 iframe 갱신
+        reloadPreview();
+
+        // 메모리 재로드
+        await loadSessionData();
+
+        alert("성공적으로 저장 및 미리보기가 갱신되었습니다!");
+
+      } catch (err) {
+        console.error(err);
+        alert(`저장 중 오류 발생: ${err.message}`);
+      } finally {
+        isAILoading = false;
+        setLoadingState(false);
+      }
+    }
+
+    // ── HELPERS ──
+    function appendLocalMessage(role, content) {
+      const box = document.getElementById("chatMessagesBox");
+      const bubble = document.createElement("div");
+      bubble.className = `chat-bubble chat-bubble-${role === 'user' ? 'user' : 'ai'}`;
+      bubble.innerHTML = content.replace(/\n/g, "<br>");
+      box.appendChild(bubble);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function setLoadingState(loading, text = "") {
+      const spinner = document.getElementById("aiSpinner");
+      const spinnerText = document.getElementById("spinnerText");
+
+      if (loading) {
+        spinnerText.textContent = text;
+        spinner.classList.add("visible");
+      } else {
+        spinner.classList.remove("visible");
+      }
+    }
+
+    function reloadPreview() {
+      const iframe = document.getElementById("previewIframe");
+      iframe.classList.add("loading");
+      // 캐시 방지를 위한 타임스탬프 덧붙여 강제 갱신
+      iframe.src = `/viewer/raw/${sessionId}?t=${Date.now()}`;
+    }
+
+    function onIframeLoad() {
+      const iframe = document.getElementById("previewIframe");
+      iframe.classList.remove("loading");
+    }
+
+    function printPreviewIframe() {
+      const iframe = document.getElementById("previewIframe");
+      if (iframe && iframe.contentWindow) {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+      }
+    }
+  </script>
+</body>
+
+</html>

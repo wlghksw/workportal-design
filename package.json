@@ -1,0 +1,15 @@
+{
+  "name": "integration-platform-design",
+  "private": true,
+  "description": "에듀올랩 통합 플랫폼 — 디자인/UI 협업용 (서버·배포 코드 제외)",
+  "scripts": {
+    "serve:workportal": "npx serve services/workportal -p 3000",
+    "serve:ppt": "npx serve services/ppt -p 3001",
+    "serve:ebook": "npx serve services/ebook -p 3002",
+    "serve:meeting": "npx serve services/meeting -p 3003",
+    "serve:newsletter": "npx serve services/newsletter/web -p 3004",
+    "serve:news-api": "npx serve services/news-api -p 3005",
+    "serve:bidding": "npx serve services/bidding -p 3006",
+    "serve:website": "npx serve services/website -p 3007"
+  }
+}

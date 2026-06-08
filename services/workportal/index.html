@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>에듀올랩 · 통합 업무 포탈</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css?v=home17" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header__row">
+        <a class="brand" href="index.html">
+          <img
+            class="brand__logo"
+            src="assets/eduallab-logo.png"
+            alt="에듀올랩"
+          />
+          <span class="brand__sub">통합 업무 포탈</span>
+        </a>
+        <form class="site-search" id="siteSearch" role="search">
+          <input
+            type="search"
+            id="siteSearchInput"
+            aria-label="서비스 검색"
+            autocomplete="off"
+          />
+          <button type="submit" class="site-search__btn" aria-label="검색">
+            <svg class="site-search__icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="7"/>
+              <path d="M20 20l-3.5-3.5"/>
+            </svg>
+          </button>
+        </form>
+        <div class="site-header__actions">
+          <span class="topbar__user" id="topbarUser" hidden></span>
+          <a class="topbar__btn topbar__btn--login" id="loginBtn" href="login" hidden>
+            로그인
+          </a>
+          <button class="topbar__btn" id="logoutBtn" type="button" hidden>
+            로그아웃
+          </button>
+        </div>
+      </div>
+      <nav class="site-nav" aria-label="주요 메뉴">
+        <button class="site-nav__item is-active tab" data-view="dashboard" type="button">
+          홈
+        </button>
+        <button class="site-nav__item tab" data-view="guide" type="button">
+          가이드
+        </button>
+        <button class="site-nav__item tab" data-view="activity" type="button">
+          사용 이력
+        </button>
+      </nav>
+    </header>
+
+    <main class="page" id="page">
+      <!-- 홈 (대시보드) -->
+      <section class="view portal-home" data-view="dashboard">
+        <section class="portal-hero" aria-label="소개">
+          <div class="portal-hero__content">
+            <p class="portal-hero__eyebrow">에듀올랩 업무 자동화</p>
+            <h1 class="portal-hero__title">통합 업무 포탈</h1>
+            <p class="portal-hero__sub">
+              한 번의 로그인으로 입찰·회의록·뉴스·제안서·대시보드·e-book 등 업무 서비스를 이용할 수 있습니다.
+            </p>
+          </div>
+          <div class="portal-hero__deco" aria-hidden="true"></div>
+        </section>
+
+        <section class="portal-board" aria-label="소식">
+          <div class="portal-board__head">
+            <div class="portal-board__tabs" role="tablist">
+              <button
+                type="button"
+                class="portal-board__tab is-active"
+                data-board-tab="recent"
+                role="tab"
+                aria-selected="true"
+              >
+                최근 사용
+              </button>
+              <button
+                type="button"
+                class="portal-board__tab"
+                data-board-tab="guide"
+                role="tab"
+                aria-selected="false"
+              >
+                이용 안내
+              </button>
+            </div>
+            <button
+              type="button"
+              class="portal-board__more"
+              data-view-jump="activity"
+              title="사용 이력 전체 보기"
+            >
+              +
+            </button>
+          </div>
+          <div class="portal-board__panel is-active" data-board-panel="recent" role="tabpanel">
+            <ul class="portal-notice" id="homeRecentList">
+              <li class="portal-notice__empty">불러오는 중…</li>
+            </ul>
+          </div>
+          <div class="portal-board__panel" data-board-panel="guide" role="tabpanel" hidden>
+            <ul class="portal-notice portal-notice--guide">
+              <li>
+                <a href="#" data-view-jump="activity" class="portal-notice__link">
+                  <span class="portal-notice__title">로그인 후 서비스 이용</span>
+                  <span class="portal-notice__desc"
+                    >포털에서 로그인하면 연동된 업무 서비스에 별도 비밀번호 없이 접속할 수
+                    있습니다.</span
+                  >
+                  <time class="portal-notice__date">안내</time>
+                </a>
+              </li>
+              <li>
+                <span class="portal-notice__link portal-notice__link--static">
+                  <span class="portal-notice__title">입찰 공고</span>
+                  <span class="portal-notice__desc"
+                    >공공·민간 입찰 공고 수집, AI 요약, 회사별 맞춤 필터</span
+                  >
+                  <time class="portal-notice__date">서비스</time>
+                </span>
+              </li>
+              <li>
+                <span class="portal-notice__link portal-notice__link--static">
+                  <span class="portal-notice__title">회의록 자동화</span>
+                  <span class="portal-notice__desc"
+                    >녹음 업로드 후 요약·결정사항·Teams 공유</span
+                  >
+                  <time class="portal-notice__date">서비스</time>
+                </span>
+              </li>
+              <li>
+                <span class="portal-notice__link portal-notice__link--static">
+                  <span class="portal-notice__title">PPT·제안서 · 크레용스쿨 대시보드 · e-book</span>
+                  <span class="portal-notice__desc"
+                    >문서→제안서, 제품 대시보드, 16컷 동화 e-book 제작</span
+                  >
+                  <time class="portal-notice__date">서비스</time>
+                </span>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <div class="portal-layout">
+          <h2 class="portal-section-title portal-layout__title">업무 서비스 바로가기</h2>
+          <div class="portal-layout__main">
+            <div class="portal-services" id="portalServices">
+              <article
+                class="portal-tile"
+                data-go="bidding"
+                data-newtab="0"
+                data-search="입찰 공고 bid"
+                tabindex="0"
+                role="link"
+              >
+                <span class="portal-tile__icon portal-tile__icon--bid" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="8" y1="13" x2="16" y2="13"/>
+                    <line x1="8" y1="17" x2="13" y2="17"/>
+                  </svg>
+                </span>
+                <div class="portal-tile__body">
+                  <div class="portal-tile__head">
+                    <h3 class="portal-tile__title">입찰 공고</h3>
+                    <span class="badge badge--muted" data-health="bidding">확인 중…</span>
+                  </div>
+                  <p class="portal-tile__desc">
+                    공공·민간 입찰 공고 수집 · 점수화 · 알림
+                  </p>
+                  <p class="portal-tile__host" data-host="bidding">bid.platformers.kr</p>
+                </div>
+                <span class="portal-tile__arrow" aria-hidden="true">→</span>
+              </article>
+
+              <article
+                class="portal-tile"
+                data-go="meeting"
+                data-newtab="0"
+                data-search="회의록 meeting 녹음"
+                tabindex="0"
+                role="link"
+              >
+                <span class="portal-tile__icon portal-tile__icon--meet" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/>
+                    <path d="M19 10v1a7 7 0 0 1-14 0v-1"/>
+                    <line x1="12" y1="18" x2="12" y2="22"/>
+                    <line x1="8" y1="22" x2="16" y2="22"/>
+                  </svg>
+                </span>
+                <div class="portal-tile__body">
+                  <div class="portal-tile__head">
+                    <h3 class="portal-tile__title">회의록 자동화</h3>
+                    <span class="badge badge--muted" data-health="meeting">확인 중…</span>
+                  </div>
+                  <p class="portal-tile__desc">
+                    회의 녹취 업로드 → 요약 · 결정사항 · 할일
+                  </p>
+                  <p class="portal-tile__host" data-host="meeting">meeting.platformers.kr</p>
+                </div>
+                <span class="portal-tile__arrow" aria-hidden="true">→</span>
+              </article>
+
+              <article
+                class="portal-tile"
+                data-go="news"
+                data-newtab="0"
+                data-search="뉴스 news 교육"
+                tabindex="0"
+                role="link"
+              >
+                <span class="portal-tile__icon portal-tile__icon--news" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                    <line x1="8" y1="7" x2="16" y2="7"/>
+                    <line x1="8" y1="11" x2="16" y2="11"/>
+                  </svg>
+                </span>
+                <div class="portal-tile__body">
+                  <div class="portal-tile__head">
+                    <h3 class="portal-tile__title">교육 뉴스</h3>
+                    <span class="badge badge--muted" data-health="news">확인 중…</span>
+                  </div>
+                  <p class="portal-tile__desc">RSS · NewsAPI 기반 교육 분야 뉴스 수집</p>
+                  <p class="portal-tile__host" data-host="news">news.platformers.kr</p>
+                </div>
+                <span class="portal-tile__arrow" aria-hidden="true">→</span>
+              </article>
+
+              <article
+                class="portal-tile"
+                data-go="newsletter"
+                data-newtab="0"
+                data-search="뉴스레터 newsletter 교육 메일 소식지"
+                tabindex="0"
+                role="link"
+              >
+                <span class="portal-tile__icon portal-tile__icon--newsletter" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="5" width="18" height="14" rx="2"/>
+                    <path d="M3 7l9 6 9-6"/>
+                  </svg>
+                </span>
+                <div class="portal-tile__body">
+                  <div class="portal-tile__head">
+                    <h3 class="portal-tile__title">교육 뉴스레터</h3>
+                    <span class="badge badge--muted" data-health="newsletter">확인 중…</span>
+                  </div>
+                  <p class="portal-tile__desc">
+                    블로그 링크 → HTML 뉴스레터 생성 · 미리보기 · 메일 발행
+                  </p>
+                  <p class="portal-tile__host" data-host="newsletter">newsletter.platformers.kr</p>
+                </div>
+                <span class="portal-tile__arrow" aria-hidden="true">→</span>
+              </article>
+
+              <article
+                class="portal-tile"
+                data-go="ppt"
+                data-newtab="0"
+                data-search="ppt 제안서 proposal"
+                tabindex="0"
+                role="link"
+              >
+                <span class="portal-tile__icon portal-tile__icon--ppt" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                    <path d="M8 12h8"/>
+                    <path d="M12 8v8"/>
+                  </svg>
+                </span>
+                <div class="portal-tile__body">
+                  <div class="portal-tile__head">
+                    <h3 class="portal-tile__title">PPT·제안서</h3>
+                    <span class="badge badge--muted" data-health="ppt">확인 중…</span>
+                  </div>
+                  <p class="portal-tile__desc">문서 업로드 → HTML·PPT 제안서 자동 생성</p>
+                  <p class="portal-tile__host" data-host="ppt">ppt.platformers.kr</p>
+                </div>
+                <span class="portal-tile__arrow" aria-hidden="true">→</span>
+              </article>
+
+              <article
+                class="portal-tile"
+                data-go="crayon"
+                data-newtab="0"
+                data-search="crayon 크레용스쿨 대시보드"
+                tabindex="0"
+                role="link"
+              >
+                <span class="portal-tile__icon portal-tile__icon--crayon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="7" height="7"/>
+                    <rect x="14" y="3" width="7" height="7"/>
+                    <rect x="3" y="14" width="7" height="7"/>
+                    <rect x="14" y="14" width="7" height="7"/>
+                  </svg>
+                </span>
+                <div class="portal-tile__body">
+                  <div class="portal-tile__head">
+                    <h3 class="portal-tile__title">크레용스쿨 대시보드</h3>
+                    <span class="badge badge--muted" data-health="crayon">확인 중…</span>
+                  </div>
+                  <p class="portal-tile__desc">크레용스쿨 제품·콘텐츠 통합 대시보드</p>
+                  <p class="portal-tile__host" data-host="crayon">crayon.platformers.kr</p>
+                </div>
+                <span class="portal-tile__arrow" aria-hidden="true">→</span>
+              </article>
+
+              <article
+                class="portal-tile"
+                data-go="fairytale"
+                data-newtab="0"
+                data-search="ebook e-book fairytale 동화"
+                tabindex="0"
+                role="link"
+              >
+                <span class="portal-tile__icon portal-tile__icon--fairytale" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/>
+                    <path d="M5 19c2-2 4-3 7-3s5 1 7 3"/>
+                  </svg>
+                </span>
+                <div class="portal-tile__body">
+                  <div class="portal-tile__head">
+                    <h3 class="portal-tile__title">e-book</h3>
+                    <span class="badge badge--muted" data-health="fairytale">확인 중…</span>
+                  </div>
+                  <p class="portal-tile__desc">16컷 동화 이미지 분할 · 편집 · ZIP·Teams 출력</p>
+                  <p class="portal-tile__host" data-host="fairytale">fairytale.platformers.kr</p>
+                </div>
+                <span class="portal-tile__arrow" aria-hidden="true">→</span>
+              </article>
+            </div>
+          </div>
+
+          <aside class="portal-layout__side">
+            <article class="portal-sidecard">
+              <header class="portal-sidecard__head">
+                <h3>서비스 상태</h3>
+                <span class="portal-sidecard__sub" id="lastSync">확인 중…</span>
+              </header>
+              <ul class="portal-status" id="statusList"></ul>
+            </article>
+          </aside>
+        </div>
+      </section>
+
+      <!-- 가이드 (서비스 매뉴얼) -->
+      <section class="view view--frame" data-view="guide" hidden>
+        <iframe
+          class="service-frame"
+          id="guideFrame"
+          title="에듀올랩 통합 업무 자동화 가이드"
+          src="/guide.html?embed=1"
+          loading="lazy"
+        ></iframe>
+      </section>
+
+      <!-- 사용 이력 (기능 사용) -->
+      <section class="view" data-view="activity" hidden>
+        <article class="card panel panel--activity">
+          <header class="panel__head panel__head--stack">
+            <div>
+              <h3>사용 이력</h3>
+            </div>
+            <span class="panel__sub panel__sub--badge" id="activityMeta">—</span>
+          </header>
+          <div class="activity-toolbar">
+            <label class="activity-filter">
+              <span class="activity-filter__label">사용자</span>
+              <select id="activityUser">
+                <option value="">전체</option>
+              </select>
+            </label>
+            <label class="activity-filter">
+              <span class="activity-filter__label">서비스</span>
+              <select id="activityService">
+                <option value="">전체</option>
+              </select>
+            </label>
+            <button class="btn-refresh" id="activityRefresh" type="button">
+              ↻ 새로고침
+            </button>
+          </div>
+          <ul class="activity-timeline" id="activityTimeline">
+            <li class="activity-empty">탭을 열면 목록을 불러옵니다.</li>
+          </ul>
+          <footer class="activity-footer">
+            <button class="btn-pager" id="activityPrev" type="button" disabled>
+              이전
+            </button>
+            <span class="activity-footer__pager" id="activityPager">—</span>
+            <button class="btn-pager" id="activityNext" type="button" disabled>
+              다음
+            </button>
+          </footer>
+        </article>
+      </section>
+    </main>
+
+    <script src="/app.js?v=9" defer></script>
+  </body>
+</html>

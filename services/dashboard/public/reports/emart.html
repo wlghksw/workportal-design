@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이마트 컬처클럽 벤치마킹 리포트 | PLATFORMERS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&family=Outfit:wght@600;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.rawgit.com/evidenceprime/html-docx-js/master/dist/html-docx.js"></script>
+    <style>
+        :root {
+            --primary: #E31837;
+            --secondary: #ff6b6b;
+            --accent: #FFD700;
+            --bg: #fff5f5;
+            --white: #ffffff;
+            --text-main: #1e1e1e;
+            --text-sub: #636e72;
+            --border: #f0d0d0;
+            --shadow: 0 8px 32px rgba(227,24,55,0.10);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe0e0 100%);
+            color: var(--text-main);
+            font-family: 'Pretendard', -apple-system, sans-serif;
+            line-height: 1.8; padding: 40px 20px;
+        }
+        .download-group { position: fixed; top: 20px; right: 20px; display: flex; gap: 10px; z-index: 1000; }
+        .btn-dl { border: none; padding: 10px 18px; border-radius: 6px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; color: white; font-size: 13px; transition: all 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .btn-dl:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        .btn-pdf { background: #e74c3c; }
+        .btn-word { background: #2b579a; }
+        .document { max-width: 940px; margin: 0 auto; background: var(--white); border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; }
+        header { background: linear-gradient(135deg, #E31837 0%, #ff6b6b 100%); padding: 52px 56px; color: white; }
+        .badge { display: inline-block; background: rgba(255,255,255,0.2); padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; letter-spacing: 1px; margin-bottom: 20px; }
+        header h1 { font-family: 'Outfit', sans-serif; font-size: 34px; font-weight: 800; margin-bottom: 10px; }
+        header p { font-size: 15px; opacity: 0.85; }
+        .meta-row { display: flex; gap: 30px; margin-top: 28px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.2); }
+        .meta-item { font-size: 13px; opacity: 0.85; }
+        .meta-item span { display: block; font-weight: 700; font-size: 15px; opacity: 1; }
+        .content { padding: 52px 56px; }
+        .section { margin-bottom: 52px; }
+        .section-title { font-size: 20px; font-weight: 800; color: var(--primary); margin-bottom: 24px; padding-bottom: 12px; border-bottom: 3px solid var(--secondary); display: flex; align-items: center; gap: 10px; }
+        .step-badge { background: var(--primary); color: white; width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; flex-shrink: 0; }
+
+        /* 핵심 특징 카드 */
+        .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px; }
+        .feature-card { background: var(--bg); border-radius: 12px; padding: 20px; border: 1px solid var(--border); border-top: 4px solid var(--primary); }
+        .feature-card .icon { font-size: 28px; margin-bottom: 8px; }
+        .feature-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 6px; color: var(--primary); }
+        .feature-card p { font-size: 13px; color: var(--text-sub); line-height: 1.6; }
+
+        /* 테이블 */
+        table { width: 100%; border-collapse: collapse; font-size: 14px; margin-bottom: 24px; }
+        th { background: var(--primary); color: white; padding: 13px 16px; font-weight: 700; text-align: left; }
+        td { padding: 12px 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
+        tr:nth-child(even) td { background: var(--bg); }
+        tr:last-child td { border-bottom: none; }
+
+        /* O2O 강조 박스 */
+        .highlight-box { background: #fff3cd; border-left: 5px solid #FFD700; padding: 20px 24px; border-radius: 0 12px 12px 0; margin-bottom: 20px; }
+        .highlight-box h4 { font-size: 15px; font-weight: 800; color: #856404; margin-bottom: 8px; }
+        .highlight-box p { font-size: 14px; color: #664d03; line-height: 1.6; }
+
+        /* 카테고리 태그 */
+        .tag-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+        .tag { background: var(--bg); border: 1px solid var(--border); padding: 5px 14px; border-radius: 20px; font-size: 13px; color: var(--text-main); font-weight: 500; }
+
+        /* 핵심 기능 분석 */
+        .core-cards { display: flex; flex-direction: column; gap: 16px; }
+        .core-card { background: var(--bg); border-radius: 14px; padding: 22px; border-left: 5px solid var(--primary); }
+        .core-card h4 { font-size: 15px; font-weight: 800; margin-bottom: 10px; color: var(--primary); }
+        .core-card p { font-size: 13px; color: var(--text-sub); line-height: 1.7; }
+        .star-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; font-size: 13px; }
+        .star-row .label { width: 130px; color: var(--text-sub); font-weight: 600; }
+        .star-hi { color: #E31837; font-weight: 800; }
+        .star-mid { color: #FFD700; font-weight: 800; }
+        .star-lo { color: #00b894; font-weight: 800; }
+
+        /* 인사이트 */
+        .insight-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+        .insight-card { background: linear-gradient(135deg, #fff0f0, #fff5f5); border-radius: 14px; padding: 24px; border: 1px solid var(--border); }
+        .insight-card .num { width: 32px; height: 32px; background: var(--primary); color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; margin-bottom: 12px; }
+        .insight-card h4 { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+        .insight-card p { font-size: 13px; color: var(--text-sub); line-height: 1.6; }
+
+        footer { text-align: center; padding: 32px; background: var(--bg); border-top: 1px solid var(--border); font-size: 13px; color: var(--text-sub); }
+        @media print { body { background: white; padding: 0; } .document { box-shadow: none; border-radius: 0; } .download-group { display: none; } }
+    </style>
+</head>
+<body>
+    <div class="download-group">
+        <button class="btn-dl btn-pdf" onclick="downloadPDF()">📄 PDF</button>
+        <button class="btn-dl btn-word" onclick="downloadWord()">📝 Word</button>
+    </div>
+    <div class="document" id="report">
+        <header>
+            <div class="badge">O2O BENCHMARKING REPORT</div>
+            <h1>이마트 컬처클럽 시스템 분석 리포트</h1>
+            <p>https://www.cultureclub.emart.com — 비로그인 전수 조사 결과 (1~4단계 완료)</p>
+            <div class="meta-row">
+                <div class="meta-item">조사일<span>2026-04-28</span></div>
+                <div class="meta-item">조사 대상<span>cultureclub.emart.com</span></div>
+                <div class="meta-item">서비스 유형<span>O2O 오프라인 문화센터</span></div>
+                <div class="meta-item">작성<span>Antigravity AI</span></div>
+            </div>
+        </header>
+
+        <div class="content">
+
+            <!-- 1단계: 서비스 개요 -->
+            <div class="section">
+                <h2 class="section-title"><span class="step-badge">1</span>서비스 정체성 및 구조 파악</h2>
+                <div class="highlight-box">
+                    <h4>🏪 오프라인 인프라 기반의 O2O 문화센터 플랫폼</h4>
+                    <p>이마트 컬처클럽은 전국 이마트 지점의 물리적 공간을 활용한 지역 밀착형 문화센터입니다. 온라인으로 수강신청을 받지만, 실제 교육은 오프라인 지점에서 이루어집니다. 영유아부터 성인까지 전 연령대를 커버하는 것이 핵심 강점입니다.</p>
+                </div>
+                <h3 style="font-size:15px; font-weight:700; margin-bottom:12px;">주요 클럽(카테고리) 구조</h3>
+                <div class="feature-grid">
+                    <div class="feature-card"><div class="icon">👶</div><h4>Little Club</h4><p>영유아·자녀 대상 발달 및 교육 강좌. 부모 동반 수업 중심.</p></div>
+                    <div class="feature-card"><div class="icon">🍳</div><h4>Cooking Club</h4><p>요리 실습 강좌. 재료비가 수강료에 포함되거나 별도 청구.</p></div>
+                    <div class="feature-card"><div class="icon">🎨</div><h4>Culture Club</h4><p>성인 취미·교양 강좌. 공예, 운동, 음악, 어학 등 다양.</p></div>
+                </div>
+                <h3 style="font-size:15px; font-weight:700; margin-bottom:10px; margin-top:20px;">세부 강좌 카테고리</h3>
+                <div class="tag-group">
+                    <span class="tag">🧘 운동·요가</span>
+                    <span class="tag">🎵 음악·악기</span>
+                    <span class="tag">🎨 미술·공예</span>
+                    <span class="tag">🌐 어학</span>
+                    <span class="tag">🍳 요리</span>
+                    <span class="tag">💻 디지털·IT</span>
+                    <span class="tag">👶 영유아</span>
+                    <span class="tag">💃 댄스</span>
+                    <span class="tag">📸 사진</span>
+                    <span class="tag">🌿 원예·플라워</span>
+                </div>
+            </div>
+
+            <!-- 2단계: 워크플로우 역설계 -->
+            <div class="section">
+                <h2 class="section-title"><span class="step-badge">2</span>워크플로우 및 기능 역설계</h2>
+
+                <h3 style="font-size:15px; font-weight:700; margin-bottom:12px;">📍 지점 기반 수강 신청 프로세스</h3>
+                <table>
+                    <tr><th>단계</th><th>내용</th></tr>
+                    <tr><td>① 지점 선택</td><td>접속 시 가장 먼저 주변 이마트 지점 선택 유도 → 개인화된 강좌 목록 제공</td></tr>
+                    <tr><td>② 강좌 탐색</td><td>카테고리·기간·요일·시간대 필터로 원하는 강좌 검색</td></tr>
+                    <tr><td>③ 결제</td><td>수강료 + 재료비 분리 표시 후 통합 결제 (신세계포인트 사용 가능)</td></tr>
+                    <tr><td>④ 수강</td><td>등록된 이마트 지점 문화센터 현장 방문 수강</td></tr>
+                    <tr><td>⑤ 환불</td><td>개강 전날 17:00까지만 온라인 취소 가능. 이후에는 반드시 지점 방문 처리</td></tr>
+                </table>
+
+                <h3 style="font-size:15px; font-weight:700; margin-bottom:12px; margin-top:24px;">👩‍🏫 강사 지원 및 관리</h3>
+                <table>
+                    <tr><th>항목</th><th>내용</th></tr>
+                    <tr><td>지원 방식</td><td>신세계 포인트 회원 가입 후 온라인 강사 지원 시스템(`/recruit/instructor`)으로 상시 지원</td></tr>
+                    <tr><td>강사 프로필</td><td>강좌 상세 페이지에 강사명 및 간략한 소개 표시</td></tr>
+                    <tr><td>강사 대시보드</td><td>비공개 (로그인 필요, 외부 접근 불가)</td></tr>
+                </table>
+
+                <h3 style="font-size:15px; font-weight:700; margin-bottom:12px; margin-top:24px;">💳 멤버십 & 포인트 시스템</h3>
+                <table>
+                    <tr><th>항목</th><th>내용</th></tr>
+                    <tr><td>통합 계정</td><td>신세계 통합 멤버십으로 로그인 (이마트·SSG·스타벅스 공유)</td></tr>
+                    <tr><td>포인트 적립</td><td>수강료 결제 시 신세계포인트 적립</td></tr>
+                    <tr><td>포인트 사용</td><td>수강료 결제 시 신세계포인트 차감 가능</td></tr>
+                    <tr><td>멤버십 혜택</td><td>이마트 App 회원 등급별 추가 할인 가능</td></tr>
+                </table>
+
+                <h3 style="font-size:15px; font-weight:700; margin-bottom:12px; margin-top:24px;">📚 지점별 디지털 카탈로그</h3>
+                <p style="font-size:14px; color:var(--text-sub); margin-bottom:8px;">기존 종이 전단지를 대체하는 고화질 웹 카탈로그를 지점별로 제공합니다. 각 지점의 이번 달 강좌를 PDF 형식의 디지털 카탈로그로 확인 가능합니다.</p>
+            </div>
+
+            <!-- 3단계: 핵심 기능 분석 -->
+            <div class="section">
+                <h2 class="section-title"><span class="step-badge">3</span>핵심 기능 분석 및 인사이트 도출</h2>
+                <div class="core-cards">
+                    <div class="core-card">
+                        <h4>📍 지점 기반 개인화 필터링 시스템</h4>
+                        <div class="star-row"><span class="label">핵심도 (Core Value)</span><span class="star-hi">★★★★★</span></div>
+                        <div class="star-row"><span class="label">편의성 (Efficiency)</span><span class="star-hi">★★★★★</span></div>
+                        <div class="star-row"><span class="label">차별성 (Differentiation)</span><span class="star-hi">★★★★★</span></div>
+                        <p style="margin-top:10px;">접속 즉시 가까운 지점을 선택하게 하여, 전국 수백 곳의 강좌 데이터 중 내 지점의 것만 보여주는 개인화 UX. 오프라인 플랫폼의 정보 과부하 문제를 해결하는 핵심 설계.</p>
+                    </div>
+                    <div class="core-card" style="border-left-color:#FFD700">
+                        <h4>🏪 이마트 생태계 통합 (멤버십·포인트·앱)</h4>
+                        <div class="star-row"><span class="label">핵심도 (Core Value)</span><span class="star-hi">★★★★★</span></div>
+                        <div class="star-row"><span class="label">편의성 (Efficiency)</span><span class="star-hi">★★★★☆</span></div>
+                        <div class="star-row"><span class="label">차별성 (Differentiation)</span><span class="star-hi">★★★★★</span></div>
+                        <p style="margin-top:10px;">신세계 통합 멤버십을 그대로 활용하여 별도 회원가입 없이 수강신청 가능. 이마트 쇼핑 고객을 문화센터 수강생으로 자연스럽게 전환시키는 강력한 플랫폼 락인(Lock-in) 전략.</p>
+                    </div>
+                    <div class="core-card" style="border-left-color:#00b894">
+                        <h4>📋 재료비/수강료 분리 관리</h4>
+                        <div class="star-row"><span class="label">핵심도 (Core Value)</span><span class="star-hi">★★★★☆</span></div>
+                        <div class="star-row"><span class="label">편의성 (Efficiency)</span><span class="star-hi">★★★★☆</span></div>
+                        <div class="star-row"><span class="label">차별성 (Differentiation)</span><span class="star-mid">★★★☆☆</span></div>
+                        <p style="margin-top:10px;">요리·공예 등 재료가 필요한 강좌에서 수강료와 재료비를 명확히 분리하여 청구. 정산 투명성 확보 및 재료 수급에 따른 환불 정책 차별 적용이 가능.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4단계: 크레용스쿨 인사이트 -->
+            <div class="section">
+                <h2 class="section-title"><span class="step-badge">4</span>크레용스쿨을 위한 벤치마킹 인사이트</h2>
+                <div class="insight-cards">
+                    <div class="insight-card">
+                        <div class="num">1</div>
+                        <h4>교구재 대여 + 강좌료 분리 정산</h4>
+                        <p>이마트처럼 크레용스쿨도 강의료와 교구재 대여료를 결제 단계에서 명확히 분리하면 정산 투명성이 높아지고, 교구재 반납 여부에 따른 차등 환불 로직도 자동화할 수 있음.</p>
+                    </div>
+                    <div class="insight-card">
+                        <div class="num">2</div>
+                        <h4>배움터(지점) 기반 필터링 UX</h4>
+                        <p>크레용스쿨의 전국 배움터 구조는 이마트 지점 구조와 동일. 수강생이 접속 시 먼저 가까운 배움터를 선택하고, 해당 배움터의 강좌만 보여주는 UX를 도입하면 탐색 편의성이 크게 향상됨.</p>
+                    </div>
+                    <div class="insight-card">
+                        <div class="num">3</div>
+                        <h4>디지털 카탈로그 자동 생성</h4>
+                        <p>이마트처럼 매월 지점별 강좌 목록을 PDF 카탈로그로 자동 생성하는 기능 도입. 현재 수동으로 제작하는 안내 자료를 시스템이 자동으로 생성하게 되면 행정 공수 대폭 절감.</p>
+                    </div>
+                    <div class="insight-card">
+                        <div class="num">4</div>
+                        <h4>온라인 신청 + 오프라인 운영 환불 정책</h4>
+                        <p>개강 전 취소는 자동 처리, 개강 후 환불은 담당자 승인 필요 등 단계별 자동화·수동 처리 하이브리드 정책을 설계하면 환불 관련 민원 처리 업무가 체계화됨.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <footer>
+            <p>본 보고서는 <strong>PLATFORMERS</strong>가 크레용스쿨 자동화 설계를 위해 작성한 벤치마킹 문서입니다.</p>
+            <p style="margin-top:6px;">© 2026 Platformers. All Rights Reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        function downloadPDF() {
+            const element = document.getElementById('report');
+            const opt = { margin: [0.4, 0.4], filename: '이마트컬처클럽_벤치마킹_리포트.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true, logging: false }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }, pagebreak: { mode: ['avoid-all', 'css', 'legacy'] } };
+            const btns = document.querySelector('.download-group');
+            btns.style.display = 'none';
+            html2pdf().set(opt).from(element).save().then(() => { btns.style.display = 'flex'; });
+        }
+        function downloadWord() {
+            const content = document.getElementById('report').innerHTML;
+            const styles = document.querySelector('style').innerHTML;
+            const fullHtml = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>${styles}</style></head><body>${content}</body></html>`;
+            const converted = htmlDocx.asBlob(fullHtml, { orientation: 'portrait' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(converted);
+            link.download = '이마트컬처클럽_벤치마킹_리포트.docx';
+            link.click();
+        }
+    </script>
+</body>
+</html>
