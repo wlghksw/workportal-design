@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>에듀올랩 — UI 미리보기</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #fff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --primary: #2563eb;
+      --border: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Noto Sans KR", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .wrap {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 40px 20px 64px;
+    }
+    h1 {
+      font-size: 1.75rem;
+      margin: 0 0 8px;
+    }
+    .sub {
+      color: var(--muted);
+      margin: 0 0 28px;
+      font-size: 0.95rem;
+    }
+    .notice {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 0.875rem;
+      color: #1e40af;
+      margin-bottom: 28px;
+    }
+    .list {
+      display: grid;
+      gap: 10px;
+    }
+    a.card {
+      display: block;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 18px;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    a.card:hover {
+      border-color: #93c5fd;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
+    }
+    .card strong {
+      display: block;
+      font-size: 1rem;
+      margin-bottom: 2px;
+    }
+    .card span {
+      font-size: 0.8rem;
+      color: var(--muted);
+      word-break: break-all;
+    }
+    .section {
+      margin-top: 32px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    footer {
+      margin-top: 40px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    code {
+      background: #f1f5f9;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>에듀올랩 UI 미리보기</h1>
+    <p class="sub">디자인 협업용 로컬 프리뷰 — HTML/CSS 수정 후 브라우저 새로고침으로 확인하세요.</p>
+    <p class="notice">API·로그인·저장 기능은 동작하지 않습니다. 화면 레이아웃·스타일 확인 목적입니다.</p>
+
+    <div class="section">주요 화면</div>
+    <div class="list">
+      <a class="card" href="/services/workportal/guide.html">
+        <strong>이용 가이드</strong>
+        <span>/services/workportal/guide.html</span>
+      </a>
+      <a class="card" href="/services/workportal/index.html">
+        <strong>통합 업무 포탈</strong>
+        <span>/services/workportal/index.html</span>
+      </a>
+      <a class="card" href="/services/newsletter/web/index.html">
+        <strong>교육 뉴스레터</strong>
+        <span>/services/newsletter/web/index.html</span>
+      </a>
+      <a class="card" href="/services/ppt/templates/index.html">
+        <strong>AI PPT 제안서</strong>
+        <span>/services/ppt/templates/index.html</span>
+      </a>
+      <a class="card" href="/services/ebook/index.html">
+        <strong>AI E-Book 동화</strong>
+        <span>/services/ebook/index.html</span>
+      </a>
+      <a class="card" href="/services/meeting/ui-page.html">
+        <strong>회의록 자동화</strong>
+        <span>/services/meeting/ui-page.html</span>
+      </a>
+      <a class="card" href="/services/news-api/preview.html">
+        <strong>뉴스 수집 목록</strong>
+        <span>/services/news-api/preview.html</span>
+      </a>
+    </div>
+
+    <div class="section">별도 설정 필요</div>
+    <div class="list">
+      <a class="card" href="/services/ppt/templates/editor.html">
+        <strong>PPT 에디터 (템플릿)</strong>
+        <span>/services/ppt/templates/editor.html — 일부 동적 영역은 백엔드 연동 필요</span>
+      </a>
+    </div>
+
+    <footer>
+      서버 실행: <code>npm start</code> · 종료: <code>Ctrl+C</code><br />
+      React 대시보드는 <code>cd services/dashboard && npm install && npm run dev</code>
+    </footer>
+  </div>
+</body>
+</html>

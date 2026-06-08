@@ -3,13 +3,13 @@
   "private": true,
   "description": "에듀올랩 통합 플랫폼 — 디자인/UI 협업용 (서버·배포 코드 제외)",
   "scripts": {
-    "serve:workportal": "npx serve services/workportal -p 3000",
-    "serve:ppt": "npx serve services/ppt -p 3001",
-    "serve:ebook": "npx serve services/ebook -p 3002",
-    "serve:meeting": "npx serve services/meeting -p 3003",
-    "serve:newsletter": "npx serve services/newsletter/web -p 3004",
-    "serve:news-api": "npx serve services/news-api -p 3005",
-    "serve:bidding": "npx serve services/bidding -p 3006",
-    "serve:website": "npx serve services/website -p 3007"
+    "start": "sh -c 'serve -l 3000 .' _",
+    "postinstall": "node -e \"console.log('\\n✅ 설치 완료!  npm start 실행 후 http://localhost:3000/preview.html 을 여세요.\\n')\""
+  },
+  "devDependencies": {
+    "serve": "^14.2.6"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }

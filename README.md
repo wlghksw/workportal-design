@@ -19,31 +19,148 @@
 | `services/website/` | 플랫포머즈 마케팅 사이트 | `index.php` |
 | `shared/` | 공통 헤더·로고 | `portal-header.css` |
 
-## 로컬 미리보기
+## 사전 준비 (UI 수정 전 필수)
 
-각 서비스 폴더에서 정적 서버를 실행합니다.
+| 항목 | 설명 |
+|------|------|
+| [Node.js](https://nodejs.org/) **18 이상** | `npm install`, `npm start` 실행에 필요 |
+| [Git](https://git-scm.com/) | 저장소 clone 및 PR 제출에 필요 |
+| 코드 에디터 | VS Code, Cursor 등 아무거나 가능 |
+| 브라우저 | Chrome, Safari 등 최신 브라우저 |
+
+### 처음 시작하기
 
 ```bash
-# 예: 이용 가이드
-npx serve services/workportal -p 3000
-# → http://localhost:3000/guide.html
-
-# 예: PPT
-npx serve services/ppt -p 3001
-# → http://localhost:3001/templates/index.html
-
-# 예: E-Book
-npx serve services/ebook -p 3002
-
-# 예: 회의록
-npx serve services/meeting -p 3003
-
-# 예: 뉴스레터 웹앱
-npx serve services/newsletter/web -p 3004
-
-# 예: 대시보드 (React — npm 필요)
-cd services/dashboard && npm install && npm run dev
+git clone https://github.com/wlghksw/workportal-design.git
+cd workportal-design
+npm install
+npm start
 ```
+
+브라우저에서 **http://localhost:3000/preview.html** 을 열면 전체 화면 목록이 나옵니다.
+
+### 작업 흐름
+
+1. 아래 표에서 수정할 **화면 → 파일 경로** 확인
+2. 에디터에서 HTML/CSS 파일 수정
+3. 브라우저 **새로고침**으로 변경 확인
+4. 서버 종료: `Ctrl+C`
+
+### 주의사항
+
+- HTML 파일을 **더블클릭(`file://`)으로 열면 CSS가 깨집니다.** 반드시 `npm start` 후 브라우저에서 접속하세요.
+- **API·로그인·저장 기능은 동작하지 않습니다.** 버튼 클릭 오류는 무시하고 레이아웃·색상·폰트만 확인하세요.
+- 한 번에 여러 화면을 볼 필요 없으면 `npm start` 하나만 켜두면 됩니다.
+
+---
+
+## 화면별 UI 수정 가이드
+
+수정하려는 화면의 **미리보기 URL**과 **편집할 파일**을 아래에서 찾으세요.
+
+### 공통 (모든 서비스 상단 헤더)
+
+| 미리보기 | 수정 파일 |
+|----------|-----------|
+| (각 서비스 화면 상단) | `shared/portal-header.css` — 헤더·네비 스타일 |
+| | `shared/portal-header.js` — 로그인 버튼 동작 (운영 API 연동) |
+| | `shared/eduallab-logo.png` — 로고 이미지 |
+
+### 이용 가이드
+
+| 미리보기 URL | 수정 파일 |
+|--------------|-----------|
+| http://localhost:3000/services/workportal/guide.html | `services/workportal/guide.html` — 본문·핫스팟·인라인 스타일 |
+| | `services/workportal/assets/portal-header.css` — 가이드 전용 헤더 |
+| | `services/workportal/guide-assets/` — 가이드 스크린샷 이미지 |
+
+### 통합 업무 포탈 (홈)
+
+| 미리보기 URL | 수정 파일 |
+|--------------|-----------|
+| http://localhost:3000/services/workportal/index.html | `services/workportal/index.html` — 홈 레이아웃 |
+| | `services/workportal/styles.css` — 포탈 전체 스타일 |
+| | `services/workportal/app.js` — 카드·탭 동작 (UI 구조) |
+| | `services/workportal/login.html` — 로그인 화면 |
+
+### 교육 뉴스레터
+
+| 미리보기 URL | 수정 파일 |
+|--------------|-----------|
+| http://localhost:3000/services/newsletter/web/index.html | `services/newsletter/web/index.html` — 웹앱 화면 구조 |
+| | `services/newsletter/web/static/theme.css` — **메인 스타일시트** |
+| | `services/newsletter/web/static/app.js` — 탭·폼 UI 동작 |
+| | `services/newsletter/template.html` — 발송용 이메일 HTML 템플릿 |
+| | `services/newsletter/template_outlook.html` — Outlook용 템플릿 |
+
+### AI PPT 제안서
+
+| 미리보기 URL | 수정 파일 |
+|--------------|-----------|
+| http://localhost:3000/services/ppt/templates/index.html | `services/ppt/templates/index.html` — 입력 화면 (인라인 스타일 포함) |
+| http://localhost:3000/services/ppt/templates/editor.html | `services/ppt/templates/editor.html` — 에디터 화면 |
+| | `services/ppt/css/presentation.css` — 슬라이드 공통 스타일 |
+| | `services/ppt/css/presentation_white.css` — 화이트 테마 |
+| | `services/ppt/css/presentation_crayon.css` — 크레용 테마 |
+| | `services/ppt/PPT_Design_Guidelines.md` — PPT 디자인 규격 |
+
+### AI E-Book 동화
+
+| 미리보기 URL | 수정 파일 |
+|--------------|-----------|
+| http://localhost:3000/services/ebook/index.html | `services/ebook/index.html` — 전체 화면 (인라인 `<style>` 포함) |
+
+### 회의록 자동화
+
+| 미리보기 URL | 수정 파일 |
+|--------------|-----------|
+| http://localhost:3000/services/meeting/ui-page.html | `services/meeting/ui-page.html` — 화면 구조·인라인 스크립트 |
+| | `services/meeting/theme-light.css` — **메인 스타일시트** |
+
+### 뉴스 수집 목록
+
+| 미리보기 URL | 수정 파일 |
+|--------------|-----------|
+| http://localhost:3000/services/news-api/preview.html | `services/news-api/preview.html` — 카드 목록 UI (인라인 스타일) |
+
+### 크레용스쿨 대시보드 (React — 별도 실행)
+
+```bash
+cd services/dashboard
+npm install
+npm run dev
+```
+
+| 수정 파일 | 설명 |
+|-----------|------|
+| `services/dashboard/src/App.jsx` | 앱 레이아웃 |
+| `services/dashboard/src/index.css` | Tailwind·전역 스타일 |
+| `services/dashboard/src/components/` | 리포트·스펙 컴포넌트 |
+| `services/dashboard/public/reports/*.html` | 정적 리포트 HTML |
+
+### 입찰 공고 / 마케팅 사이트 (PHP)
+
+| 폴더 | 수정 파일 |
+|------|-----------|
+| `services/bidding/` | `index.php`, `search.php` — HTML/CSS 마크업 위주 |
+| `services/website/` | `index.php`, `contact.php` 등 + `static/css/main.css` |
+
+> PHP 파일은 `npm start`로 정적 미리보기만 가능합니다. PHP 렌더링은 별도 서버가 필요합니다.
+
+---
+
+## 미리보기 URL 한눈에 보기
+
+| 화면 | URL |
+|------|-----|
+| **시작 페이지 (목록)** | http://localhost:3000/preview.html |
+| 이용 가이드 | http://localhost:3000/services/workportal/guide.html |
+| 통합 포탈 | http://localhost:3000/services/workportal/index.html |
+| 뉴스레터 | http://localhost:3000/services/newsletter/web/index.html |
+| PPT | http://localhost:3000/services/ppt/templates/index.html |
+| E-Book | http://localhost:3000/services/ebook/index.html |
+| 회의록 | http://localhost:3000/services/meeting/ui-page.html |
+| 뉴스 수집 | http://localhost:3000/services/news-api/preview.html |
 
 ## 협업 범위 (가능)
 

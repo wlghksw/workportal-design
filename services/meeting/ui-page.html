@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>회의록 자동화 — 에듀올랩</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{{ASSET_BASE}}/theme-light.css?v=8">
-<link rel="stylesheet" href="../../shared/portal-header.css?v=1">
+<link rel="stylesheet" href="theme-light.css?v=8">
+<link rel="stylesheet" href="/shared/portal-header.css?v=1">
 </head>
 <body>
 <header class="site-header site-header--service">
   <div class="site-header__row">
     <a class="brand" href="https://portal.platformers.kr/">
-      <img class="brand__logo" src="../../shared/eduallab-logo.png" alt="에듀올랩" />
+      <img class="brand__logo" src="/shared/eduallab-logo.png" alt="에듀올랩" />
       <span class="brand__sub">회의록 자동화</span>
     </a>
     <div class="site-header__spacer"></div>
@@ -23,7 +23,7 @@
     </div>
   </div>
 </header>
-<script src="../../shared/portal-header.js?v=1" defer></script>
+<script src="/shared/portal-header.js?v=1" defer></script>
 <div class="app">
   <div class="main">
     <div class="sidebar">
@@ -234,8 +234,8 @@
   </div>
 </div>
 <script>
-const __MP_BASE={{MP_BASE}};
-const __MP_MAX_UPLOAD_MB={{MAX_UPLOAD_MB}};
+const __MP_BASE="";
+const __MP_MAX_UPLOAD_MB=1024;
 const __MP_UPLOAD_CAP_MB=(typeof __MP_MAX_UPLOAD_MB==='number'&&__MP_MAX_UPLOAD_MB>0)?__MP_MAX_UPLOAD_MB:1024;
 
 async function apiFetch(url, opts){
