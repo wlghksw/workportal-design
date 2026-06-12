@@ -1,5 +1,6 @@
 (function () {
   const $ = (id) => document.getElementById(id);
+  const API_BASE = (window.API_BASE_URL || "http://localhost:8080").replace(/\/$/, "");
 
   const urlsEl = $("urls");
   const featuredEl = $("featured");
@@ -139,7 +140,7 @@
 
   async function loadMailStatus() {
     try {
-      const res = await fetch("/api/mail/status" + mailStatusQuery());
+      const res = await fetch(API_BASE + "/api/mail/status" + mailStatusQuery());
       const data = await res.json();
       mailSender.textContent = data.sender;
       mailRecipientCount.textContent = (data.recipient_count ?? 0) + "명";
@@ -191,7 +192,7 @@
   }
 
   async function loadIssueDefault() {
-    const res = await fetch("/api/issue-default");
+    const res = await fetch(API_BASE + "/api/issue-default");
     const data = await res.json();
     issueYearEl.value = data.issue_year;
     issueMonthEl.value = data.issue_month;
@@ -203,7 +204,7 @@
       issue_year: String(year),
       issue_month: String(month),
     });
-    const res = await fetch("/api/used-urls?" + q);
+    const res = await fetch(API_BASE + "/api/used-urls?" + q);
     const data = await res.json();
     usedCount.textContent = data.count + "건";
     usedUrls.innerHTML = "";
@@ -250,7 +251,7 @@
     };
 
     try {
-      const res = await fetch("/api/generate", {
+      const res = await fetch(API_BASE + "/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -352,7 +353,7 @@
       return;
     }
 
-    const statusRes = await fetch("/api/mail/status");
+    const statusRes = await fetch(API_BASE + "/api/mail/status");
     const status = await statusRes.json();
     const year = parseInt(issueYearEl.value, 10);
     const month = parseInt(issueMonthEl.value, 10);
@@ -393,7 +394,7 @@
     btnSend.innerHTML = '<span class="spinner"></span> 발송 중…';
 
     try {
-      const res = await fetch("/api/mail/send", {
+      const res = await fetch(API_BASE + "/api/mail/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -965,7 +966,7 @@
 
   async function loadRecipientsEditor() {
     try {
-      const res = await fetch("/api/mail/recipients/manage");
+      const res = await fetch(API_BASE + "/api/mail/recipients/manage");
       const data = await res.json();
       recipientRows = (data.recipients || []).map((r) => ({
         email: r.email || "",
@@ -1036,7 +1037,7 @@
       btn.disabled = true;
     });
     try {
-      const res = await fetch("/api/mail/recipients/manage", {
+      const res = await fetch(API_BASE + "/api/mail/recipients/manage", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ recipients: rows }),
@@ -1100,7 +1101,7 @@
     });
     btnAddRecipient.disabled = true;
     try {
-      const res = await fetch("/api/mail/recipients/manage", {
+      const res = await fetch(API_BASE + "/api/mail/recipients/manage", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ recipients: rows }),
@@ -1142,7 +1143,7 @@
     fd.append("file", file);
     fd.append("merge", recipientCsvMerge.checked ? "true" : "false");
     try {
-      const res = await fetch("/api/mail/recipients/import-csv", {
+      const res = await fetch(API_BASE + "/api/mail/recipients/import-csv", {
         method: "POST",
         body: fd,
       });

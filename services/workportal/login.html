@@ -61,12 +61,14 @@
 
       const form = document.getElementById("loginForm");
       const err = document.getElementById("loginError");
+      const API_BASE = (window.API_BASE_URL || "http://localhost:8080").replace(/\/$/, "");
+
       form.addEventListener("submit", async (ev) => {
         ev.preventDefault();
         err.classList.remove("is-show");
         const data = Object.fromEntries(new FormData(form).entries());
         try {
-          const r = await fetch("/api/auth/login", {
+          const r = await fetch(API_BASE + "/api/auth/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data),

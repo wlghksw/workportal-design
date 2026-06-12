@@ -33,9 +33,10 @@
     fairytale: "e-book",
     portal: "포탈",
   };
+  const API_BASE = (window.API_BASE_URL || "http://localhost:8080").replace(/\/$/, "");
 
   const apiFetch = (url, opts = {}) =>
-    fetch(url, { credentials: "include", ...opts });
+    fetch(API_BASE + url, { credentials: "include", ...opts });
 
   function fmtDateTime(iso) {
     if (!iso) return "—";
