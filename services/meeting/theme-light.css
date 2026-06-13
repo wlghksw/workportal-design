@@ -1,32 +1,24 @@
+@import url("/shared/tokens.css");
+
 /* WorkPortal · 입찰 공고와 동일 토큰 (입찰 화면은 미수정) */
 :root {
-  --bg: #f4f6fb;
-  --panel: #ffffff;
-  --panel2: #f8fafc;
-  --panel3: #f2f5fb;
-  --border: #e2e8f0;
-  --border2: #e2e8f0;
-  --text: #0f172a;
-  --muted: #64748b;
-  --muted2: #94a3b8;
-  --primary: #2563eb;
-  --primary-hover: #1d4ed8;
-  --primary-soft: #eff6ff;
-  --accent: #2563eb;
-  --accent-hover: #1d4ed8;
-  --accent-soft: #eff6ff;
+  --bg: var(--background);
+  --panel: var(--surface);
+  --panel2: var(--surface-subtle);
+  --panel3: var(--background-subtle);
+  --border2: var(--border);
+  --muted: var(--text-sub);
+  --muted2: var(--text-muted);
+  --accent: var(--primary);
+  --accent-hover: var(--primary-hover);
+  --accent-soft: var(--primary-soft);
   --accent-glow: rgba(37, 99, 235, 0.12);
-  --meet: #059669;
-  --meet-soft: #ecfdf5;
-  --green: #16a34a;
-  --red: #dc2626;
-  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
-  --shadow-md: 0 12px 34px rgba(15, 23, 42, 0.08);
-  --shadow-lg: 0 18px 48px rgba(15, 23, 42, 0.12);
+  --meet: var(--success);
+  --meet-soft: var(--success-soft);
+  --green: var(--success);
+  --red: var(--danger);
   --radius: 14px;
   --radius-sm: 12px;
-  --radius-lg: 18px;
-  --layout-max: 1180px;
 }
 
 * {
@@ -36,12 +28,12 @@
 }
 
 body {
-  font-family: "Noto Sans KR", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-family-base);
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
   padding: 0;
-  font-size: 14px;
+  font-size: var(--font-body);
   line-height: 1.5;
   text-rendering: optimizeLegibility;
 }

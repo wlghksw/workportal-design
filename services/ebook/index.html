@@ -11,25 +11,19 @@
     href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Outfit:wght@600;800&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="/shared/portal-header.css?v=1" />
+  <link rel="stylesheet" href="/shared/tokens.css" />
   <style>
     :root {
-      --bg: #f4f6fb;
-      --surface: #ffffff;
-      --surface2: #f8fafc;
-      --border: #e2e8f0;
-      --text: #0f172a;
-      --text-muted: #64748b;
-      --text-soft: #94a3b8;
-      --primary: #2563eb;
-      --primary-hover: #1d4ed8;
-      --primary-soft: #eff6ff;
-      --accent: #3b82f6;
-      --warn: #d97706;
+      /* Ebook legacy aliases */
+      --bg: var(--background);
+      --surface2: var(--surface-subtle);
+      --text-soft: var(--text-muted);
+      --accent: var(--primary);
+      --warn: var(--warning);
+
+      /* Maintain specific dimensions for ebook template precision */
       --radius-md: 10px;
       --radius-lg: 14px;
-      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
-      --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.06);
-      --layout-max: 1180px;
     }
 
     * {
@@ -41,7 +35,7 @@
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: "Noto Sans KR", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      font-family: var(--font-family-base);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
