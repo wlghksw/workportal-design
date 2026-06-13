@@ -1,0 +1,5 @@
+/* Base reset for Next.js app */
+body {
+  margin: 0;
+  padding: 0;
+}

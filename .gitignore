@@ -11,3 +11,4 @@ __pycache__/
 web/data/
 guide-assets/_*
 services/**/data/
+.next/
