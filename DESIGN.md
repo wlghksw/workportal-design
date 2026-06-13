@@ -398,8 +398,8 @@ Header
 Layout
 ```
 
-현재 우선 정의하는 컴포넌트는 Button과 Card다.  
-Input, Badge, Header, Layout은 동일한 토큰 기준으로 확장한다.
+현재 모든 주요 공통 컴포넌트가 `shared/*.css` 파일로 정의되어 있으며, React + TypeScript 컴포넌트로 구현되어 있다.
+Input, Badge, Header, Layout은 동일한 토큰 기준으로 확장되었다.
 
 ---
 
@@ -757,15 +757,15 @@ danger
 → class="btn btn--danger-soft"
 ```
 
-#### React Component Conversion
+#### React Component Example
 
-HTML/CSS 버튼은 이후 React 컴포넌트로 변환한다.
+React 컴포넌트에서는 다음처럼 사용할 수 있다.
 
 ```tsx
 <Button variant="primary">저장</Button>
 <Button variant="secondary">취소</Button>
 <Button variant="danger">삭제</Button>
-<Button variant="dangerSoft" size="icon">×</Button>
+<Button variant="dangerSoft" size="sm">삭제</Button>
 ```
 
 ---
@@ -1039,11 +1039,14 @@ Input 상태는 다음을 고려한다.
 React 컴포넌트 전환 예시:
 
 ```tsx
-<Input
-  label="이메일"
-  placeholder="example@email.com"
-  errorMessage={emailError}
-/>
+<FormField label="이메일" htmlFor="email" errorMessage={emailError}>
+  <Input
+    id="email"
+    type="email"
+    placeholder="example@email.com"
+    error={Boolean(emailError)}
+  />
+</FormField>
 ```
 
 ---
@@ -1487,26 +1490,24 @@ DESIGN.md를 기준으로 기존 HTML 서비스를 Next.js App Router 구조로 
 디자인 시스템 적용과 마이그레이션은 다음 순서로 진행한다.
 
 ```txt
-1. 공통 디자인 토큰 정리
-   - colors
-   - spacing
-   - typography
-   - radius
-   - shadow
+1. 공통 디자인 토큰 정리 (완료)
+   - colors, spacing, typography, radius, shadow
 
-2. 공통 UI 컴포넌트 정의
-   - Button
-   - Card
-   - Input
-   - Badge
-   - Header
-   - Layout
+2. 기존 HTML 서비스에 공통 CSS 토큰 연결 (완료)
+   - WorkPortal, Newsletter, Meeting, Dashboard, Ebook, PPT
 
-3. React + TypeScript 컴포넌트로 변환
+3. 공통 UI 컴포넌트 스타일 정의 (완료)
+   - Button, Card, Input, Badge, Header, Layout
 
-4. Next.js App Router 기반으로 페이지 구조 재설계
+4. Next.js + TypeScript 프로젝트 초기 구성 (완료)
+   - App Router, 프로젝트 scripts 및 기본 설정 정리
 
-5. 기존 HTML 서비스들을 하나씩 이전
+5. React + TypeScript 공통 UI 컴포넌트 생성 (완료)
+   - shared CSS 기반의 재사용 가능한 컴포넌트 라이브러리 구축
+
+6. WorkPortal 홈 화면부터 Next.js로 이전 (예정)
+
+7. 각 서비스별 점진적 마이그레이션 (예정)
 ```
 
 ### 10.1 Shared File Structure
@@ -1516,20 +1517,26 @@ shared/
   colors.css
   spacing.css
   typography.css
-  cards.css
   buttons.css
-  tokens.css
+  cards.css
+  inputs.css
+  badges.css
+  layout.css
   portal-header.css
+  tokens.css
 ```
 
 `tokens.css`는 공통 토큰과 공통 컴포넌트 스타일을 모아서 import한다.
 
 ```css
-@import url("/shared/colors.css");
-@import url("/shared/spacing.css");
-@import url("/shared/typography.css");
-@import url("/shared/cards.css");
-@import url("/shared/buttons.css");
+@import url("./colors.css");
+@import url("./spacing.css");
+@import url("./typography.css");
+@import url("./buttons.css");
+@import url("./cards.css");
+@import url("./inputs.css");
+@import url("./badges.css");
+@import url("./layout.css");
 ```
 
 각 서비스 CSS에서는 가능하면 `tokens.css`만 import한다.
@@ -1635,52 +1642,51 @@ Dashboard는 Tailwind 기반이므로 Tailwind theme token과 CSS variable을 �
 
 ## 11. React + TypeScript Component Direction
 
-HTML/CSS로 정의한 공통 UI는 이후 React 컴포넌트로 이전한다.
+HTML/CSS로 정의한 공통 UI를 React + TypeScript 컴포넌트로 구현했다.
 
-예상 구조:
+실제 구조:
 
 ```txt
-src/
-  components/
-    ui/
-      Button/
-        Button.tsx
-        Button.module.css
-        Button.types.ts
-        index.ts
+components/
+  index.ts
 
-      Card/
-        Card.tsx
-        Card.module.css
-        Card.types.ts
-        index.ts
+  ui/
+    index.ts
+    utils.ts
+    Button.tsx
+    Card.tsx
+    Input.tsx
+    Textarea.tsx
+    Select.tsx
+    FormField.tsx
+    Badge.tsx
 
-      Input/
-        Input.tsx
-        Input.module.css
-        Input.types.ts
-        index.ts
-
-      Badge/
-        Badge.tsx
-        Badge.module.css
-        Badge.types.ts
-        index.ts
+  layout/
+    index.ts
+    PortalHeader.tsx
+    Page.tsx
+    Section.tsx
+    Stack.tsx
+    Cluster.tsx
+    Grid.tsx
 ```
 
 ### 11.1 Button Type Example
 
 ```tsx
-type ButtonVariant = "primary" | "secondary" | "danger" | "dangerSoft";
+type ButtonVariant =
+  | "primary"
+  | "secondary"
+  | "ghost"
+  | "danger"
+  | "dangerSoft";
 
-type ButtonSize = "sm" | "md" | "lg" | "icon";
+type ButtonSize = "sm" | "md" | "lg";
 
-interface ButtonProps {
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
   size?: ButtonSize;
-  block?: boolean;
-  disabled?: boolean;
-  children: React.ReactNode;
+  fullWidth?: boolean;
 }
 ```
 
@@ -1691,15 +1697,12 @@ type CardVariant =
   | "default"
   | "clickable"
   | "elevated"
-  | "container"
   | "soft"
   | "danger";
 
-interface CardProps {
+interface CardProps extends React.HTMLAttributes<HTMLElement> {
   variant?: CardVariant;
-  compact?: boolean;
-  spacious?: boolean;
-  children: React.ReactNode;
+  spacing?: "compact" | "default" | "spacious";
 }
 ```
 
@@ -1758,57 +1761,57 @@ export default function RootLayout({
 
 ## 13. Completion Criteria
 
-디자인 시스템 1차 정리 완료 기준은 다음과 같다.
+디자인 시스템 마이그레이션 진행 상태는 다음과 같다.
 
 ```txt
-1. DESIGN.md 작성 완료
-2. shared/colors.css 작성 완료
-3. shared/spacing.css 작성 완료
-4. shared/typography.css 작성 완료
-5. shared/cards.css 작성 완료
-6. shared/buttons.css 작성 완료
-7. shared/tokens.css 작성 완료
-8. shared/portal-header.css가 tokens.css를 사용하도록 정리
-9. WorkPortal에 공통 토큰 1차 적용
-10. Newsletter, Meeting, Dashboard에 alias 기반 연결
+[완료] 1. DESIGN.md 작성 및 마이그레이션 전략 수립
+[완료] 2. 기초 디자인 토큰 생성 (colors, spacing, typography)
+[완료] 3. 기존 모든 서비스(6개)에 공통 토큰 1차 연결 및 검증
+[완료] 4. 공통 UI 컴포넌트 스타일 명세 확립 (buttons, cards, inputs, badges, layout)
+[완료] 5. Next.js 15 + TypeScript 5 마이그레이션 플랫폼 초기 구축
+[완료] 6. React + TypeScript 기반 공통 UI 컴포넌트 라이브러리 구현
+[예정] 7. WorkPortal 홈 화면 Next.js App Router 이전 및 컴포넌트 적용
+[예정] 8. 개별 서비스별 점진적 React 전환 및 도메인 로직 마이그레이션
 ```
 
 ---
 
 ## 14. Checklist
 
-### Design Tokens
+### Design Tokens & Base
 
-- [ ] `shared/colors.css` 생성
-- [ ] `shared/spacing.css` 생성
-- [ ] `shared/typography.css` 생성
-- [ ] radius token 정리
-- [ ] shadow token 정리
-- [ ] legacy alias 추가
+- [x] `shared/colors.css` 생성 및 시맨틱 정의
+- [x] `shared/spacing.css` 생성 (4px grid 시스템)
+- [x] `shared/typography.css` 생성 및 유틸리티 클래스
+- [x] `shared/tokens.css` 통합 엔트리 포인트 구축
+- [x] 기존 서비스별 Legacy Alias 매핑 및 UI 안정성 검증
 
-### Shared Components
+### Shared Component Styles (CSS)
 
-- [ ] `shared/buttons.css` 생성
-- [ ] `shared/cards.css` 생성
-- [ ] Input 기준 정리
-- [ ] Badge 기준 정리
-- [ ] Header 기준 정리
-- [ ] Layout 기준 정리
+- [x] `shared/buttons.css` (Base + Variants + Sizes)
+- [x] `shared/cards.css` (Header/Body/Footer 구조화)
+- [x] `shared/inputs.css` (FormField 래퍼 및 상태별 스타일)
+- [x] `shared/badges.css` (Solid/Soft 테마 구분)
+- [x] `shared/layout.css` (Page/Section/Responsive Grid)
+- [x] `shared/portal-header.css` 리팩토링 및 시맨틱화
 
-### Service Application
+### Next.js Platform Setup
 
-- [ ] WorkPortal CSS에 공통 토큰 적용
-- [ ] Newsletter CSS에 공통 토큰 적용
-- [ ] Meeting CSS에 공통 토큰 적용
-- [ ] Dashboard Tailwind theme에 공통 토큰 연결
-- [ ] Ebook/PPT HTML 템플릿에 공통 토큰 연결
+- [x] Next.js App Router 구조 초기화
+- [x] TypeScript Strict Mode 및 절대 경로(@/\*) 설정
+- [x] ESLint CLI 기반 정적 분석 환경 구축 (.eslintignore 포함)
+- [x] `pnpm` 기반 패키지 매니저 정렬 및 락파일 관리
+- [x] 글로벌 CSS 통합 및 디자인 토큰 연결 기반 마련
 
-### Migration
+### React UI Components (Implementation)
 
-- [ ] React 컴포넌트 구조 설계
-- [ ] TypeScript props 타입 설계
-- [ ] Next.js App Router 페이지 구조 설계
-- [ ] 기존 HTML 서비스별 이전 순서 정리
+- [x] 컴포넌트 디렉토리 및 Export 구조 설계 (`components/ui`, `layout`)
+- [x] 클래스명 조합 유틸리티 `cx` 구현 (Type-safe)
+- [x] `Button` 컴포넌트 (HTMLAttributes 확장 및 Props 매핑)
+- [x] `Card` 컴포넌트 (Dot notation: Header, Body 등 지원)
+- [x] `Input`, `Textarea`, `Select`, `FormField` 컴포넌트
+- [x] `Badge` 컴포넌트 (Solid/Soft 변체 대응)
+- [x] `PortalHeader` 및 레이아웃 관련 컴포넌트 (`Page`, `Section`, `Stack` 등)
 
 ---
 
@@ -1823,6 +1826,6 @@ export default function RootLayout({
 6. spacing은 4px grid를 기준으로 한다.
 7. 버튼은 class="btn ..." 형태로 작성한다.
 8. 카드는 class="card ..." 형태로 작성한다.
-9. 이후 React + TypeScript 컴포넌트로 변환한다.
+9. 신규 UI와 이전 대상 UI는 React + TypeScript 컴포넌트 기준으로 작성한다.
 10. 최종적으로 Next.js App Router 기반 구조로 이전한다.
 ```
