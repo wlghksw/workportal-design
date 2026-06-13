@@ -1,0 +1,190 @@
+/* --- Button Base --- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+
+  min-height: 42px;
+  padding: var(--space-3) var(--space-4);
+
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+
+  font-family: inherit;
+  font-size: var(--font-body);
+  font-weight: var(--font-bold);
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  text-decoration: none;
+
+  cursor: pointer;
+  user-select: none;
+
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.1s ease;
+}
+
+.btn:hover:not(:disabled):not([aria-disabled="true"]) {
+  transform: translateY(-1px);
+}
+
+.btn:active:not(:disabled):not([aria-disabled="true"]) {
+  transform: translateY(0);
+}
+
+.btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+.btn:disabled,
+.btn[aria-disabled="true"] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* --- Button Variants --- */
+
+/* Primary */
+.btn--primary {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--text-inverse);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn--primary:hover:not(:disabled):not([aria-disabled="true"]) {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+  box-shadow: var(--shadow-md);
+}
+
+.btn--primary:active:not(:disabled):not([aria-disabled="true"]) {
+  background: var(--primary-active);
+  border-color: var(--primary-active);
+}
+
+/* Secondary */
+.btn--secondary {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--text-sub);
+}
+
+.btn--secondary:hover:not(:disabled):not([aria-disabled="true"]) {
+  background: var(--surface-subtle);
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
+.btn--secondary:active:not(:disabled):not([aria-disabled="true"]) {
+  background: var(--background-subtle);
+}
+
+/* Danger */
+.btn--danger {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: var(--text-inverse);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn--danger:hover:not(:disabled):not([aria-disabled="true"]) {
+  background: var(--danger-hover);
+  border-color: var(--danger-hover);
+  box-shadow: var(--shadow-md);
+}
+
+.btn--danger:active:not(:disabled):not([aria-disabled="true"]) {
+  background: var(--danger-hover);
+  border-color: var(--danger-hover);
+}
+
+/* Danger Soft */
+.btn--danger-soft {
+  background: var(--danger-soft);
+  border-color: var(--danger-soft);
+  color: var(--danger);
+}
+
+.btn--danger-soft:hover:not(:disabled):not([aria-disabled="true"]) {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: var(--text-inverse);
+}
+
+/* --- Button Sizes --- */
+.btn--sm {
+  min-height: 34px;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-body-sm);
+  border-radius: var(--radius-sm);
+}
+
+.btn--md {
+  min-height: 42px;
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-body);
+}
+
+.btn--lg {
+  min-height: 48px;
+  padding: var(--space-4) var(--space-6);
+  font-size: var(--font-subtitle);
+}
+
+.btn--block {
+  width: 100%;
+}
+
+.btn--icon {
+  width: 36px;
+  height: 36px;
+  min-height: 36px;
+  padding: 0;
+  border-radius: var(--radius-sm);
+}
+
+.btn svg {
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+}
+
+/* --- Button Legacy Alias --- */
+.btn-primary {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--text-inverse);
+}
+
+.btn-primary:hover:not(:disabled):not([aria-disabled="true"]) {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+.btn-ghost {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--text-sub);
+}
+
+.btn-ghost:hover:not(:disabled):not([aria-disabled="true"]) {
+  background: var(--surface-subtle);
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
+.btn-send {
+  background: var(--success);
+  border-color: var(--success);
+  color: var(--text-inverse);
+}
