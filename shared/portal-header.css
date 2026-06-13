@@ -1,7 +1,12 @@
 @import url("./tokens.css");
 
-/* 에듀올랩 통합 업무 포탈 — 공통 서비스 헤더 (메인 index.html site-header__row 와 동일) */
+/*
+  WorkPortal 공통 서비스 헤더
+  - DESIGN.md 기준 클래스: .portal-header, .portal-header__inner 등
+  - 레거시 호환 클래스: .site-header, .site-header__row 등
+*/
 
+.portal-header,
 .site-header {
   background: var(--ph-surface);
   border-bottom: 1px solid var(--ph-border);
@@ -11,6 +16,7 @@
   font-family: var(--font-family-base);
 }
 
+.portal-header__inner,
 .site-header__row {
   max-width: var(--ph-layout-max);
   margin: 0 auto;
@@ -25,10 +31,11 @@
   min-width: var(--space-3);
 }
 
+.portal-header__actions,
 .site-header__actions {
   display: flex;
   align-items: center;
-  gap: 10px; /* 화면 영향 가능성이 있어 10px 유지 */
+  gap: var(--space-2);
   flex-shrink: 0;
   margin-left: auto;
 }
@@ -38,6 +45,7 @@
   justify-content: flex-end;
 }
 
+.portal-header__brand,
 .site-header .brand {
   display: inline-flex;
   align-items: center;
@@ -59,7 +67,7 @@
 }
 
 .site-header .brand > .brand__sub {
-  font-size: 17px; /* 화면 영향 가능성이 있어 17px 유지 */
+  font-size: var(--font-title-sm);
   font-weight: var(--font-bold);
   color: var(--ph-text);
   letter-spacing: var(--letter-title);
@@ -68,8 +76,8 @@
 }
 
 .site-header .topbar__user {
-  padding: 6px 12px; /* 화면 영향 가능성이 있어 6px 유지 */
-  border-radius: 999px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-xl);
   background: var(--ph-surface2);
   border: 1px solid var(--ph-border);
   color: var(--ph-text);
@@ -78,14 +86,17 @@
 }
 
 .site-header .topbar__btn {
-  padding: var(--space-2) 14px; /* 화면 영향 가능성이 있어 14px 유지 */
+  padding: var(--space-2) var(--space-4);
   border-radius: var(--ph-radius-sm);
   background: var(--ph-surface);
   border: 1px solid var(--ph-border);
   color: var(--ph-text);
   font-size: var(--font-body-sm);
   font-weight: var(--font-medium);
-  transition: all 0.15s;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
   cursor: pointer;
   font-family: inherit;
   text-decoration: none;
@@ -110,6 +121,7 @@
 }
 
 /* 포털과 동일한 하위 네비 (뉴스레터 등) */
+.portal-header__nav,
 .site-header .site-nav {
   max-width: var(--ph-layout-max);
   margin: 0 auto;
@@ -122,14 +134,14 @@
 
 .site-header .site-nav__item {
   position: relative;
-  padding: var(--space-3) 18px; /* 화면 영향 가능성이 있어 18px 유지 */
+  padding: var(--space-3) var(--space-5);
   font-size: var(--font-body);
   font-weight: var(--font-medium);
   color: var(--ph-text-muted);
   border: 0;
   background: none;
   cursor: pointer;
-  transition: color 0.15s;
+  transition: color 0.15s ease;
   text-decoration: none;
   font-family: inherit;
 }
@@ -158,11 +170,11 @@
 .site-header__meta {
   max-width: var(--ph-layout-max);
   margin: 0 auto;
-  padding: 0 var(--space-6) 10px; /* 화면 영향 가능성이 있어 10px 유지 */
+  padding: 0 var(--space-6) var(--space-2);
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 10px; /* 화면 영향 가능성이 있어 10px 유지 */
+  gap: var(--space-2);
   flex-wrap: wrap;
 }
 
@@ -174,10 +186,12 @@
   .site-header .brand > .brand__sub {
     font-size: var(--font-subtitle);
   }
+  .portal-header__inner,
   .site-header__row {
     flex-wrap: wrap;
-    padding: var(--space-3) var(--space-4) 10px;
+    padding: var(--space-3) var(--space-4) var(--space-2);
   }
+  .portal-header__actions,
   .site-header__actions {
     width: 100%;
     justify-content: flex-end;
