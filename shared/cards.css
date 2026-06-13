@@ -1,0 +1,143 @@
+:root {
+  --card-radius-sm: var(--radius-md);
+  --card-radius-md: var(--radius-lg);
+  --card-radius-lg: var(--radius-xl);
+
+  --card-border: 1px solid var(--border);
+  --card-border-hover: var(--border-strong);
+
+  --card-bg: var(--surface);
+  --card-bg-subtle: var(--surface-subtle);
+
+  --card-shadow-sm: var(--shadow-sm);
+  --card-shadow-md: var(--shadow-md);
+  --card-shadow-lg: var(--shadow-lg);
+
+  --card-padding-sm: var(--space-4);
+  --card-padding-md: var(--space-5);
+  --card-padding-lg: var(--space-6);
+}
+
+/* --- Card Base --- */
+.card {
+  background: var(--card-bg);
+  border: var(--card-border);
+  border-radius: var(--card-radius-md);
+  box-shadow: var(--card-shadow-sm);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Card Structure --- */
+.card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--card-padding-lg);
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(
+    180deg,
+    var(--surface-subtle) 0%,
+    var(--surface) 100%
+  );
+}
+
+.card__title {
+  margin: 0;
+  font-size: var(--font-title-sm);
+  font-weight: var(--font-extra-bold);
+  line-height: 1.35;
+  letter-spacing: var(--letter-card-title);
+  color: var(--text);
+}
+
+.card__description {
+  margin: var(--space-1) 0 0;
+  font-size: var(--font-body);
+  line-height: 1.55;
+  color: var(--text-sub);
+}
+
+.card__body {
+  padding: var(--card-padding-lg);
+  flex: 1;
+}
+
+.card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: var(--card-padding-md) var(--card-padding-lg);
+  border-top: 1px solid var(--border);
+  background: var(--surface-subtle);
+}
+
+/* --- Card Variants --- */
+.card--default {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.card--clickable {
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+
+.card--clickable:hover:not([aria-disabled="true"]) {
+  border-color: var(--card-border-hover);
+  box-shadow: var(--card-shadow-md);
+  transform: translateY(-1px);
+}
+
+.card--clickable[aria-disabled="true"] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: var(--card-shadow-sm);
+}
+
+.card--clickable:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.card--elevated {
+  box-shadow: var(--card-shadow-md);
+}
+
+.card--container {
+  border-radius: var(--card-radius-lg);
+  box-shadow: var(--card-shadow-lg);
+}
+
+.card--soft {
+  background: var(--card-bg-subtle);
+  border-color: var(--border);
+  box-shadow: none;
+}
+
+.card--danger {
+  background: var(--danger-soft);
+  border-color: var(--danger);
+  box-shadow: none;
+}
+
+/* --- Card Size Modifiers --- */
+.card--compact .card__header,
+.card--compact .card__body,
+.card--compact .card__footer {
+  padding: var(--card-padding-sm);
+}
+
+.card--spacious .card__header,
+.card--spacious .card__body,
+.card--spacious .card__footer {
+  padding: var(--card-padding-lg);
+}
