@@ -1,23 +1,29 @@
+@import url("/shared/tokens.css");
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #2563eb;
-  --color-primary-hover: #1d4ed8;
-  --color-primary-soft: #eff6ff;
-  --color-secondary: #1d4ed8;
-  --color-accent: #059669;
-  --color-background: #f4f6fb;
-  --color-surface: #ffffff;
-  --color-surface2: #f8fafc;
-  --color-text-main: #0f172a;
-  --color-text-sub: #64748b;
-  --color-text-soft: #94a3b8;
-  --color-border: #e2e8f0;
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-soft: var(--primary-soft);
 
-  --font-sans: "Noto Sans KR", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --color-secondary: var(--secondary);
+  --color-accent: var(--success);
 
-  --shadow-premium: 0 8px 24px rgba(15, 23, 42, 0.06);
-  --radius-portal: 14px;
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface2: var(--surface-subtle);
+
+  --color-text-main: var(--text);
+  --color-text-sub: var(--text-sub);
+  --color-text-soft: var(--text-muted);
+
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+
+  --font-sans: var(--font-family-base);
+
+  --shadow-premium: var(--shadow-md);
+  --radius-portal: var(--radius-lg);
 }
 
 @layer base {
