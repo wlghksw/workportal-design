@@ -1,0 +1,131 @@
+:root {
+  --input-padding-y: var(--space-3);
+  --input-padding-x: var(--space-4);
+  --input-radius: var(--radius-md);
+  --input-border: 1px solid var(--border);
+  --input-border-focus: var(--primary);
+  --input-bg: var(--surface);
+  --input-bg-disabled: var(--background-subtle);
+  --input-text: var(--text);
+  --input-placeholder: var(--text-muted);
+}
+
+/* --- Field Wrapper --- */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.field__label {
+  font-size: var(--font-body);
+  font-weight: var(--font-bold);
+  color: var(--text-sub);
+  line-height: 1.4;
+}
+
+.field__help {
+  font-size: var(--font-caption);
+  color: var(--text-muted);
+  line-height: var(--line-caption);
+}
+
+.field__error {
+  display: none;
+  font-size: var(--font-caption);
+  color: var(--danger);
+  line-height: var(--line-caption);
+}
+
+.field--error .field__error {
+  display: block;
+}
+
+.field--error .field__label {
+  color: var(--danger);
+}
+
+/* --- Input Base --- */
+.input,
+.textarea,
+.select {
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--input-padding-y) var(--input-padding-x);
+  
+  background-color: var(--input-bg);
+  border: var(--input-border);
+  border-radius: var(--input-radius);
+  
+  color: var(--input-text);
+  font-family: inherit;
+  font-size: var(--font-body);
+  line-height: var(--line-body);
+  
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--input-placeholder);
+}
+
+/* --- States --- */
+.input:hover:not(:disabled):not([readonly]):not([aria-disabled="true"]),
+.textarea:hover:not(:disabled):not([readonly]):not([aria-disabled="true"]),
+.select:hover:not(:disabled):not([aria-disabled="true"]) {
+  border-color: var(--border-strong);
+}
+
+.input:focus-visible:not([aria-disabled="true"]),
+.textarea:focus-visible:not([aria-disabled="true"]),
+.select:focus-visible:not([aria-disabled="true"]) {
+  border-color: var(--input-border-focus);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+.input:disabled,
+.textarea:disabled,
+.select:disabled,
+.input[aria-disabled="true"],
+.textarea[aria-disabled="true"],
+.select[aria-disabled="true"] {
+  background-color: var(--input-bg-disabled);
+  color: var(--text-disabled);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.input[readonly],
+.textarea[readonly] {
+  background-color: var(--background-subtle);
+  cursor: default;
+}
+
+/* --- Error States --- */
+.input--error,
+.field--error .input,
+.field--error .textarea,
+.field--error .select {
+  border-color: var(--danger);
+}
+
+.input--error:focus-visible,
+.field--error .input:focus-visible,
+.field--error .textarea:focus-visible,
+.field--error .select:focus-visible {
+  box-shadow: 0 0 0 3px var(--danger-soft);
+}
+
+/* --- Textarea Specific --- */
+.textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* --- Select Specific --- */
+.select {
+  cursor: pointer;
+}
