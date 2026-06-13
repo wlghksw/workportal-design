@@ -5,3 +5,4 @@ export * from "./Input";
 export * from "./Textarea";
 export * from "./Select";
 export * from "./FormField";
+export * from "./Badge";
