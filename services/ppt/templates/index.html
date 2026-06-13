@@ -11,19 +11,17 @@
     href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Outfit:wght@600;800&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="/shared/portal-header.css?v=1" />
+  <link rel="stylesheet" href="/shared/tokens.css" />
   <style>
     :root {
-      --bg-slate: #F8FAFC;
-      --bg-card: #FFFFFF;
-      --primary: #2563EB; /* Cobalt Blue */
-      --secondary: #0F172A; /* Deep Navy */
-      --accent: #F59E0B; /* Amber Orange */
-      --text-black: #1E293B; /* Ink Black */
-      --text-gray: #475569;
-      --border: rgba(15, 23, 42, 0.08);
-      --radius-md: 12px;
-      --radius-lg: 16px;
-      --shadow-premium: 0 10px 25px -5px rgba(15, 23, 42, 0.04), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+      /* PPT legacy aliases */
+      --bg-slate: var(--background);
+      --bg-card: var(--surface);
+      --secondary: var(--text);
+      --accent: var(--warning);
+      --text-black: var(--text);
+      --text-gray: var(--text-sub);
+      --shadow-premium: var(--shadow-md);
     }
 
     * {
@@ -35,7 +33,7 @@
     body {
       background: var(--bg-slate);
       color: var(--text-black);
-      font-family: 'Noto Sans KR', sans-serif;
+      font-family: var(--font-family-base);
       height: 100vh;
       display: flex;
       flex-direction: column;
