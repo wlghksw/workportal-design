@@ -1,0 +1,112 @@
+:root {
+  /* Blue */
+  --blue-50: #e8f3ff;
+  --blue-100: #c9e2ff;
+  --blue-200: #90c2ff;
+  --blue-500: #3182f6;
+  --blue-600: #1b64da;
+  --blue-700: #1957c2;
+
+  /* Gray */
+  --gray-0: #ffffff;
+  --gray-50: #f9fafb;
+  --gray-100: #f2f4f6;
+  --gray-200: #e5e8eb;
+  --gray-300: #d1d6db;
+  --gray-400: #b0b8c1;
+  --gray-500: #8b95a1;
+  --gray-600: #6b7684;
+  --gray-700: #4e5968;
+  --gray-800: #333d4b;
+  --gray-900: #191f28;
+
+  /* Green */
+  --green-50: #e9f9ef;
+  --green-500: #00a661;
+  --green-600: #008f53;
+
+  /* Yellow / Orange */
+  --yellow-50: #fff7e0;
+  --yellow-500: #ffb020;
+  --yellow-600: #f59e0b;
+
+  /* Red */
+  --red-50: #fff0f0;
+  --red-500: #f04452;
+  --red-600: #d92d3e;
+
+  /* Brand */
+  --primary: var(--blue-500);
+  --primary-hover: var(--blue-600);
+  --primary-active: var(--blue-700);
+  --primary-soft: var(--blue-50);
+
+  /* Secondary */
+  --secondary: var(--gray-800);
+  --secondary-hover: var(--gray-900);
+  --secondary-soft: var(--gray-100);
+
+  /* Background */
+  --background: var(--gray-50);
+  --background-subtle: var(--gray-100);
+
+  /* Surface */
+  --surface: var(--gray-0);
+  --surface-subtle: var(--gray-50);
+  --surface-raised: var(--gray-0);
+
+  /* Border */
+  --border: var(--gray-200);
+  --border-strong: var(--gray-300);
+
+  /* Text */
+  --text: var(--gray-900);
+  --text-sub: var(--gray-700);
+  --text-muted: var(--gray-500);
+  --text-disabled: var(--gray-400);
+  --text-inverse: var(--gray-0);
+
+  /* Status */
+  --success: var(--green-500);
+  --success-hover: var(--green-600);
+  --success-soft: var(--green-50);
+
+  --warning: var(--yellow-500);
+  --warning-hover: var(--yellow-600);
+  --warning-soft: var(--yellow-50);
+
+  --danger: var(--red-500);
+  --danger-hover: var(--red-600);
+  --danger-soft: var(--red-50);
+
+  /* WorkPortal legacy */
+  --bg: var(--background);
+  --surface2: var(--surface-subtle);
+  --ok: var(--success);
+  --warn: var(--warning);
+  --bad: var(--danger);
+
+  /* Meeting legacy */
+  --panel: var(--surface);
+  --panel2: var(--surface-subtle);
+  --panel3: var(--background-subtle);
+  --muted: var(--text-sub);
+  --muted2: var(--text-muted);
+  --accent: var(--primary);
+  --accent-hover: var(--primary-hover);
+  --accent-soft: var(--primary-soft);
+  --green: var(--success);
+  --red: var(--danger);
+
+  /* Portal Header legacy */
+  --ph-bg: var(--background);
+  --ph-surface: var(--surface);
+  --ph-surface2: var(--surface-subtle);
+  --ph-border: var(--border);
+  --ph-text: var(--text);
+  --ph-text-muted: var(--text-sub);
+  --ph-text-soft: var(--text-muted);
+  --ph-primary: var(--primary);
+  --ph-primary-hover: var(--primary-hover);
+  --ph-primary-soft: var(--primary-soft);
+}
