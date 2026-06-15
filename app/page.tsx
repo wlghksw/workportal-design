@@ -24,7 +24,7 @@ import Link from "next/link";
 import { useState, useEffect, useMemo, useCallback } from "react";
 
 // --- Types & Constants ---
-type ViewType = "dashboard" | "guide" | "activity";
+type ViewType = "dashboard" | "guide";
 type BoardTabType = "recent" | "guide";
 
 const API_BASE = (process.env.NEXT_PUBLIC_API_BASE_URL || "").replace(
@@ -249,7 +249,7 @@ export default function WorkPortalHomePage() {
 
     // Handle hash on initial load
     const hash = window.location.hash.replace(/^#/, "");
-    if (hash === "guide" || hash === "activity") {
+    if (hash === "guide") {
       setActiveView(hash as ViewType);
     }
 
@@ -374,13 +374,9 @@ export default function WorkPortalHomePage() {
           >
             가이드
           </button>
-          <button
-            className={cx("site-nav__item tab", activeView === "activity" && "is-active")}
-            onClick={() => setActiveView("activity")}
-            type="button"
-          >
+          <Link href="/activity" className="site-nav__item tab">
             사용 이력
-          </button>
+          </Link>
         </nav>
       </PortalHeader>
 
@@ -434,15 +430,14 @@ export default function WorkPortalHomePage() {
                       이용 안내
                     </button>
                   </div>
-                  <button
-                    type="button"
+                  <Link
+                    href="/activity"
                     className="portal-board__more"
-                    onClick={() => setActiveView("activity")}
                     title="사용 이력 전체 보기"
                     aria-label="사용 이력 전체 보기"
                   >
                     +
-                  </button>
+                  </Link>
                 </Card.Header>
                 <Card.Body>
                   {activeBoardTab === "recent" ? (
@@ -457,10 +452,9 @@ export default function WorkPortalHomePage() {
                       ) : recentActivities.length > 0 ? (
                         recentActivities.map((row, idx) => (
                           <li key={idx}>
-                            <button
-                              type="button"
+                            <Link
+                              href="/activity"
                               className="portal-notice__link"
-                              onClick={() => setActiveView("activity")}
                               aria-label={`${row.label || row.action} 상세 보기`}
                             >
                               <span className="portal-notice__title">
@@ -474,7 +468,7 @@ export default function WorkPortalHomePage() {
                               <time className="portal-notice__date">
                                 {fmtDateTime(row.ts)}
                               </time>
-                            </button>
+                            </Link>
                           </li>
                         ))
                       ) : (
@@ -492,9 +486,8 @@ export default function WorkPortalHomePage() {
                       aria-labelledby="tab-guide"
                     >
                       <li>
-                        <button
-                          type="button"
-                          onClick={() => setActiveView("activity")}
+                        <Link
+                          href="/activity"
                           className="portal-notice__link"
                           aria-label="이용 안내: 로그인 후 서비스 이용"
                         >
@@ -506,7 +499,7 @@ export default function WorkPortalHomePage() {
                             비밀번호 없이 접속할 수 있습니다.
                           </span>
                           <time className="portal-notice__date">안내</time>
-                        </button>
+                        </Link>
                       </li>
                       <li>
                         <div className="portal-notice__link portal-notice__link--static">
@@ -661,18 +654,6 @@ export default function WorkPortalHomePage() {
               src="/services/workportal/guide.html?embed=1"
               loading="lazy"
             ></iframe>
-          </div>
-        )}
-
-        {activeView === "activity" && (
-          <div className="view">
-             <Card variant="default">
-               <CardBody>
-                 <div className="activity-empty">
-                    사용 이력 기능은 상세 페이지 마이그레이션 단계에서 구현될 예정입니다.
-                 </div>
-               </CardBody>
-             </Card>
           </div>
         )}
       </Page>
