@@ -1772,8 +1772,8 @@ export default function RootLayout({
 [완료] 5. Next.js 15 + TypeScript 5 마이그레이션 플랫폼 초기 구축
 [완료] 6. React + TypeScript 기반 공통 UI 컴포넌트 라이브러리 구현
 [완료] 7. WorkPortal 홈, 로그인 및 사용 이력 페이지 Next.js 이전 및 연동
-[예정] 8. 개별 서비스별 점진적 React 전환 및 도메인 로직 마이그레이션
-
+[완료] 8. 이용 가이드 페이지(/guide) 정적 콘텐츠 Next.js 라우트 이전 완수
+[예정] 9. 개별 서비스별 점진적 React 전환 및 도메인 로직 마이그레이션
 ```
 
 ---
