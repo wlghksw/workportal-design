@@ -121,7 +121,12 @@ export function ActivityList() {
     <Card variant="default">
       <Card.Header className="panel__head">
         <Card.Title>기능 사용 로그</Card.Title>
-        <Badge variant={isLoading ? "default" : "neutral"} soft size="sm">
+        <Badge
+          variant={isLoading ? "default" : "neutral"}
+          soft
+          size="sm"
+          aria-live="polite"
+        >
           {isLoading ? "확인 중…" : `총 ${total.toLocaleString()}건`}
         </Badge>
       </Card.Header>
@@ -129,13 +134,14 @@ export function ActivityList() {
       <Card.Body>
         <Stack spacing="md">
           {/* 필터 툴바 */}
-          <Cluster className="activity-toolbar">
+          <Cluster className="activity-toolbar" aria-label="활동 내역 필터">
             <FormField label="사용자" htmlFor="user-select">
               <Select
                 id="user-select"
                 value={filters.user}
                 onChange={(e) => handleFilterChange("user", e.target.value)}
                 disabled={isLoading}
+                aria-controls="activity-timeline"
               >
                 <option value="">전체</option>
                 {facets.users.map((u) => (
@@ -151,6 +157,7 @@ export function ActivityList() {
                 value={filters.service}
                 onChange={(e) => handleFilterChange("service", e.target.value)}
                 disabled={isLoading}
+                aria-controls="activity-timeline"
               >
                 <option value="">전체</option>
                 {facets.services.map((s) => (
@@ -165,26 +172,39 @@ export function ActivityList() {
               size="sm"
               onClick={() => loadActivity()}
               disabled={isLoading}
+              aria-label="데이터 새로고침"
             >
               ↻ 새로고침
             </Button>
           </Cluster>
 
           {/* 타임라인 목록 */}
-          <ul className="activity-timeline">
+          <ul
+            id="activity-timeline"
+            className="activity-timeline"
+            aria-live="polite"
+            aria-busy={isLoading}
+          >
             {isLoading ? (
               <li className="activity-empty">목록을 불러오는 중입니다.</li>
             ) : isError ? (
-              <li className="activity-empty">데이터를 불러오지 못했습니다.</li>
+              <li className="activity-empty" role="alert">
+                데이터를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.
+              </li>
             ) : items.length > 0 ? (
               items.map((row, idx) => {
                 const who = row.displayName || row.user || "알 수 없음";
-                const svc = SERVICE_LABEL[row.service] || row.serviceName || row.service;
+                const svc =
+                  SERVICE_LABEL[row.service] || row.serviceName || row.service;
                 return (
                   <li key={idx} className="activity-item">
                     <div className="activity-item__top">
                       <span className="activity-item__who">{who}</span>
-                      <time className="activity-item__time">
+                      <time
+                        className="activity-item__time"
+                        dateTime={row.ts}
+                        title={fmtDateTime(row.ts)}
+                      >
                         {fmtDateTime(row.ts)}
                       </time>
                     </div>
@@ -221,10 +241,11 @@ export function ActivityList() {
               size="sm"
               disabled={page <= 0 || isLoading}
               onClick={() => setPage((p) => p - 1)}
+              aria-label="이전 페이지"
             >
               이전
             </Button>
-            <span className="text-body-sm">
+            <span className="text-body-sm" aria-current="page">
               {page + 1} / {totalPages}
             </span>
             <Button
@@ -232,6 +253,7 @@ export function ActivityList() {
               size="sm"
               disabled={page >= totalPages - 1 || isLoading}
               onClick={() => setPage((p) => p + 1)}
+              aria-label="다음 페이지"
             >
               다음
             </Button>

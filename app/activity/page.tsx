@@ -39,17 +39,15 @@ export default function ActivityPage() {
 
       <Page>
         <Stack spacing="lg">
-          <Section>
-            <div className="page-header">
-              <h1 className="text-title-lg">사용 이력</h1>
-              <p className="text-subtitle">
-                워크포탈 내 주요 기능 사용 기록을 확인할 수 있습니다.
-              </p>
-            </div>
-          </Section>
+          <header className="page-header">
+            <h1 className="text-title-lg">사용 이력</h1>
+            <p className="text-subtitle">
+              워크포탈 내 주요 기능 사용 기록을 확인할 수 있습니다.
+            </p>
+          </header>
 
-          <Section>
-            <Suspense fallback={<div>목록 로딩 중...</div>}>
+          <Section title="상세 사용 로그">
+            <Suspense fallback={<div className="loading-placeholder">목록 로딩 중...</div>}>
               <ActivityList />
             </Suspense>
           </Section>
