@@ -4,26 +4,42 @@
 
 서버·DB·배포·API 로직은 제외하고, **화면(HTML/CSS/JS)과 디자인 자산**만 포함합니다.
 
-## 포함된 프로그램
+---
+## 프로젝트 실행 방식
 
-| 폴더 | 프로그램 | 미리보기 진입점 |
-|------|----------|----------------|
-| `services/workportal/` | 통합 업무 포탈 + 이용 가이드 | `guide.html`, `index.html` |
-| `services/ppt/` | AI PPT 제안서 메이커 | `templates/index.html`, `templates/editor.html` |
-| `services/ebook/` | AI E-Book 동화 | `index.html` |
-| `services/meeting/` | 회의록 자동화 | `ui-page.html` |
-| `services/newsletter/` | 교육 뉴스레터 | `web/index.html`, `template.html` |
-| `services/news-api/` | 뉴스 수집 목록 UI | `preview.html` |
-| `services/bidding/` | 입찰 공고 모니터링 | `index.php`, `search.php` |
-| `services/dashboard/` | 크레용스쿨 대시보드 (React) | `index.html` + `src/` |
-| `services/website/` | 플랫포머즈 마케팅 사이트 | `index.php` |
-| `shared/` | 공통 헤더·로고 | `portal-header.css` |
+현재 프로젝트는 **기존 정적 HTML 기반 서비스**와 **새로운 Next.js 플랫폼**이 공존하는 과도기 상태입니다. 목적에 맞는 명령어를 선택하세요.
+
+### 1. Next.js 플랫폼 (추천 - 개발 중인 새 플랫폼)
+
+마이그레이션이 진행 중인 React + TypeScript 기반의 현대적 플랫폼입니다.
+
+```bash
+pnpm install
+pnpm dev
+```
+- **URL**: [http://localhost:3000](http://localhost:3000)
+- **주요 기능**: 통합 업무 포탈(Home), 공통 React 컴포넌트 라이브러리
+- **API 연동**: `.env.local` 파일을 생성하고 `NEXT_PUBLIC_API_BASE_URL=http://localhost:8080` 설정을 추가하면 백엔드 기능을 활용할 수 있습니다. (예시는 `.env.example` 참고)
+
+### 2. 레거시 정적 미리보기 (기존 HTML/CSS 수정용)
+
+기존에 작성된 정적 HTML 파일들을 로컬 정적 서버에서 확인할 때 사용합니다.
+
+```bash
+pnpm install
+pnpm preview
+```
+- **URL**: [http://localhost:3000/preview.html](http://localhost:3000/preview.html)
+- **주요 기능**: 개별 서비스(뉴스레터, PPT, 회의록 등)의 기존 HTML/CSS 레이아웃 확인
+- **주의**: API 호출이나 로그인 기능은 동작하지 않습니다.
+
+---
 
 ## 사전 준비 (UI 수정 전 필수)
 
 | 항목 | 설명 |
 |------|------|
-| [Node.js](https://nodejs.org/) **18 이상** | `npm install`, `npm start` 실행에 필요 |
+| [Node.js](https://nodejs.org/) **18 이상** | `pnpm dev`, `pnpm preview` 실행에 필요 |
 | [Git](https://git-scm.com/) | 저장소 clone 및 PR 제출에 필요 |
 | 코드 에디터 | VS Code, Cursor 등 아무거나 가능 |
 | 브라우저 | Chrome, Safari 등 최신 브라우저 |
@@ -33,11 +49,13 @@
 ```bash
 git clone https://github.com/wlghksw/workportal-design.git
 cd workportal-design
-npm install
-npm start
+pnpm install
+pnpm dev
 ```
 
-브라우저에서 **http://localhost:3000/preview.html** 을 열면 전체 화면 목록이 나옵니다.
+브라우저에서 **[http://localhost:3000](http://localhost:3000)** 을 열면 마이그레이션된 새 포털 홈을 확인할 수 있습니다.
+
+> 레거시 정적 미리보기 목록(`preview.html`)을 확인하려면 별도로 `pnpm preview`를 실행한 후 **[http://localhost:3000/preview.html](http://localhost:3000/preview.html)** 에 접속하세요.
 
 ### 작업 흐름
 
@@ -48,9 +66,9 @@ npm start
 
 ### 주의사항
 
-- HTML 파일을 **더블클릭(`file://`)으로 열면 CSS가 깨집니다.** 반드시 `npm start` 후 브라우저에서 접속하세요.
+- HTML 파일을 **더블클릭(`file://`)으로 열면 CSS가 깨집니다.** 반드시 `pnpm dev` 또는 `pnpm preview` 실행 후 브라우저에서 접속하세요.
 - **API·로그인·저장 기능은 동작하지 않습니다.** 버튼 클릭 오류는 무시하고 레이아웃·색상·폰트만 확인하세요.
-- 한 번에 여러 화면을 볼 필요 없으면 `npm start` 하나만 켜두면 됩니다.
+- 한 번에 여러 화면을 볼 필요 없으면 `pnpm preview` 하나만 켜두면 됩니다.
 
 ---
 
@@ -145,7 +163,7 @@ npm run dev
 | `services/bidding/` | `index.php`, `search.php` — HTML/CSS 마크업 위주 |
 | `services/website/` | `index.php`, `contact.php` 등 + `static/css/main.css` |
 
-> PHP 파일은 `npm start`로 정적 미리보기만 가능합니다. PHP 렌더링은 별도 서버가 필요합니다.
+> PHP 파일은 `pnpm preview`로 정적 미리보기만 가능합니다. PHP 렌더링은 별도 서버가 필요합니다.
 
 ---
 

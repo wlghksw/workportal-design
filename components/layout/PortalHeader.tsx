@@ -5,6 +5,7 @@ export interface PortalHeaderProps extends Omit<HTMLAttributes<HTMLElement>, "ti
   logo?: ReactNode;
   title?: ReactNode;
   subtitle?: ReactNode;
+  search?: ReactNode;
   actions?: ReactNode;
   children?: ReactNode;
 }
@@ -13,6 +14,7 @@ export function PortalHeader({
   logo,
   title,
   subtitle,
+  search,
   actions,
   className,
   children,
@@ -26,10 +28,11 @@ export function PortalHeader({
           {title && <span className="brand__sub">{title}</span>}
           {subtitle && <span className="brand__sub">{subtitle}</span>}
         </div>
+        {search}
         <div className="site-header__spacer" />
         {actions && <div className="portal-header__actions">{actions}</div>}
-        {children}
       </div>
+      {children}
     </header>
   );
 }
