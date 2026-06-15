@@ -271,34 +271,39 @@ export default function WorkPortalHomePage() {
             <div className="portal-layout__main">
               <Grid cols={3} className="portal-services">
                 {SERVICES.map((service) => (
-                  <Card
+                  <a
                     key={service.id}
-                    variant="clickable"
-                    className="portal-tile"
+                    href={service.href}
+                    aria-label={`${service.title} 서비스 열기`}
+                    style={{ textDecoration: "none", color: "inherit" }}
                   >
-                    <div
-                      className={cx(
-                        "portal-tile__icon",
-                        `portal-tile__icon--${service.iconType}`
-                      )}
-                      aria-hidden="true"
-                    >
-                      <ServiceIcon id={service.iconType} />
-                    </div>
-                    <div className="portal-tile__body">
-                      <div className="portal-tile__head">
-                        <h3 className="portal-tile__title">{service.title}</h3>
-                        <Badge variant="default" className="badge--muted">
-                          확인 중…
-                        </Badge>
+                    <Card variant="clickable" className="portal-tile">
+                      <div
+                        className={cx(
+                          "portal-tile__icon",
+                          `portal-tile__icon--${service.iconType}`
+                        )}
+                        aria-hidden="true"
+                      >
+                        <ServiceIcon id={service.id} />
                       </div>
-                      <p className="portal-tile__desc">{service.description}</p>
-                      <p className="portal-tile__host">{service.host}</p>
-                    </div>
-                    <span className="portal-tile__arrow" aria-hidden="true">
-                      →
-                    </span>
-                  </Card>
+                      <div className="portal-tile__body">
+                        <div className="portal-tile__head">
+                          <h3 className="portal-tile__title">{service.title}</h3>
+                          <Badge variant="default" className="badge--muted">
+                            확인 중…
+                          </Badge>
+                        </div>
+                        <p className="portal-tile__desc">
+                          {service.description}
+                        </p>
+                        <p className="portal-tile__host">{service.host}</p>
+                      </div>
+                      <span className="portal-tile__arrow" aria-hidden="true">
+                        →
+                      </span>
+                    </Card>
+                  </a>
                 ))}
               </Grid>
             </div>
