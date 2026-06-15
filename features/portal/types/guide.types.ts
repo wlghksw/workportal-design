@@ -46,6 +46,7 @@ export interface GuideCard {
   icon?: string;
   badge?: string; // 카드 헤더에 붙는 배지 텍스트
   steps?: GuideStep[];
+  image?: GuideImage;
   content?: string;
   checklist?: GuideChecklistItem[];
   faqs?: GuideFaqItem[];

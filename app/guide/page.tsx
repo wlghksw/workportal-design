@@ -1,18 +1,27 @@
+import { Suspense } from "react";
 import {
   PortalHeader,
   Page,
-  Section,
-  Stack,
-  Card,
 } from "@/components";
 import Image from "next/image";
 import Link from "next/link";
+import { GuideSidebar } from "./GuideSidebar";
+import { GuideContent } from "./GuideContent";
+import { GUIDE_DATA, GuideCategoryId } from "@/features/portal";
+
+interface GuidePageProps {
+  searchParams: Promise<{ service?: string }>;
+}
 
 /**
- * 이용 가이드 페이지 (Shell)
- * Phase 1: 기반 구조 및 레이아웃 Placeholder 구축
+ * 이용 가이드 페이지
+ * Phase 2: 정적 콘텐츠 마이그레이션 (뉴스레터 중심)
  */
-export default function GuidePage() {
+export default async function GuidePage({ searchParams }: GuidePageProps) {
+  const params = await searchParams;
+  const activeId = (params.service as GuideCategoryId) || "newsletter";
+  const serviceData = GUIDE_DATA[activeId];
+
   return (
     <>
       <PortalHeader
@@ -41,46 +50,25 @@ export default function GuidePage() {
       </PortalHeader>
 
       <Page className="guide-page">
-        <div className="layout-wrapper" style={{ display: "flex", gap: "20px" }}>
-          {/* 좌측 사이드바 (Placeholder) */}
-          <aside
-            className="portal-sidebar"
-            style={{ width: "260px", flexShrink: 0 }}
-          >
-            <Card variant="default">
-              <Card.Header>
-                <Card.Title style={{ fontSize: "11px", opacity: 0.6 }}>
-                  업무 자동화 서비스
-                </Card.Title>
-              </Card.Header>
-              <Card.Body>
-                <Stack spacing="sm">
-                  <p className="text-body-sm">서비스 목록 로딩 중...</p>
-                </Stack>
-              </Card.Body>
-            </Card>
-          </aside>
+        <div className="guide-layout">
+          <GuideSidebar activeId={activeId} />
 
-          {/* 본문 영역 (Placeholder) */}
-          <main className="view-container" style={{ flex: 1 }}>
-            <Stack spacing="lg">
-              <header className="page-header">
-                <h1 className="text-title-lg">이용 가이드</h1>
-                <p className="text-subtitle">
-                  각 서비스의 상세 사용 방법과 팁을 확인하실 수 있습니다.
-                </p>
-              </header>
-
-              <Section>
-                <Card variant="soft">
-                  <Card.Body>
-                    <p className="text-body">
-                      좌측 메뉴에서 서비스를 선택하면 상세 가이드가 표시됩니다.
-                    </p>
-                  </Card.Body>
-                </Card>
-              </Section>
-            </Stack>
+          <main className="guide-main">
+            <Suspense fallback={<div className="loading-placeholder">가이드 로딩 중...</div>}>
+              {serviceData ? (
+                <GuideContent service={serviceData} />
+              ) : (
+                <div className="guide-empty">
+                  <h1 className="text-title-md">준비 중인 가이드입니다</h1>
+                  <p className="text-body">
+                    선택하신 서비스의 가이드는 현재 마이그레이션 준비 중입니다.
+                  </p>
+                  <Link href="/guide?service=newsletter" className="guide-empty-link">
+                    뉴스레터 가이드 보기
+                  </Link>
+                </div>
+              )}
+            </Suspense>
           </main>
         </div>
       </Page>
