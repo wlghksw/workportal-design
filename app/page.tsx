@@ -17,6 +17,7 @@ import {
   ServiceId,
   HealthStatus,
   ActivityItem,
+  AuthState,
 } from "@/features/portal";
 import Image from "next/image";
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -177,17 +178,6 @@ function fmtDateTime(iso: string) {
     second: "2-digit",
     hour12: false,
   });
-}
-
-interface UserData {
-  name: string;
-  displayName?: string;
-}
-
-interface AuthState {
-  loggedIn: boolean;
-  authEnabled: boolean;
-  user?: UserData;
 }
 
 // --- Main Page Component ---
