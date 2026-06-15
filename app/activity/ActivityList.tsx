@@ -9,6 +9,7 @@ import {
   Select,
   Button,
   Badge,
+  cx,
 } from "@/components";
 import {
   ActivityItem,
@@ -134,8 +135,12 @@ export function ActivityList() {
       <Card.Body>
         <Stack spacing="md">
           {/* 필터 툴바 */}
-          <Cluster className="activity-toolbar" aria-label="활동 내역 필터">
-            <FormField label="사용자" htmlFor="user-select">
+          <div className="activity-toolbar" aria-label="활동 내역 필터">
+            <FormField
+              label="사용자"
+              htmlFor="user-select"
+              className="activity-filter"
+            >
               <Select
                 id="user-select"
                 value={filters.user}
@@ -151,7 +156,11 @@ export function ActivityList() {
                 ))}
               </Select>
             </FormField>
-            <FormField label="서비스" htmlFor="service-select">
+            <FormField
+              label="서비스"
+              htmlFor="service-select"
+              className="activity-filter"
+            >
               <Select
                 id="service-select"
                 value={filters.service}
@@ -173,10 +182,11 @@ export function ActivityList() {
               onClick={() => loadActivity()}
               disabled={isLoading}
               aria-label="데이터 새로고침"
+              className="activity-refresh-btn"
             >
               ↻ 새로고침
             </Button>
-          </Cluster>
+          </div>
 
           {/* 타임라인 목록 */}
           <ul
@@ -209,7 +219,14 @@ export function ActivityList() {
                       </time>
                     </div>
                     <div className="activity-item__action">
-                      <span className="activity-item__service">{svc}</span>
+                      <span
+                        className={cx(
+                          "activity-item__service",
+                          `activity-item__service--${row.service}`
+                        )}
+                      >
+                        {svc}
+                      </span>
                       <span className="activity-item__label">
                         {row.label || row.action}
                       </span>
@@ -228,14 +245,7 @@ export function ActivityList() {
           </ul>
 
           {/* 페이징 */}
-          <Cluster
-            className="activity-footer"
-            style={{
-              justifyContent: "center",
-              gap: "var(--space-4)",
-              marginTop: "var(--space-6)",
-            }}
-          >
+          <div className="activity-footer">
             <Button
               variant="secondary"
               size="sm"
@@ -257,7 +267,7 @@ export function ActivityList() {
             >
               다음
             </Button>
-          </Cluster>
+          </div>
         </Stack>
       </Card.Body>
     </Card>
