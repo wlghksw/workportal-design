@@ -4,6 +4,14 @@
 
 서버·DB·배포·API 로직은 제외하고, **화면(HTML/CSS/JS)과 디자인 자산**만 포함합니다.
 
+---
+
+### Next.js (새 플랫폼)
+
+- 마이그레이션 중인 Next.js App Router 기반 프로젝트입니다.
+- `pnpm dev`로 실행하여 `http://localhost:3000`에서 확인 가능합니다.
+- 백엔드 API 연동이 필요한 경우, `.env.local` 파일을 생성하고 `NEXT_PUBLIC_API_BASE_URL=http://localhost:8080`와 같이 설정하세요. (예시는 `.env.example` 참고)
+
 ## 포함된 프로그램
 
 | 폴더 | 프로그램 | 미리보기 진입점 |
