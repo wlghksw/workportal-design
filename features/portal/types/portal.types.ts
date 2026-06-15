@@ -20,17 +20,6 @@ export interface ServiceData {
   healthKey?: string;
 }
 
-export interface ActivityItem {
-  ts: string;
-  user: string;
-  displayName?: string;
-  action: string;
-  label?: string;
-  service: ServiceId;
-  serviceName?: string;
-  detail?: string;
-}
-
 export interface HealthStatus {
   id: ServiceId;
   status: "up" | "down" | "unknown";
