@@ -19,19 +19,25 @@ export function GuideSidebar({ activeId }: GuideSidebarProps) {
             </Card.Title>
           </Card.Header>
           <Card.Body>
-            <div className="portal-menu-list">
-              {GUIDE_MENU.map((item) => (
-                <div
-                  key={item.id}
-                  className={`portal-menu-item ${activeId === item.id ? "active" : ""}`}
-                >
-                  <Link href={`/guide?service=${item.id}`} className="portal-menu-btn">
-                    <ServiceMenuIcon id={item.id} />
-                    {item.label}
-                  </Link>
-                </div>
-              ))}
-            </div>
+            <nav aria-label="서비스 가이드 선택">
+              <div className="portal-menu-list">
+                {GUIDE_MENU.map((item) => (
+                  <div
+                    key={item.id}
+                    className={`portal-menu-item ${activeId === item.id ? "active" : ""}`}
+                  >
+                    <Link
+                      href={`/guide?service=${item.id}`}
+                      className="portal-menu-btn"
+                      aria-current={activeId === item.id ? "page" : undefined}
+                    >
+                      <ServiceMenuIcon id={item.id} />
+                      {item.label}
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </nav>
           </Card.Body>
         </Card>
 
@@ -43,7 +49,7 @@ export function GuideSidebar({ activeId }: GuideSidebarProps) {
               </Card.Title>
             </Card.Header>
             <Card.Body className="guide-toc-body">
-              <nav className="guide-toc">
+              <nav className="guide-toc" aria-label="가이드 상세 목차">
                 {toc.map((item) => (
                   <Link
                     key={item.id}
