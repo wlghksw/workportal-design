@@ -21,7 +21,7 @@ import {
 } from "@/features/portal";
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 
 // --- Types & Constants ---
 type ViewType = "dashboard" | "guide";
@@ -192,6 +192,8 @@ export default function WorkPortalHomePage() {
   const [isHealthLoading, setIsHealthLoading] = useState(true);
   const [isRecentLoading, setIsRecentLoading] = useState(true);
 
+  const firstResultRef = useRef<HTMLAnchorElement>(null);
+
   // Fetch logic
   const apiFetch = useCallback((url: string, opts: RequestInit = {}) => {
     return fetch(API_BASE + url, { credentials: "include", ...opts });
@@ -289,6 +291,17 @@ export default function WorkPortalHomePage() {
     }
   };
 
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (filteredServices.length > 0 && searchQuery.trim()) {
+      firstResultRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+      });
+      firstResultRef.current?.focus();
+    }
+  };
+
   return (
     <>
       <PortalHeader
@@ -305,7 +318,7 @@ export default function WorkPortalHomePage() {
         search={
           <form
             className="site-search"
-            onSubmit={(e) => e.preventDefault()}
+            onSubmit={handleSearchSubmit}
             role="search"
           >
             <input
@@ -380,9 +393,9 @@ export default function WorkPortalHomePage() {
         </nav>
       </PortalHeader>
 
-      <Page>
+      <Page className="portal-home">
         {activeView === "dashboard" && (
-          <Stack spacing="lg">
+          <Stack spacing="lg" className="portal-home__content-wrap">
             {/* 히어로 영역 */}
             <section className="portal-hero" aria-label="소개">
               <div className="portal-hero__content">
@@ -530,21 +543,26 @@ export default function WorkPortalHomePage() {
             </Section>
 
             {/* 서비스 그리드 및 사이드바 레이아웃 */}
-            <Section className="portal-layout" title="업무 서비스 바로가기">
+            <div className="portal-layout">
+              <header className="portal-layout__title">
+                <h2 className="portal-section-title">업무 서비스 바로가기</h2>
+              </header>
+
               <div className="portal-layout__main">
                 {filteredServices.length > 0 ? (
-                  <Grid cols={3} className="portal-services">
-                    {filteredServices.map((service) => {
+                  <div className="portal-services">
+                    {filteredServices.map((service, index) => {
                       const health = healths.find((h) => h.id === service.id);
                       return (
                         <a
                           key={service.id}
                           href={service.href}
+                          ref={index === 0 ? firstResultRef : null}
                           aria-label={`${service.title} 서비스 열기`}
                           className="portal-tile-wrapper"
                           style={{ textDecoration: "none", color: "inherit" }}
                         >
-                          <Card variant="clickable" className="portal-tile">
+                          <article className="portal-tile">
                             <div
                               className={cx(
                                 "portal-tile__icon",
@@ -554,7 +572,7 @@ export default function WorkPortalHomePage() {
                             >
                               <ServiceIcon id={service.id} />
                             </div>
-                            <Card.Body className="portal-tile__body">
+                            <div className="portal-tile__body">
                               <div className="portal-tile__head">
                                 <h3 className="portal-tile__title">
                                   {service.title}
@@ -584,34 +602,35 @@ export default function WorkPortalHomePage() {
                                         : "확인 불가"}
                                 </Badge>
                               </div>
-                              <Card.Description className="portal-tile__desc">
+                              <p className="portal-tile__desc">
                                 {service.description}
-                              </Card.Description>
+                              </p>
                               <p className="portal-tile__host">{service.host}</p>
-                            </Card.Body>
-                            <span className="portal-tile__arrow" aria-hidden="true">
+                            </div>
+                            <span
+                              className="portal-tile__arrow"
+                              aria-hidden="true"
+                            >
                               →
                             </span>
-                          </Card>
+                          </article>
                         </a>
                       );
                     })}
-                  </Grid>
-                ) : (
-                  <div className="activity-empty">
-                    검색 결과가 없습니다.
                   </div>
+                ) : (
+                  <div className="activity-empty">검색 결과가 없습니다.</div>
                 )}
               </div>
 
               <aside className="portal-layout__side">
-                <Card variant="default" className="portal-sidecard">
-                  <Card.Header className="portal-sidecard__head">
+                <section className="portal-sidecard">
+                  <header className="portal-sidecard__head">
                     <h3 className="portal-sidecard__title">서비스 상태</h3>
                     <span className="portal-sidecard__sub">
                       {isHealthLoading ? "확인 중…" : "갱신됨"}
                     </span>
-                  </Card.Header>
+                  </header>
                   <ul className="portal-status">
                     {SERVICES.map((s) => {
                       const h = healths.find((x) => x.id === s.id);
@@ -626,7 +645,9 @@ export default function WorkPortalHomePage() {
                             aria-hidden="true"
                           />
                           <div className="portal-status__info">
-                            <span className="portal-status__name">{s.title}</span>
+                            <span className="portal-status__name">
+                              {s.title}
+                            </span>
                             <span className="portal-status__host">{s.host}</span>
                           </div>
                           <span className="portal-status__meta">
@@ -640,22 +661,20 @@ export default function WorkPortalHomePage() {
                       );
                     })}
                   </ul>
-                </Card>
+                </section>
               </aside>
-            </Section>
+            </div>
           </Stack>
         )}
 
-        {activeView === "guide" && (
-          <div className="view--frame">
-            <iframe
-              className="service-frame"
-              title="에듀올랩 통합 업무 자동화 가이드"
-              src="/services/workportal/guide.html?embed=1"
-              loading="lazy"
-            ></iframe>
-          </div>
-        )}
+        <div className="view--frame" hidden={activeView !== "guide"}>
+          <iframe
+            className="service-frame"
+            title="에듀올랩 통합 업무 자동화 가이드"
+            src="/services/workportal/guide.html?embed=1"
+            loading="lazy"
+          ></iframe>
+        </div>
       </Page>
     </>
   );
