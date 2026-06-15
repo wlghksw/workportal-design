@@ -399,30 +399,34 @@ export default function WorkPortalHomePage() {
             </section>
 
             {/* 소식/안내 보드 */}
-            <Section>
+            <Section aria-label="최근 소식 및 이용 안내">
               <Card variant="default">
-                <header className="portal-board__head">
+                <Card.Header className="portal-board__head">
                   <div className="portal-board__tabs" role="tablist">
                     <button
                       type="button"
+                      id="tab-recent"
                       className={cx(
                         "portal-board__tab",
                         activeBoardTab === "recent" && "is-active"
                       )}
                       onClick={() => setActiveBoardTab("recent")}
                       role="tab"
+                      aria-controls="panel-recent"
                       aria-selected={activeBoardTab === "recent"}
                     >
                       최근 사용
                     </button>
                     <button
                       type="button"
+                      id="tab-guide"
                       className={cx(
                         "portal-board__tab",
                         activeBoardTab === "guide" && "is-active"
                       )}
                       onClick={() => setActiveBoardTab("guide")}
                       role="tab"
+                      aria-controls="panel-guide"
                       aria-selected={activeBoardTab === "guide"}
                     >
                       이용 안내
@@ -433,13 +437,19 @@ export default function WorkPortalHomePage() {
                     className="portal-board__more"
                     onClick={() => setActiveView("activity")}
                     title="사용 이력 전체 보기"
+                    aria-label="사용 이력 전체 보기"
                   >
                     +
                   </button>
-                </header>
-                <CardBody>
+                </Card.Header>
+                <Card.Body>
                   {activeBoardTab === "recent" ? (
-                    <ul className="portal-notice">
+                    <ul
+                      id="panel-recent"
+                      className="portal-notice"
+                      role="tabpanel"
+                      aria-labelledby="tab-recent"
+                    >
                       {isRecentLoading ? (
                         <li className="portal-notice__empty">불러오는 중…</li>
                       ) : recentActivities.length > 0 ? (
@@ -449,6 +459,7 @@ export default function WorkPortalHomePage() {
                               type="button"
                               className="portal-notice__link"
                               onClick={() => setActiveView("activity")}
+                              aria-label={`${row.label || row.action} 상세 보기`}
                             >
                               <span className="portal-notice__title">
                                 {row.label || row.action || "기능 사용"}
@@ -472,12 +483,18 @@ export default function WorkPortalHomePage() {
                       )}
                     </ul>
                   ) : (
-                    <ul className="portal-notice portal-notice--guide">
+                    <ul
+                      id="panel-guide"
+                      className="portal-notice portal-notice--guide"
+                      role="tabpanel"
+                      aria-labelledby="tab-guide"
+                    >
                       <li>
                         <button
                           type="button"
                           onClick={() => setActiveView("activity")}
                           className="portal-notice__link"
+                          aria-label="이용 안내: 로그인 후 서비스 이용"
                         >
                           <span className="portal-notice__title">
                             로그인 후 서비스 이용
@@ -490,7 +507,7 @@ export default function WorkPortalHomePage() {
                         </button>
                       </li>
                       <li>
-                        <span className="portal-notice__link portal-notice__link--static">
+                        <div className="portal-notice__link portal-notice__link--static">
                           <span className="portal-notice__title">
                             입찰 공고
                           </span>
@@ -498,10 +515,10 @@ export default function WorkPortalHomePage() {
                             공공·민간 입찰 공고 수집, AI 요약, 회사별 맞춤 필터
                           </span>
                           <time className="portal-notice__date">서비스</time>
-                        </span>
+                        </div>
                       </li>
                       <li>
-                        <span className="portal-notice__link portal-notice__link--static">
+                        <div className="portal-notice__link portal-notice__link--static">
                           <span className="portal-notice__title">
                             회의록 자동화
                           </span>
@@ -509,20 +526,16 @@ export default function WorkPortalHomePage() {
                             녹음 업로드 후 요약·결정사항·Teams 공유
                           </span>
                           <time className="portal-notice__date">서비스</time>
-                        </span>
+                        </div>
                       </li>
                     </ul>
                   )}
-                </CardBody>
+                </Card.Body>
               </Card>
             </Section>
 
             {/* 서비스 그리드 및 사이드바 레이아웃 */}
-            <div className="portal-layout">
-              <header className="portal-layout__title">
-                <h2 className="portal-section-title">업무 서비스 바로가기</h2>
-              </header>
-
+            <Section className="portal-layout" title="업무 서비스 바로가기">
               <div className="portal-layout__main">
                 {filteredServices.length > 0 ? (
                   <Grid cols={3} className="portal-services">
@@ -533,6 +546,7 @@ export default function WorkPortalHomePage() {
                           key={service.id}
                           href={service.href}
                           aria-label={`${service.title} 서비스 열기`}
+                          className="portal-tile-wrapper"
                           style={{ textDecoration: "none", color: "inherit" }}
                         >
                           <Card variant="clickable" className="portal-tile">
@@ -545,7 +559,7 @@ export default function WorkPortalHomePage() {
                             >
                               <ServiceIcon id={service.id} />
                             </div>
-                            <div className="portal-tile__body">
+                            <Card.Body className="portal-tile__body">
                               <div className="portal-tile__head">
                                 <h3 className="portal-tile__title">
                                   {service.title}
@@ -575,11 +589,11 @@ export default function WorkPortalHomePage() {
                                         : "확인 불가"}
                                 </Badge>
                               </div>
-                              <p className="portal-tile__desc">
+                              <Card.Description className="portal-tile__desc">
                                 {service.description}
-                              </p>
+                              </Card.Description>
                               <p className="portal-tile__host">{service.host}</p>
-                            </div>
+                            </Card.Body>
                             <span className="portal-tile__arrow" aria-hidden="true">
                               →
                             </span>
@@ -597,12 +611,12 @@ export default function WorkPortalHomePage() {
 
               <aside className="portal-layout__side">
                 <Card variant="default" className="portal-sidecard">
-                  <header className="portal-sidecard__head">
-                    <h3>서비스 상태</h3>
+                  <Card.Header className="portal-sidecard__head">
+                    <h3 className="portal-sidecard__title">서비스 상태</h3>
                     <span className="portal-sidecard__sub">
                       {isHealthLoading ? "확인 중…" : "갱신됨"}
                     </span>
-                  </header>
+                  </Card.Header>
                   <ul className="portal-status">
                     {SERVICES.map((s) => {
                       const h = healths.find((x) => x.id === s.id);
@@ -614,6 +628,7 @@ export default function WorkPortalHomePage() {
                               h?.status === "up" && "is-up",
                               h?.status === "down" && "is-down"
                             )}
+                            aria-hidden="true"
                           />
                           <div className="portal-status__info">
                             <span className="portal-status__name">{s.title}</span>
@@ -632,7 +647,7 @@ export default function WorkPortalHomePage() {
                   </ul>
                 </Card>
               </aside>
-            </div>
+            </Section>
           </Stack>
         )}
 
