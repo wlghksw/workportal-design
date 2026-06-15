@@ -1,17 +1,13 @@
+import { Suspense } from "react";
 import {
   PortalHeader,
   Page,
   Section,
-  Card,
   Stack,
-  Cluster,
-  FormField,
-  Select,
-  Button,
-  Badge,
 } from "@/components";
 import Image from "next/image";
 import Link from "next/link";
+import { ActivityList } from "./ActivityList";
 
 export default function ActivityPage() {
   return (
@@ -53,58 +49,9 @@ export default function ActivityPage() {
           </Section>
 
           <Section>
-            <Card variant="default">
-              <Card.Header className="panel__head">
-                <Card.Title>기능 사용 로그</Card.Title>
-                <Badge variant="neutral" soft size="sm">
-                  총 0건
-                </Badge>
-              </Card.Header>
-
-              <Card.Body>
-                <Stack spacing="md">
-                  {/* 필터 툴바 */}
-                  <Cluster className="activity-toolbar">
-                    <FormField label="사용자" htmlFor="user-select">
-                      <Select id="user-select" defaultValue="">
-                        <option value="">전체</option>
-                      </Select>
-                    </FormField>
-                    <FormField label="서비스" htmlFor="service-select">
-                      <Select id="service-select" defaultValue="">
-                        <option value="">전체</option>
-                      </Select>
-                    </FormField>
-                    <Button variant="secondary" size="sm">
-                      ↻ 새로고침
-                    </Button>
-                  </Cluster>
-
-                  {/* 타임라인 목록 placeholder */}
-                  <ul className="activity-timeline">
-                    <li className="activity-empty">목록을 불러오는 중입니다.</li>
-                  </ul>
-
-                  {/* 페이징 placeholder */}
-                  <Cluster
-                    className="activity-footer"
-                    style={{
-                      justifyContent: "center",
-                      gap: "var(--space-4)",
-                      marginTop: "var(--space-6)",
-                    }}
-                  >
-                    <Button variant="secondary" size="sm" disabled>
-                      이전
-                    </Button>
-                    <span className="text-body-sm">1 / 1</span>
-                    <Button variant="secondary" size="sm" disabled>
-                      다음
-                    </Button>
-                  </Cluster>
-                </Stack>
-              </Card.Body>
-            </Card>
+            <Suspense fallback={<div>목록 로딩 중...</div>}>
+              <ActivityList />
+            </Suspense>
           </Section>
         </Stack>
       </Page>
