@@ -28,7 +28,7 @@ export default function ActivityPage() {
           <Link href="/" className="site-nav__item tab">
             홈
           </Link>
-          <Link href="/#guide" className="site-nav__item tab">
+          <Link href="/guide" className="site-nav__item tab">
             가이드
           </Link>
           <Link href="/activity" className="site-nav__item tab is-active">

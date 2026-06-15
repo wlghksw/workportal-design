@@ -249,12 +249,6 @@ export default function WorkPortalHomePage() {
     // Polling health status every 30 seconds as in legacy app.js
     const healthInterval = setInterval(refreshHealth, 30_000);
 
-    // Handle hash on initial load
-    const hash = window.location.hash.replace(/^#/, "");
-    if (hash === "guide") {
-      setActiveView(hash as ViewType);
-    }
-
     return () => clearInterval(healthInterval);
   }, [loadMe, refreshHealth, loadHomeRecent]);
 
@@ -380,13 +374,12 @@ export default function WorkPortalHomePage() {
           >
             홈
           </button>
-          <button
-            className={cx("site-nav__item tab", activeView === "guide" && "is-active")}
-            onClick={() => setActiveView("guide")}
-            type="button"
+          <Link
+            href="/guide"
+            className="site-nav__item tab"
           >
             가이드
-          </button>
+          </Link>
           <Link href="/activity" className="site-nav__item tab">
             사용 이력
           </Link>
@@ -500,7 +493,7 @@ export default function WorkPortalHomePage() {
                     >
                       <li>
                         <Link
-                          href="/activity"
+                          href="/guide?service=newsletter"
                           className="portal-notice__link"
                           aria-label="이용 안내: 로그인 후 서비스 이용"
                         >
@@ -515,15 +508,18 @@ export default function WorkPortalHomePage() {
                         </Link>
                       </li>
                       <li>
-                        <div className="portal-notice__link portal-notice__link--static">
+                        <Link
+                          href="/guide?service=newsletter"
+                          className="portal-notice__link"
+                        >
                           <span className="portal-notice__title">
-                            입찰 공고
+                            뉴스레터 발송 가이드
                           </span>
                           <span className="portal-notice__desc">
-                            공공·민간 입찰 공고 수집, AI 요약, 회사별 맞춤 필터
+                            네이버 블로그 기반 소식지 자동 생성 및 대량 발송 서비스 가이드
                           </span>
                           <time className="portal-notice__date">서비스</time>
-                        </div>
+                        </Link>
                       </li>
                       <li>
                         <div className="portal-notice__link portal-notice__link--static">
@@ -666,15 +662,6 @@ export default function WorkPortalHomePage() {
             </div>
           </Stack>
         )}
-
-        <div className="view--frame" hidden={activeView !== "guide"}>
-          <iframe
-            className="service-frame"
-            title="에듀올랩 통합 업무 자동화 가이드"
-            src="/services/workportal/guide.html?embed=1"
-            loading="lazy"
-          ></iframe>
-        </div>
       </Page>
     </>
   );

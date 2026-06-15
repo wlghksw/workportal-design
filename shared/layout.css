@@ -651,3 +651,106 @@
 }
 .activity-footer { display: flex; align-items: center; justify-content: center; gap: var(--space-4); margin-top: var(--space-6); }
 .loading-placeholder { color: var(--text-muted); font-size: var(--font-body); text-align: center; padding: var(--space-8); }
+
+/* --- Guide Page Styles --- */
+.guide-page { background: var(--background); }
+.guide-layout { display: flex; gap: var(--space-5); align-items: flex-start; }
+.guide-sidebar { width: 260px; flex-shrink: 0; }
+.guide-sidebar-title { font-size: 11px; opacity: 0.6; letter-spacing: 1px; text-transform: uppercase; }
+.guide-main { flex: 1; min-width: 0; }
+.portal-menu-list { list-style: none; padding: 0; }
+.portal-menu-btn {
+  display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+  border-radius: var(--radius-md); color: var(--text-sub); text-decoration: none;
+  font-weight: 700; transition: all 0.2s;
+}
+.portal-menu-item.active .portal-menu-btn { background: var(--primary); color: var(--text-inverse); }
+.portal-menu-btn:hover:not(.active) { background: var(--primary-soft); color: var(--primary); }
+.view-hero { border-bottom: 1px solid var(--border); padding-bottom: var(--space-6); margin-bottom: var(--space-9); }
+.view-hero-title { font-size: 32px; letter-spacing: -1px; }
+.view-hero-title span { color: var(--primary); font-weight: 400; }
+.flow-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-9); }
+.flow-card { padding: var(--space-5); }
+.flow-card .flow-number { font-size: 28px; font-weight: 800; color: var(--primary); margin-bottom: 4px; }
+.flow-card .flow-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+.flow-card .flow-desc { font-size: 12px; color: var(--text-sub); line-height: 1.5; }
+.guide-section-title { display: flex; align-items: center; gap: var(--space-2); margin-top: var(--space-5); }
+.guide-section-marker { width: 4px; height: 20px; background: var(--primary); border-radius: 4px; }
+.guide-card { padding: var(--space-7); }
+.guide-card-header { padding: 0; padding-bottom: var(--space-4); margin-bottom: var(--space-5); border-bottom: 2px solid var(--border); }
+.guide-card-title { font-size: 24px; font-weight: 800; }
+.guide-card-body { padding: 0; }
+.guide-step-list { list-style: none; counter-reset: step; display: flex; flex-direction: column; gap: var(--space-6); }
+.guide-step-item { position: relative; padding-left: 48px; }
+.guide-step-number {
+  content: counter(step); counter-increment: step; position: absolute; left: 0; top: 0;
+  width: 32px; height: 32px; border-radius: 50%; background: var(--primary-soft);
+  color: var(--primary); display: flex; align-items: center; justify-content: center;
+  font-weight: 800; border: 1px solid var(--primary); font-size: 13px;
+}
+.guide-step-title { display: block; margin-bottom: 4px; font-weight: 700; }
+.guide-highlight { margin-top: var(--space-3); padding: var(--space-4); border-radius: 0 8px 8px 0; }
+.guide-highlight--info { background: var(--primary-soft); border-left: 4px solid var(--primary); }
+.guide-highlight--warn { background: var(--danger-soft); border-left: 4px solid var(--danger); }
+.guide-highlight-title { font-weight: 700; font-size: 13px; margin-bottom: 4px; }
+.guide-highlight-text { font-size: 13px; opacity: 0.8; }
+.guide-image-button {
+  display: block; width: 100%; padding: 0; border: 0; background: none;
+  cursor: zoom-in; transition: transform 0.2s;
+  margin-top: var(--space-7); border: 1px solid var(--border);
+  border-radius: var(--radius-md); overflow: hidden;
+}
+.guide-image-button:hover { transform: scale(1.01); border-color: var(--primary); }
+.guide-image-button img { width: 100%; height: auto; display: block; }
+.guide-checklist { list-style: none; padding: 0; margin-top: var(--space-5); display: flex; flex-direction: column; gap: var(--space-3); }
+.guide-checklist-item { display: flex; align-items: flex-start; gap: var(--space-2); padding: var(--space-3); background: var(--surface-subtle); border-radius: var(--radius-sm); }
+.guide-checklist-item input[type="checkbox"] { margin-top: 4px; }
+.guide-faq-list { margin-top: var(--space-5); display: flex; flex-direction: column; gap: var(--space-3); }
+.guide-faq-item { border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+.guide-faq-summary { padding: var(--space-4); cursor: pointer; font-weight: 700; background: var(--surface); }
+.guide-faq-body { padding: var(--space-4); background: var(--surface-subtle); border-top: 1px solid var(--border); font-size: 14px; }
+.guide-empty { padding: var(--space-10); text-align: center; }
+.guide-empty p { margin-top: var(--space-2); }
+.guide-empty-link { display: inline-block; margin-top: var(--space-5); color: var(--primary); font-weight: 600; text-decoration: none; }
+.guide-empty-link:hover { text-decoration: underline; }
+
+/* --- Guide TOC --- */
+.guide-toc-body { padding: 8px 0; }
+.guide-toc { display: flex; flex-direction: column; }
+.guide-toc-item {
+  padding: 8px 16px; font-size: 13px; color: var(--text-sub);
+  text-decoration: none; border-left: 2px solid transparent;
+  transition: all 0.2s;
+}
+.guide-toc-item:hover { color: var(--primary); background: var(--primary-soft); }
+.guide-toc-item.is-header { font-weight: 700; color: var(--text); padding-top: 16px; padding-bottom: 4px; border-left: 0; }
+.guide-toc-item.is-header:first-child { padding-top: 8px; }
+.guide-toc-item.is-header:hover { background: transparent; color: var(--text); }
+.guide-toc-item:not(.is-header) { margin-left: 4px; }
+
+/* --- Lightbox --- */
+.lightbox-overlay {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000; padding: 40px; cursor: zoom-out;
+}
+.lightbox-content {
+  position: relative; width: 100%; height: 100%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+  cursor: default;
+}
+.lightbox-image-container {
+  position: relative; width: 100%; height: calc(100% - 120px);
+}
+.lightbox-image {
+  object-fit: contain; border-radius: var(--radius-md);
+}
+.lightbox-close {
+  position: absolute; top: -40px; right: 0;
+  background: none; border: 0; color: white;
+  font-size: 32px; cursor: pointer; display: flex;
+  align-items: center; justify-content: center;
+  width: 40px; height: 40px; transition: transform 0.2s;
+}
+.lightbox-close:hover { transform: scale(1.1); }
+.lightbox-caption { color: white; font-size: 16px; font-weight: 600; text-align: center; }
