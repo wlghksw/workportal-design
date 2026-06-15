@@ -94,7 +94,7 @@ export function LoginForm() {
         </div>
 
         {error && (
-          <div className="error is-show" id="loginError">
+          <div className="error is-show" id="loginError" role="alert">
             {error}
           </div>
         )}
@@ -111,6 +111,9 @@ export function LoginForm() {
             }
             required
             disabled={isLoading}
+            error={Boolean(error)}
+            aria-invalid={error ? "true" : "false"}
+            aria-describedby={error ? "loginError" : undefined}
           />
         </FormField>
 
@@ -126,6 +129,9 @@ export function LoginForm() {
             }
             required
             disabled={isLoading}
+            error={Boolean(error)}
+            aria-invalid={error ? "true" : "false"}
+            aria-describedby={error ? "loginError" : undefined}
           />
         </FormField>
 
@@ -134,6 +140,7 @@ export function LoginForm() {
           variant="primary"
           fullWidth
           disabled={isLoading}
+          aria-busy={isLoading}
         >
           {isLoading ? "로그인 중..." : "로그인"}
         </Button>
