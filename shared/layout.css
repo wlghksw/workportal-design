@@ -694,8 +694,14 @@
 .guide-highlight--warn { background: var(--danger-soft); border-left: 4px solid var(--danger); }
 .guide-highlight-title { font-weight: 700; font-size: 13px; margin-bottom: 4px; }
 .guide-highlight-text { font-size: 13px; opacity: 0.8; }
-.guide-image-wrap { margin-top: var(--space-7); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
-.guide-image-wrap img { width: 100%; height: auto; display: block; }
+.guide-image-button {
+  display: block; width: 100%; padding: 0; border: 0; background: none;
+  cursor: zoom-in; transition: transform 0.2s;
+  margin-top: var(--space-7); border: 1px solid var(--border);
+  border-radius: var(--radius-md); overflow: hidden;
+}
+.guide-image-button:hover { transform: scale(1.01); border-color: var(--primary); }
+.guide-image-button img { width: 100%; height: auto; display: block; }
 .guide-checklist { list-style: none; padding: 0; margin-top: var(--space-5); display: flex; flex-direction: column; gap: var(--space-3); }
 .guide-checklist-item { display: flex; align-items: flex-start; gap: var(--space-2); padding: var(--space-3); background: var(--surface-subtle); border-radius: var(--radius-sm); }
 .guide-checklist-item input[type="checkbox"] { margin-top: 4px; }
@@ -707,3 +713,44 @@
 .guide-empty p { margin-top: var(--space-2); }
 .guide-empty-link { display: inline-block; margin-top: var(--space-5); color: var(--primary); font-weight: 600; text-decoration: none; }
 .guide-empty-link:hover { text-decoration: underline; }
+
+/* --- Guide TOC --- */
+.guide-toc-body { padding: 8px 0; }
+.guide-toc { display: flex; flex-direction: column; }
+.guide-toc-item {
+  padding: 8px 16px; font-size: 13px; color: var(--text-sub);
+  text-decoration: none; border-left: 2px solid transparent;
+  transition: all 0.2s;
+}
+.guide-toc-item:hover { color: var(--primary); background: var(--primary-soft); }
+.guide-toc-item.is-header { font-weight: 700; color: var(--text); padding-top: 16px; padding-bottom: 4px; border-left: 0; }
+.guide-toc-item.is-header:first-child { padding-top: 8px; }
+.guide-toc-item.is-header:hover { background: transparent; color: var(--text); }
+.guide-toc-item:not(.is-header) { margin-left: 4px; }
+
+/* --- Lightbox --- */
+.lightbox-overlay {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000; padding: 40px; cursor: zoom-out;
+}
+.lightbox-content {
+  position: relative; width: 100%; height: 100%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+  cursor: default;
+}
+.lightbox-image-container {
+  position: relative; width: 100%; height: calc(100% - 120px);
+}
+.lightbox-image {
+  object-fit: contain; border-radius: var(--radius-md);
+}
+.lightbox-close {
+  position: absolute; top: -40px; right: 0;
+  background: none; border: 0; color: white;
+  font-size: 32px; cursor: pointer; display: flex;
+  align-items: center; justify-content: center;
+  width: 40px; height: 40px; transition: transform 0.2s;
+}
+.lightbox-close:hover { transform: scale(1.1); }
+.lightbox-caption { color: white; font-size: 16px; font-weight: 600; text-align: center; }

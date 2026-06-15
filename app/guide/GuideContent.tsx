@@ -1,12 +1,31 @@
+"use client";
+
 import { GuideService, GuideSection as GuideSectionType } from "@/features/portal";
 import { Stack, Card, Badge, cx } from "@/components";
 import Image from "next/image";
+import { useState, useEffect, useCallback } from "react";
 
 interface GuideContentProps {
   service: GuideService;
 }
 
 export function GuideContent({ service }: GuideContentProps) {
+  const [lightboxImg, setLightboxImg] = useState<{ src: string; alt: string } | null>(null);
+
+  const closeLightbox = useCallback(() => setLightboxImg(null), []);
+
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeLightbox();
+    };
+    if (lightboxImg) {
+      window.addEventListener("keydown", handleEsc);
+    }
+    return () => {
+      window.removeEventListener("keydown", handleEsc);
+    };
+  }, [lightboxImg, closeLightbox]);
+
   return (
     <div className="guide-main">
       <Stack spacing="lg">
@@ -38,14 +57,54 @@ export function GuideContent({ service }: GuideContentProps) {
         )}
 
         {service.sections.map((section) => (
-          <GuideSection key={section.id} section={section} />
+          <GuideSection 
+            key={section.id} 
+            section={section} 
+            onImageClick={(src, alt) => setLightboxImg({ src, alt })}
+          />
         ))}
       </Stack>
+
+      {lightboxImg && (
+        <div 
+          className="lightbox-overlay" 
+          onClick={closeLightbox}
+          role="dialog"
+          aria-modal="true"
+          aria-label="이미지 크게 보기"
+        >
+          <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
+            <button 
+              className="lightbox-close" 
+              onClick={closeLightbox}
+              aria-label="닫기"
+            >
+              &times;
+            </button>
+            <div className="lightbox-image-container">
+              <Image 
+                src={lightboxImg.src} 
+                alt={lightboxImg.alt} 
+                fill
+                className="lightbox-image"
+                unoptimized
+              />
+            </div>
+            <p className="lightbox-caption">{lightboxImg.alt}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-function GuideSection({ section }: { section: GuideSectionType }) {
+function GuideSection({ 
+  section, 
+  onImageClick 
+}: { 
+  section: GuideSectionType;
+  onImageClick: (src: string, alt: string) => void;
+}) {
   return (
     <section id={section.id} className="guide-section">
       <Stack spacing="md">
@@ -95,14 +154,19 @@ function GuideSection({ section }: { section: GuideSectionType }) {
                 )}
 
                 {card.image && (
-                  <div className="guide-image-wrap">
+                  <button 
+                    type="button"
+                    className="guide-image-button" 
+                    onClick={() => onImageClick(card.image!.src, card.image!.alt)}
+                    aria-label={`이미지 크게 보기: ${card.image.alt}`}
+                  >
                     <Image
                       src={card.image.src}
                       alt={card.image.alt}
                       width={1024}
                       height={768}
                     />
-                  </div>
+                  </button>
                 )}
 
                 {card.checklist && (

@@ -1,36 +1,63 @@
 import Link from "next/link";
-import { GUIDE_MENU, GuideCategoryId } from "@/features/portal";
+import { GUIDE_MENU, GUIDE_TOC, GuideCategoryId } from "@/features/portal";
 import { Card, Stack } from "@/components";
 
 interface GuideSidebarProps {
-  activeId?: GuideCategoryId;
+  activeId: GuideCategoryId;
 }
 
 export function GuideSidebar({ activeId }: GuideSidebarProps) {
+  const toc = GUIDE_TOC[activeId] || [];
+
   return (
     <aside className="guide-sidebar">
-      <Card variant="default">
-        <Card.Header>
-          <Card.Title className="guide-sidebar-title">
-            업무 자동화 서비스
-          </Card.Title>
-        </Card.Header>
-        <Card.Body>
-          <div className="portal-menu-list">
-            {GUIDE_MENU.map((item) => (
-              <div
-                key={item.id}
-                className={`portal-menu-item ${activeId === item.id ? "active" : ""}`}
-              >
-                <Link href={`/guide?service=${item.id}`} className="portal-menu-btn">
-                  <ServiceMenuIcon id={item.id} />
-                  {item.label}
-                </Link>
-              </div>
-            ))}
-          </div>
-        </Card.Body>
-      </Card>
+      <Stack spacing="lg">
+        <Card variant="default">
+          <Card.Header>
+            <Card.Title className="guide-sidebar-title">
+              업무 자동화 서비스
+            </Card.Title>
+          </Card.Header>
+          <Card.Body>
+            <div className="portal-menu-list">
+              {GUIDE_MENU.map((item) => (
+                <div
+                  key={item.id}
+                  className={`portal-menu-item ${activeId === item.id ? "active" : ""}`}
+                >
+                  <Link href={`/guide?service=${item.id}`} className="portal-menu-btn">
+                    <ServiceMenuIcon id={item.id} />
+                    {item.label}
+                  </Link>
+                </div>
+              ))}
+            </div>
+          </Card.Body>
+        </Card>
+
+        {toc.length > 0 && (
+          <Card variant="default">
+            <Card.Header>
+              <Card.Title className="guide-sidebar-title">
+                목차
+              </Card.Title>
+            </Card.Header>
+            <Card.Body className="guide-toc-body">
+              <nav className="guide-toc">
+                {toc.map((item) => (
+                  <Link
+                    key={item.id}
+                    href={`#${item.id}`}
+                    className={`guide-toc-item ${item.isHeader ? "is-header" : ""}`}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </nav>
+            </Card.Body>
+          </Card>
+        )}
+      </Stack>
     </aside>
   );
 }
