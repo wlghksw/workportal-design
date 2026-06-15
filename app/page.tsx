@@ -17,8 +17,10 @@ import {
   ServiceId,
   HealthStatus,
   ActivityItem,
+  AuthState,
 } from "@/features/portal";
 import Image from "next/image";
+import Link from "next/link";
 import { useState, useEffect, useMemo, useCallback } from "react";
 
 // --- Types & Constants ---
@@ -179,17 +181,6 @@ function fmtDateTime(iso: string) {
   });
 }
 
-interface UserData {
-  name: string;
-  displayName?: string;
-}
-
-interface AuthState {
-  loggedIn: boolean;
-  authEnabled: boolean;
-  user?: UserData;
-}
-
 // --- Main Page Component ---
 export default function WorkPortalHomePage() {
   const [activeView, setActiveView] = useState<ViewType>("dashboard");
@@ -281,7 +272,18 @@ export default function WorkPortalHomePage() {
   const handleLogout = async () => {
     try {
       await apiFetch("/api/auth/logout", { method: "POST" });
-      window.location.reload(); // Refresh to clear state
+      // UI를 자연스럽게 갱신하기 위해 상태 초기화
+      setMe((prev) =>
+        prev
+          ? {
+              ...prev,
+              loggedIn: false,
+              user: undefined,
+            }
+          : null
+      );
+      // 최근 사용 내역 갱신
+      void loadHomeRecent();
     } catch (e) {
       console.error("logout failed", e);
     }
@@ -350,9 +352,9 @@ export default function WorkPortalHomePage() {
                 </Button>
               </>
             ) : me?.authEnabled ? (
-              <a href="/login" className="topbar__btn topbar__btn--login">
+              <Link href="/login" className="topbar__btn topbar__btn--login">
                 로그인
-              </a>
+              </Link>
             ) : null}
           </div>
         }

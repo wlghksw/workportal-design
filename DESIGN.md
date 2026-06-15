@@ -1505,7 +1505,7 @@ DESIGN.md를 기준으로 기존 HTML 서비스를 Next.js App Router 구조로 
 5. React + TypeScript 공통 UI 컴포넌트 생성 (완료)
    - shared CSS 기반의 재사용 가능한 컴포넌트 라이브러리 구축
 
-6. WorkPortal 홈 화면부터 Next.js로 이전 (완료)
+6. WorkPortal 홈 화면 및 로그인 페이지 이전 (완료)
 
 7. 각 서비스별 점진적 마이그레이션 (예정)
 
@@ -1771,7 +1771,7 @@ export default function RootLayout({
 [완료] 4. 공통 UI 컴포넌트 스타일 명세 확립 (buttons, cards, inputs, badges, layout)
 [완료] 5. Next.js 15 + TypeScript 5 마이그레이션 플랫폼 초기 구축
 [완료] 6. React + TypeScript 기반 공통 UI 컴포넌트 라이브러리 구현
-[완료] 7. WorkPortal 홈 화면 Next.js App Router 이전 및 컴포넌트 적용
+[완료] 7. WorkPortal 홈 화면 및 로그인 페이지 Next.js 이전 및 인증 연동
 [예정] 8. 개별 서비스별 점진적 React 전환 및 도메인 로직 마이그레이션
 
 ```
@@ -1805,6 +1805,7 @@ export default function RootLayout({
 - [x] `pnpm` 기반 패키지 매니저 정렬 및 락파일 관리
 - [x] 글로벌 CSS 통합 및 디자인 토큰 연결 기반 마련
 - [x] WorkPortal 홈 화면 (app/page.tsx) 마이그레이션 및 API 연동
+- [x] WorkPortal 로그인 페이지 (app/login/page.tsx) 및 인증 로직 구현
 
 
 ### React UI Components (Implementation)

@@ -18,7 +18,7 @@ pnpm install
 pnpm dev
 ```
 - **URL**: [http://localhost:3000](http://localhost:3000)
-- **주요 기능**: 통합 업무 포탈(Home), 공통 React 컴포넌트 라이브러리
+- **주요 기능**: 통합 업무 포탈(Home), **로그인(/login)**, 공통 React 컴포넌트 라이브러리
 - **API 연동**: `.env.local` 파일을 생성하고 `NEXT_PUBLIC_API_BASE_URL=http://localhost:8080` 설정을 추가하면 백엔드 기능을 활용할 수 있습니다. (예시는 `.env.example` 참고)
 
 ### 2. 레거시 정적 미리보기 (기존 HTML/CSS 수정용)
