@@ -763,10 +763,28 @@
   border: 2px solid var(--success); font-size: 28px;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer; transition: all 0.2s;
+  padding: 0;
 }
-.rec-btn-main:hover { transform: scale(1.05); background: var(--success); color: white; }
+.rec-btn-main:hover:not(:disabled) { transform: scale(1.05); background: var(--success); color: white; }
+.rec-btn-main:disabled { opacity: 0.5; cursor: not-allowed; }
 
-/* --- Meeting Result --- */
+.rec-btn-main--recording {
+  background: var(--danger-soft); color: var(--danger); border-color: var(--danger);
+  animation: pulse-red 2s infinite;
+}
+.rec-btn-main--recording:hover:not(:disabled) { background: var(--danger); color: white; }
+
+.rec-timer { font-family: var(--font-mono); font-size: 32px; font-weight: 700; color: var(--text); }
+
+@keyframes pulse-red {
+  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+  70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+.rec-status-text { font-size: var(--font-body-sm); font-weight: 600; color: var(--text-sub); margin-top: var(--space-1); }
+
+/* --- Progress Bar --- */
 .meeting-result-content {
   white-space: pre-wrap;
   font-size: var(--font-body-sm);
@@ -801,6 +819,54 @@
   border: 1px solid var(--danger);
   font-size: var(--font-body-sm);
   margin-bottom: var(--space-4);
+}
+
+/* --- Tabs --- */
+.tabs {
+  display: flex;
+  gap: var(--space-1);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: var(--space-1);
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+}
+.tabs::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+
+.tab {
+  padding: var(--space-3) var(--space-5);
+  font-size: var(--font-body);
+  font-weight: var(--font-medium);
+  color: var(--text-sub);
+  border: 0;
+  background: none;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.tab:hover:not(:disabled):not(.active) {
+  color: var(--text);
+  background: var(--surface-subtle);
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+}
+.tab.active {
+  color: var(--primary);
+  font-weight: var(--font-bold);
+}
+.tab.active::after {
+  content: "";
+  position: absolute;
+  left: var(--space-4);
+  right: var(--space-4);
+  bottom: 0;
+  height: 2px;
+  background: var(--primary);
+  border-radius: 2px 2px 0 0;
+}
+.tab:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 /* --- Progress Bar --- */

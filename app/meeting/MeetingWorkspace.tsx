@@ -28,6 +28,7 @@ import {
 } from "@/features/meeting";
 import { MeetingForm } from "./MeetingForm";
 import { MeetingUploadZone } from "./MeetingUploadZone";
+import { MeetingRecorder } from "./MeetingRecorder";
 import { MeetingResultView } from "./MeetingResultView";
 
 const CHUNK_SIZE = 500 * 1024;
@@ -37,6 +38,7 @@ export function MeetingWorkspace() {
   const [activeTab, setActiveTab] = useState<MeetingTabType>("record");
   const [meta, setMeta] = useState<MeetingMeta>(createDefaultMeetingMeta());
   const [files, setFiles] = useState<MeetingFile[]>([]);
+  const [isRecording, setIsRecording] = useState(false);
 
   const [stage, setStage] = useState<MeetingProcessStage>(MEETING_PROCESS_STAGES.IDLE);
   const [progress, setProgress] = useState({ percent: 0, text: "준비 중..." });
@@ -227,7 +229,7 @@ export function MeetingWorkspace() {
                 height={40}
                 className="brand__logo"
               />
-              <span className="text-title-sm text-default">회의록 자동화</span>
+              <span className="text-title-sm text-body">회의록 자동화</span>
             </Cluster>
           </Link>
         }
@@ -243,9 +245,15 @@ export function MeetingWorkspace() {
       </PortalHeader>
 
       <Page>
-        <div className="portal-layout">
-          {/* 사이드바: 최근 회의 목록 */}
-          <aside className="portal-layout__side">
+        <Stack spacing="lg">
+          <header className="page-header">
+            <h1 className="text-title-lg">회의록 자동화</h1>
+            <p className="text-subtitle">음성 녹음 및 파일을 분석하여 회의록 요약문을 자동 생성하고 Teams에 공유합니다.</p>
+          </header>
+
+          <div className="portal-layout">
+            {/* 사이드바: 최근 회의 목록 */}
+            <aside className="portal-layout__side">
             <Card variant="default" className="meeting-sidebar">
               <Card.Header className="meeting-sidebar__header">
                 <Card.Title className="text-caption font-semibold uppercase">최근 회의</Card.Title>
@@ -283,7 +291,7 @@ export function MeetingWorkspace() {
                       type="button"
                       className={cx("tab", activeTab === tab.id && "active")}
                       onClick={() => setActiveTab(tab.id)}
-                      disabled={isProcessing}
+                      disabled={isProcessing || isRecording}
                     >
                       {tab.icon} {tab.label}
                     </button>
@@ -292,14 +300,21 @@ export function MeetingWorkspace() {
 
                 <Card variant="default" className="meeting-input-zone">
                   <Card.Body>
-                    {activeTab === "upload" || activeTab === "record" ? (
+                    {activeTab === "record" ? (
+                      <MeetingRecorder
+                        onFileAdd={(f) => handleFilesAdd([f])}
+                        onValidationError={setErrorMessage}
+                        onRecordingStateChange={setIsRecording}
+                        disabled={isProcessing}
+                      />
+                    ) : activeTab === "upload" ? (
                       <MeetingUploadZone
                         files={files}
                         onFilesAdd={handleFilesAdd}
                         onFileRemove={handleFileRemove}
                         onFileMove={handleFileMove}
                         onValidationError={setErrorMessage}
-                        disabled={isProcessing}
+                        disabled={isProcessing || isRecording}
                       />
                     ) : (
                       <div className="meeting-input-placeholder">
@@ -316,10 +331,10 @@ export function MeetingWorkspace() {
                 variant="primary"
                 fullWidth
                 size="lg"
-                disabled={!isValid || isProcessing}
+                disabled={!isValid || isProcessing || isRecording}
                 onClick={handleSubmit}
               >
-                {isProcessing ? "처리 중..." : `회의록 생성 ${meta.postToTeams ? "& Teams 공유" : ""}${files.length > 1 ? ` (${files.length}개 파일)` : ""}`}
+                {isProcessing ? "처리 중..." : isRecording ? "녹음 중에는 생성할 수 없습니다" : `회의록 생성 ${meta.postToTeams ? "& Teams 공유" : ""}${files.length > 1 ? ` (${files.length}개 파일)` : ""}`}
               </Button>
 
               {/* 진행 상태 */}
@@ -349,7 +364,8 @@ export function MeetingWorkspace() {
             </Stack>
           </main>
         </div>
-      </Page>
-    </>
+      </Stack>
+    </Page>
+  </>
   );
 }
