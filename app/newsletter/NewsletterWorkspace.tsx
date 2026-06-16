@@ -13,7 +13,7 @@ import {
   Badge,
   cx
 } from "@/components";
-import { NewsletterViewType, NewsletterGenerateRequest, NewsletterGenerateResponse } from "@/features/newsletter";
+import { NewsletterViewType, NewsletterGenerateRequest, NewsletterGenerateResponse, generateNewsletter } from "@/features/newsletter";
 import { NewsletterForm } from "./NewsletterForm";
 
 type GenerateState = "idle" | "loading" | "error" | "success";
@@ -72,28 +72,19 @@ function NewsletterCreateView() {
   const [generateResult, setGenerateResult] = useState<NewsletterGenerateResponse | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleGenerate = (data: NewsletterGenerateRequest) => {
+  const handleGenerate = async (data: NewsletterGenerateRequest) => {
     setGenerateState("loading");
     setErrorMessage("");
     setGenerateResult(null);
 
-    // TODO: Implement actual API fetch logic here
-    setTimeout(() => {
-      // Simulate success
+    try {
+      const result = await generateNewsletter(data);
       setGenerateState("success");
-      setGenerateResult({
-        html_file: "newsletter_2024_12.html",
-        issue_label: "2024년 12월호",
-        size_kb: 154,
-        preview_url: "about:blank", // Mock URL
-        download_url: "#",
-        urls_used: data.urls,
-        mail: {
-          ok: true,
-          recipient_count: 0
-        }
-      });
-    }, 1500);
+      setGenerateResult(result);
+    } catch (err: any) {
+      setGenerateState("error");
+      setErrorMessage(err.message || "생성에 실패했습니다.");
+    }
   };
 
   return (
@@ -153,8 +144,24 @@ function NewsletterCreateView() {
                 <Cluster className="cluster-between">
                   <Card.Title>미리보기</Card.Title>
                   <Cluster className="gap-sm">
-                    <Button variant="secondary" size="sm" disabled={generateState !== "success"}>새 탭</Button>
-                    <Button variant="secondary" size="sm" disabled={generateState !== "success"}>다운로드</Button>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      disabled={generateState !== "success" || !generateResult?.preview_url}
+                      onClick={() => generateResult?.preview_url && window.open(generateResult.preview_url, '_blank')}
+                    >새 탭</Button>
+
+                    {generateState === "success" && generateResult?.download_url ? (
+                      <a
+                        href={generateResult.download_url}
+                        download={generateResult.html_file}
+                        className="btn btn--secondary btn--sm text-decoration-none text-inherit"
+                      >
+                        다운로드
+                      </a>
+                    ) : (
+                      <Button variant="secondary" size="sm" disabled>다운로드</Button>
+                    )}
                   </Cluster>
                 </Cluster>
               </Card.Header>
