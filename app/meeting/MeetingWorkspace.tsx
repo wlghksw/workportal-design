@@ -21,11 +21,17 @@ import {
   MeetingResult,
   createDefaultMeetingMeta,
   MeetingProcessStage,
-  MEETING_PROCESS_STAGES
+  MEETING_PROCESS_STAGES,
+  uploadMeetingChunk,
+  createMeetingJob,
+  getMeetingJobStatus
 } from "@/features/meeting";
 import { MeetingForm } from "./MeetingForm";
 import { MeetingUploadZone } from "./MeetingUploadZone";
 import { MeetingResultView } from "./MeetingResultView";
+
+const CHUNK_SIZE = 500 * 1024;
+const MAX_POLLING_ATTEMPTS = 90; // 2초 간격 기준 약 3분
 
 export function MeetingWorkspace() {
   const [activeTab, setActiveTab] = useState<MeetingTabType>("record");
@@ -39,6 +45,26 @@ export function MeetingWorkspace() {
 
   const handleMetaChange = <K extends keyof MeetingMeta>(field: K, value: MeetingMeta[K]) => {
     setMeta(prev => ({ ...prev, [field]: value }));
+  };
+
+  const uploadFileInChunks = async (meetingFile: MeetingFile, onFileProgress: (done: number, total: number) => void) => {
+    const { file } = meetingFile;
+    const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+    const uploadId = (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2)).replace(/-/g, "");
+    const ext = (file.name.split(".").pop() || "bin").replace(/[^a-zA-Z0-9]/g, "");
+
+    for (let i = 0; i < totalChunks; i++) {
+      const chunk = file.slice(i * CHUNK_SIZE, Math.min((i + 1) * CHUNK_SIZE, file.size));
+      await uploadMeetingChunk({
+        uploadId,
+        chunkIndex: i,
+        totalChunks,
+        ext,
+        chunk
+      });
+      onFileProgress(i + 1, totalChunks);
+    }
+    return uploadId;
   };
 
   const handleFilesAdd = (newFiles: File[]) => {
@@ -93,15 +119,87 @@ export function MeetingWorkspace() {
   }, [files, meta.title]);
 
   const handleSubmit = async () => {
-    if (!isValid || stage === MEETING_PROCESS_STAGES.PROCESSING) return;
+    if (!isValid || stage === MEETING_PROCESS_STAGES.PROCESSING || stage === MEETING_PROCESS_STAGES.UPLOADING) return;
 
     setErrorMessage("");
-    setStage(MEETING_PROCESS_STAGES.PROCESSING);
-    setProgress({ percent: 5, text: "파일 분석을 시작합니다..." });
+    setResult(null);
+    setStage(MEETING_PROCESS_STAGES.UPLOADING);
+    setProgress({ percent: 0, text: "파일 업로드를 시작합니다..." });
 
-    // API logic will be implemented in the next phase
+    try {
+      const uploadIds: string[] = [];
+      const totalFiles = files.length;
+
+      // 1. Chunked Upload
+      for (let i = 0; i < totalFiles; i++) {
+        const uid = await uploadFileInChunks(files[i], (done, total) => {
+          const fileProgress = Math.round(((i + done / total) / totalFiles) * 100);
+          setProgress({
+            percent: fileProgress,
+            text: `파일 업로드 중... (${i + 1}/${totalFiles})`
+          });
+        });
+        uploadIds.push(uid);
+      }
+
+      // 2. Create Job
+      setStage(MEETING_PROCESS_STAGES.PROCESSING);
+      setProgress({ percent: 0, text: "회의록 분석을 요청합니다..." });
+
+      const jobResp = await createMeetingJob({
+        ...meta,
+        uploadIds
+      });
+
+      if (!jobResp.jobId) throw new Error(jobResp.error || "작업 요청 실패");
+      const { jobId } = jobResp;
+
+      // 3. Polling
+      let isDone = false;
+      let attempts = 0;
+      while (!isDone) {
+        attempts++;
+        if (attempts >= MAX_POLLING_ATTEMPTS) {
+          throw new Error("처리 시간이 초과되었습니다. 잠시 후 히스토리에서 확인해 주세요.");
+        }
+
+        await new Promise(r => setTimeout(r, 2000));
+        const status = await getMeetingJobStatus(jobId);
+
+        if (status.status === "completed") {
+          isDone = true;
+          setStage(MEETING_PROCESS_STAGES.SUCCESS);
+          setResult({
+            noteText: status.result?.noteText || "회의록 내용이 없습니다.",
+            qualityWarnings: status.result?.qualityWarnings,
+            downloadUrl: undefined // To be implemented if needed
+          });
+        } else if (status.status === "failed") {
+          throw new Error(status.error || "회의록 생성 중 오류가 발생했습니다.");
+        } else {
+          // progress text updates
+          let stageText = "분석 중...";
+          if (status.progress?.stage === "stt") stageText = "음성 텍스트 변환 중...";
+          else if (status.progress?.stage === "summarize") stageText = "AI 요약 중...";
+          else if (status.progress?.stage === "teams") stageText = "Teams 공유 중...";
+
+          const currentPct = status.progress?.total
+            ? Math.round(((status.progress.done || 0) / status.progress.total) * 100)
+            : 0;
+
+          setProgress({
+            percent: currentPct,
+            text: `${stageText}${currentPct > 0 ? ` (${currentPct}%)` : ""}`
+          });
+        }
+      }
+
+    } catch (err: unknown) {
+      setStage(MEETING_PROCESS_STAGES.ERROR);
+      const msg = err instanceof Error ? err.message : "오류가 발생했습니다.";
+      setErrorMessage(msg);
+    }
   };
-
   const handleCopyResult = () => {
     // Copy logic will be implemented in the next phase
   };
