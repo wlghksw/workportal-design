@@ -2,8 +2,14 @@
 
 import { useState, useMemo } from "react";
 import { Stack, Cluster, FormField, Input, Textarea, Button } from "@/components";
+import { NewsletterGenerateRequest } from "@/features/newsletter";
 
-export function NewsletterForm() {
+interface NewsletterFormProps {
+  onSubmit: (data: NewsletterGenerateRequest) => void;
+  isLoading: boolean;
+}
+
+export function NewsletterForm({ onSubmit, isLoading }: NewsletterFormProps) {
   const [urls, setUrls] = useState("");
   const [featured, setFeatured] = useState("");
   const [year, setYear] = useState<string>(new Date().getFullYear().toString());
@@ -43,9 +49,15 @@ export function NewsletterForm() {
 
   const handleSubmit = () => {
     setTouched({ urls: true, year: true, month: true });
-    if (!isValid) return;
+    if (!isValid || isLoading) return;
     
-    // API logic will be implemented in the next phase
+    onSubmit({
+      urls: parsedUrls,
+      featured_link: featured || null,
+      issue_year: Number(year) || null,
+      issue_month: Number(month) || null,
+      allow_repeat: allowRepeat
+    });
   };
 
   return (
@@ -62,6 +74,7 @@ export function NewsletterForm() {
           onBlur={() => handleBlur("urls")}
           placeholder="https://blog.naver.com/...&#10;https://blog.naver.com/..." 
           rows={6} 
+          disabled={isLoading}
         />
       </FormField>
       
@@ -72,6 +85,7 @@ export function NewsletterForm() {
           value={featured}
           onChange={(e) => setFeatured(e.target.value)}
           placeholder="배너용 링크 (비우면 첫 글 자동 적용)" 
+          disabled={isLoading}
         />
       </FormField>
       
@@ -90,6 +104,7 @@ export function NewsletterForm() {
             placeholder="2024" 
             min={2020}
             max={2099}
+            disabled={isLoading}
           />
         </FormField>
         <FormField 
@@ -106,6 +121,7 @@ export function NewsletterForm() {
             placeholder="12" 
             min={1}
             max={12}
+            disabled={isLoading}
           />
         </FormField>
       </Cluster>
@@ -116,14 +132,15 @@ export function NewsletterForm() {
             type="checkbox" 
             checked={allowRepeat}
             onChange={(e) => setAllowRepeat(e.target.checked)}
+            disabled={isLoading}
           /> 이전 호 URL 포함
         </label>
         <Button 
           variant="primary" 
           onClick={handleSubmit}
-          disabled={!isValid}
+          disabled={!isValid || isLoading}
         >
-          뉴스레터 만들기
+          {isLoading ? "생성 중..." : "뉴스레터 만들기"}
         </Button>
       </Cluster>
     </Stack>

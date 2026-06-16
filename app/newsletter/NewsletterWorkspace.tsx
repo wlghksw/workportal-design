@@ -13,8 +13,10 @@ import {
   Badge,
   cx
 } from "@/components";
-import { NewsletterViewType } from "@/features/newsletter";
+import { NewsletterViewType, NewsletterGenerateRequest, NewsletterGenerateResponse } from "@/features/newsletter";
 import { NewsletterForm } from "./NewsletterForm";
+
+type GenerateState = "idle" | "loading" | "error" | "success";
 
 export function NewsletterWorkspace() {
   const [activeView, setActiveView] = useState<NewsletterViewType>("create");
@@ -66,12 +68,52 @@ export function NewsletterWorkspace() {
 }
 
 function NewsletterCreateView() {
+  const [generateState, setGenerateState] = useState<GenerateState>("idle");
+  const [generateResult, setGenerateResult] = useState<NewsletterGenerateResponse | null>(null);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleGenerate = (data: NewsletterGenerateRequest) => {
+    setGenerateState("loading");
+    setErrorMessage("");
+    setGenerateResult(null);
+
+    // TODO: Implement actual API fetch logic here
+    setTimeout(() => {
+      // Simulate success
+      setGenerateState("success");
+      setGenerateResult({
+        html_file: "newsletter_2024_12.html",
+        issue_label: "2024년 12월호",
+        size_kb: 154,
+        preview_url: "about:blank", // Mock URL
+        download_url: "#",
+        urls_used: data.urls,
+        mail: {
+          ok: true,
+          recipient_count: 0
+        }
+      });
+    }, 1500);
+  };
+
   return (
     <Stack spacing="lg">
       <header className="page-header">
         <h1 className="text-title-lg">뉴스레터 만들기</h1>
         <p className="text-subtitle">네이버 블로그 링크를 붙여넣으면 발송용 HTML을 자동 생성합니다.</p>
       </header>
+
+      {generateState === "error" && (
+        <div className="alert alert-error" role="alert">
+          {errorMessage || "생성에 실패했습니다."}
+        </div>
+      )}
+
+      {generateState === "success" && generateResult && (
+        <div className="alert alert-success" role="status">
+          {generateResult.issue_label} 완료 · 미리보기 {generateResult.size_kb}KB. 확인 후 메일 발행하세요.
+        </div>
+      )}
 
       <div className="portal-layout">
         <div className="portal-layout__main">
@@ -82,24 +124,56 @@ function NewsletterCreateView() {
                 <Card.Description>한 줄에 URL 하나씩 · 3~8개</Card.Description>
               </Card.Header>
               <Card.Body>
-                <NewsletterForm />
+                <NewsletterForm onSubmit={handleGenerate} isLoading={generateState === "loading"} />
               </Card.Body>
             </Card>
+
+            {generateState === "success" && generateResult && (
+              <Card variant="default">
+                <Card.Header>
+                  <Card.Title>생성 완료 요약</Card.Title>
+                </Card.Header>
+                <Card.Body>
+                  <Stack spacing="md">
+                    <p className="text-body-sm">
+                      <Badge variant="success" soft size="sm">완료</Badge> {generateResult.issue_label} · 카드 {generateResult.urls_used.length}개
+                    </p>
+                    <ul className="text-body-sm text-muted preview-url-list">
+                      {generateResult.urls_used.map((url, i) => (
+                        <li key={i}>{url}</li>
+                      ))}
+                    </ul>
+                  </Stack>
+                </Card.Body>
+              </Card>
+            )}
 
             <Card variant="default">
               <Card.Header>
                 <Cluster className="cluster-between">
                   <Card.Title>미리보기</Card.Title>
                   <Cluster className="gap-sm">
-                    <Button variant="secondary" size="sm" disabled>새 탭</Button>
-                    <Button variant="secondary" size="sm" disabled>다운로드</Button>
+                    <Button variant="secondary" size="sm" disabled={generateState !== "success"}>새 탭</Button>
+                    <Button variant="secondary" size="sm" disabled={generateState !== "success"}>다운로드</Button>
                   </Cluster>
                 </Cluster>
               </Card.Header>
               <Card.Body>
-                <div className="preview-placeholder">
-                  <p>링크 입력 후<br/>「뉴스레터 만들기」를 누르면<br/>여기에 표시됩니다</p>
-                </div>
+                {generateState === "success" && generateResult ? (
+                  <iframe
+                    src={generateResult.preview_url}
+                    className="preview-frame"
+                    title="뉴스레터 미리보기"
+                  />
+                ) : (
+                  <div className="preview-placeholder">
+                    {generateState === "loading" ? (
+                      <p>생성 중입니다. 잠시만 기다려주세요...</p>
+                    ) : (
+                      <p>링크 입력 후<br/>「뉴스레터 만들기」를 누르면<br/>여기에 표시됩니다</p>
+                    )}
+                  </div>
+                )}
               </Card.Body>
             </Card>
           </Stack>
@@ -111,7 +185,9 @@ function NewsletterCreateView() {
               <Card.Header>
                 <Cluster className="cluster-between">
                   <Card.Title className="text-body-lg">메일 발행</Card.Title>
-                  <Badge variant="warning" soft size="sm">준비 중</Badge>
+                  <Badge variant="warning" soft size="sm">
+                    준비 중
+                  </Badge>
                 </Cluster>
               </Card.Header>
               <Card.Body>
@@ -124,11 +200,14 @@ function NewsletterCreateView() {
                     <span className="text-caption">수신: </span>
                     <span className="text-body-sm font-semibold">0명</span>
                   </div>
-                  <p className="text-caption text-muted">생성 후 미리보기를 확인하고 발행하세요.</p>
+                  <p className="text-caption text-muted">
+                    {generateState === "success" ? "발행 관련 설정은 추후 구현됩니다." : "생성 후 미리보기를 확인하고 발행하세요."}
+                  </p>
                   <Button variant="primary" fullWidth disabled>메일 발행</Button>
                 </Stack>
               </Card.Body>
             </Card>
+
 
             <Card variant="soft">
               <Card.Header>
