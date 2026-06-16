@@ -717,6 +717,54 @@
 }
 
 
+/* --- Meeting Page Styles --- */
+.meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+@media (max-width: 639px) {
+  .meta-grid { grid-template-columns: 1fr; }
+}
+
+.drop-zone {
+  border: 2px dashed var(--border-strong);
+  border-radius: var(--radius-lg);
+  padding: var(--space-10) var(--space-4);
+  text-align: center;
+  background: var(--surface-subtle);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+.drop-zone:hover, .drop-zone--over {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+}
+.drop-icon { font-size: 32px; }
+.drop-text { font-weight: var(--font-semibold); color: var(--text); }
+.drop-hint { font-size: var(--font-body-sm); color: var(--text-muted); }
+
+.record-zone {
+  padding: var(--space-10) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  text-align: center;
+}
+.rec-btn-main {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: var(--success-soft); color: var(--success);
+  border: 2px solid var(--success); font-size: 28px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.2s;
+}
+.rec-btn-main:hover { transform: scale(1.05); background: var(--success); color: white; }
+
 /* --- Progress Bar --- */
 .progress-bar-bg {
   height: 8px; background: var(--border); border-radius: var(--radius-xl); overflow: hidden;

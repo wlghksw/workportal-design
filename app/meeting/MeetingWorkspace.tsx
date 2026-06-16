@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -11,15 +11,79 @@ import {
   Card,
   Button,
   Badge,
-  cx,
-  FormField,
-  Input,
-  Select
+  cx
 } from "@/components";
-import { MeetingTabType, MEETING_TABS } from "@/features/meeting";
+import {
+  MeetingTabType,
+  MEETING_TABS,
+  MeetingMeta,
+  MeetingFile,
+  createDefaultMeetingMeta
+} from "@/features/meeting";
+import { MeetingForm } from "./MeetingForm";
+import { MeetingUploadZone } from "./MeetingUploadZone";
 
 export function MeetingWorkspace() {
   const [activeTab, setActiveTab] = useState<MeetingTabType>("record");
+  const [meta, setMeta] = useState<MeetingMeta>(createDefaultMeetingMeta());
+  const [files, setFiles] = useState<MeetingFile[]>([]);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleMetaChange = <K extends keyof MeetingMeta>(field: K, value: MeetingMeta[K]) => {
+    setMeta(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleFilesAdd = (newFiles: File[]) => {
+    setErrorMessage("");
+    const maxMb = 1024;
+
+    const validFiles: MeetingFile[] = [];
+    for (const f of newFiles) {
+      if (f.size === 0) {
+        setErrorMessage(`오류: "${f.name}" 파일이 비어 있습니다.`);
+        continue;
+      }
+      if (f.size > maxMb * 1024 * 1024) {
+        setErrorMessage(`오류: "${f.name}" 용량이 너무 큽니다. (최대 1GB)`);
+        continue;
+      }
+      validFiles.push({
+        id: Math.random().toString(36).slice(2) + Date.now(),
+        name: f.name,
+        size: f.size,
+        type: f.type,
+        file: f
+      });
+    }
+
+    setFiles(prev => [...prev, ...validFiles]);
+  };
+  const handleFileRemove = (id: string) => {
+    setFiles(prev => prev.filter(f => f.id !== id));
+  };
+
+  const handleFileMove = (id: string, direction: number) => {
+    setFiles(prev => {
+      const idx = prev.findIndex(f => f.id === id);
+      if (idx === -1) return prev;
+      const nextIdx = idx + direction;
+      if (nextIdx < 0 || nextIdx >= prev.length) return prev;
+
+      const next = [...prev];
+      const [moved] = next.splice(idx, 1);
+      next.splice(nextIdx, 0, moved);
+      return next;
+    });
+  };
+
+  const isValid = useMemo(() => {
+    return files.length > 0 && meta.title.trim().length > 0;
+  }, [files, meta.title]);
+
+  const handleSubmit = () => {
+    if (!isValid) return;
+    // API logic will be in next commit
+  };
 
   return (
     <>
@@ -68,32 +132,16 @@ export function MeetingWorkspace() {
           {/* 메인 콘텐츠 */}
           <main className="portal-layout__main">
             <Stack spacing="lg">
+              {errorMessage && (
+                <div className="alert alert-error" role="alert">
+                  {errorMessage}
+                </div>
+              )}
+
               {/* 메타 정보 입력 */}
               <Card variant="default">
                 <Card.Body>
-                  <div className="meta-grid">
-                    <FormField label="회의 제목" htmlFor="title">
-                      <Input id="title" placeholder="예: 4월 마케팅 전략 회의" />
-                    </FormField>
-                    <FormField label="참석자" htmlFor="participants">
-                      <Input id="participants" placeholder="예: 김철수, 이영희" />
-                    </FormField>
-                    <FormField label="Teams 공유 팀" htmlFor="team">
-                      <Select id="team" defaultValue="일반업무">
-                        <option value="교육개발">교육개발</option>
-                        <option value="영업마케팅">영업마케팅</option>
-                        <option value="일반업무">일반업무</option>
-                      </Select>
-                    </FormField>
-                    <Cluster className="cluster-center gap-md mt-2">
-                      <FormField label="날짜" htmlFor="date">
-                        <Input id="date" type="date" />
-                      </FormField>
-                      <FormField label="장소" htmlFor="location">
-                        <Input id="location" placeholder="예: 본사 회의실" />
-                      </FormField>
-                    </Cluster>
-                  </div>
+                  <MeetingForm data={meta} onChange={handleMetaChange} />
                 </Card.Body>
               </Card>
 
@@ -114,18 +162,34 @@ export function MeetingWorkspace() {
 
                 <Card variant="default" className="meeting-input-zone">
                   <Card.Body>
-                    <div className="meeting-input-placeholder">
-                      {activeTab === "record" && <p>🎙️ 마이크 권한 허용 후 녹음을 시작하세요.</p>}
-                      {activeTab === "upload" && <p>📁 오디오 파일을 드래그하거나 클릭하여 추가하세요.</p>}
-                      {activeTab === "live" && <p>⚡ 실시간으로 전사 및 요약을 확인합니다.</p>}
-                    </div>
+                    {activeTab === "upload" || activeTab === "record" ? (
+                      <MeetingUploadZone
+                        files={files}
+                        onFilesAdd={handleFilesAdd}
+                        onFileRemove={handleFileRemove}
+                        onFileMove={handleFileMove}
+                        onValidationError={setErrorMessage}
+                      />
+                    ) : (
+                      <div className="meeting-input-placeholder">
+                        <p>⚡ 실시간으로 전사 및 요약을 확인합니다.</p>
+                        <p className="text-caption mt-2">실시간 모드는 추후 지원 예정입니다.</p>
+                      </div>
+                    )}
                   </Card.Body>
                 </Card>
               </Stack>
 
               {/* 액션 버튼 */}
-              <Button variant="primary" fullWidth size="lg" disabled>
-                회의록 생성 & Teams 공유
+              <Button
+                variant="primary"
+                fullWidth
+                size="lg"
+                disabled={!isValid}
+                onClick={handleSubmit}
+              >
+                회의록 생성 {meta.postToTeams ? "& Teams 공유" : ""}
+                {files.length > 1 ? ` (${files.length}개 파일)` : ""}
               </Button>
 
               {/* 진행 상태 (Hidden by default) */}
