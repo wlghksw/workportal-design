@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -13,7 +13,19 @@ import {
   Badge,
   cx
 } from "@/components";
-import { NewsletterViewType, NewsletterGenerateRequest, NewsletterGenerateResponse, generateNewsletter } from "@/features/newsletter";
+import {
+  NewsletterViewType,
+  NewsletterGenerateRequest,
+  NewsletterGenerateResponse,
+  generateNewsletter,
+  getMailStatus,
+  sendMail,
+  NewsletterMailStatusResponse,
+  NewsletterRecipient,
+  getRecipients,
+  saveRecipients,
+  importCsv
+} from "@/features/newsletter";
 import { NewsletterForm } from "./NewsletterForm";
 
 type GenerateState = "idle" | "loading" | "error" | "success";
@@ -72,10 +84,23 @@ function NewsletterCreateView() {
   const [generateResult, setGenerateResult] = useState<NewsletterGenerateResponse | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
 
+  const [mailStatus, setMailStatus] = useState<NewsletterMailStatusResponse | null>(null);
+  const [isSending, setIsSending] = useState(false);
+  const [sendSuccessMsg, setSendSuccessMsg] = useState("");
+  const [sendErrorMsg, setSendErrorMsg] = useState("");
+
+  useEffect(() => {
+    getMailStatus()
+      .then(setMailStatus)
+      .catch(() => setMailStatus(null));
+  }, []);
+
   const handleGenerate = async (data: NewsletterGenerateRequest) => {
     setGenerateState("loading");
     setErrorMessage("");
     setGenerateResult(null);
+    setSendSuccessMsg("");
+    setSendErrorMsg("");
 
     try {
       const result = await generateNewsletter(data);
@@ -86,6 +111,36 @@ function NewsletterCreateView() {
       setErrorMessage(err.message || "생성에 실패했습니다.");
     }
   };
+
+  const handleSendMail = async () => {
+    const sendFile = generateResult?.send_html_file || generateResult?.html_file;
+    if (!sendFile || !mailStatus?.ready) return;
+
+    const ok = window.confirm(`${mailStatus.sender} 계정으로 ${mailStatus.recipient_count}명에게 BCC 발송합니다.\n\n계속하시겠습니까?`);
+    if (!ok) return;
+
+    setIsSending(true);
+    setSendSuccessMsg("");
+    setSendErrorMsg("");
+    try {
+      const res = await sendMail({ html_file: sendFile, dry_run: false, groups: null });
+      setSendSuccessMsg(`${res.recipient_count}명 발송 완료`);
+    } catch (err: any) {
+      setSendErrorMsg(err.message || "발송 실패");
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  const mailReadyBadge = mailStatus?.ready ? (
+    <Badge variant="success" soft size="sm">발행 가능</Badge>
+  ) : mailStatus?.graph_configured === false ? (
+    <Badge variant="warning" soft size="sm">Graph 미설정</Badge>
+  ) : mailStatus?.recipients_ready === false ? (
+    <Badge variant="warning" soft size="sm">수신자 없음</Badge>
+  ) : (
+    <Badge variant="warning" soft size="sm">준비 중</Badge>
+  );
 
   return (
     <Stack spacing="lg">
@@ -100,9 +155,21 @@ function NewsletterCreateView() {
         </div>
       )}
 
-      {generateState === "success" && generateResult && (
+      {sendErrorMsg && (
+        <div className="alert alert-error" role="alert">
+          {sendErrorMsg}
+        </div>
+      )}
+
+      {generateState === "success" && generateResult && !sendSuccessMsg && (
         <div className="alert alert-success" role="status">
           {generateResult.issue_label} 완료 · 미리보기 {generateResult.size_kb}KB. 확인 후 메일 발행하세요.
+        </div>
+      )}
+
+      {sendSuccessMsg && (
+        <div className="alert alert-success" role="status">
+          {sendSuccessMsg}
         </div>
       )}
 
@@ -192,25 +259,30 @@ function NewsletterCreateView() {
               <Card.Header>
                 <Cluster className="cluster-between">
                   <Card.Title className="text-body-lg">메일 발행</Card.Title>
-                  <Badge variant="warning" soft size="sm">
-                    준비 중
-                  </Badge>
+                  {mailReadyBadge}
                 </Cluster>
               </Card.Header>
               <Card.Body>
                 <Stack spacing="md">
                   <div>
                     <span className="text-caption">발신: </span>
-                    <span className="text-body-sm font-semibold">partner@kidsedutv.co.kr</span>
+                    <span className="text-body-sm font-semibold">{mailStatus?.sender || "-"}</span>
                   </div>
                   <div>
                     <span className="text-caption">수신: </span>
-                    <span className="text-body-sm font-semibold">0명</span>
+                    <span className="text-body-sm font-semibold">{mailStatus?.recipient_count || 0}명</span>
                   </div>
                   <p className="text-caption text-muted">
-                    {generateState === "success" ? "발행 관련 설정은 추후 구현됩니다." : "생성 후 미리보기를 확인하고 발행하세요."}
+                    {mailStatus?.ready && generateState === "success" ? "미리보기 확인 후 「메일 발행」을 누르면 BCC로 발송됩니다." : "생성 후 미리보기를 확인하고 발행하세요."}
                   </p>
-                  <Button variant="primary" fullWidth disabled>메일 발행</Button>
+                  <Button
+                    variant="primary"
+                    fullWidth
+                    disabled={generateState !== "success" || !mailStatus?.ready || isSending || !(generateResult?.send_html_file || generateResult?.html_file)}
+                    onClick={handleSendMail}
+                  >
+                    {isSending ? "발송 중..." : "메일 발행"}
+                  </Button>
                 </Stack>
               </Card.Body>
             </Card>
@@ -232,12 +304,95 @@ function NewsletterCreateView() {
 }
 
 function NewsletterRecipientsView() {
+  const [recipients, setRecipients] = useState<NewsletterRecipient[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
+
+  const [file, setFile] = useState<File | null>(null);
+  const [mergeCsv, setMergeCsv] = useState(false);
+  const [alertMsg, setAlertMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
+
+  const loadRecipients = async () => {
+    setIsLoading(true);
+    setAlertMsg(null);
+    try {
+      const res = await getRecipients();
+      setRecipients(res.recipients.length > 0 ? res.recipients : [{ email: "", name: "", active: true, note: "", group: "" }]);
+    } catch (err: any) {
+      setAlertMsg({ type: "error", text: err.message || "수신자 목록을 불러오지 못했습니다." });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadRecipients();
+  }, []);
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    setAlertMsg(null);
+    try {
+      const validRecipients = recipients.filter(r => r.email.trim());
+      const res = await saveRecipients({ recipients: validRecipients });
+      setAlertMsg({ type: "success", text: `저장 완료 · 발송 대상 ${res.active || 0}명 (전체 ${res.total}명)` });
+      loadRecipients();
+    } catch (err: any) {
+      setAlertMsg({ type: "error", text: err.message || "저장 실패" });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleImport = async () => {
+    if (!file) {
+      setAlertMsg({ type: "error", text: "CSV 파일을 선택하세요." });
+      return;
+    }
+    setIsImporting(true);
+    setAlertMsg(null);
+    try {
+      const res = await importCsv(file, mergeCsv);
+      setAlertMsg({ type: "success", text: `CSV 반영 · ${res.active}명 (전체 ${res.total}명)` });
+      setFile(null);
+      loadRecipients();
+    } catch (err: any) {
+      setAlertMsg({ type: "error", text: err.message || "CSV 가져오기 실패" });
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
+  const addRow = () => {
+    setRecipients(prev => [...prev, { email: "", name: "", active: true, note: "", group: "" }]);
+  };
+
+  const updateRow = (index: number, field: keyof NewsletterRecipient, value: any) => {
+    setRecipients(prev => {
+      const next = [...prev];
+      next[index] = { ...next[index], [field]: value };
+      return next;
+    });
+  };
+
+  const removeRow = (index: number) => {
+    if(!window.confirm("이 수신자를 삭제할까요?")) return;
+    setRecipients(prev => prev.filter((_, i) => i !== index));
+  };
+
   return (
     <Stack spacing="lg">
       <header className="page-header">
         <h1 className="text-title-lg">수신자 관리</h1>
         <p className="text-subtitle">발송 대상을 추가·수정합니다. 저장 후 「만들기」에서 메일을 발행하세요.</p>
       </header>
+
+      {alertMsg && (
+        <div className={`alert alert-${alertMsg.type}`} role={alertMsg.type === "error" ? "alert" : "status"}>
+          {alertMsg.text}
+        </div>
+      )}
 
       <Card variant="default">
         <Card.Header>
@@ -246,11 +401,27 @@ function NewsletterRecipientsView() {
         </Card.Header>
         <Card.Body>
           <Cluster className="cluster-center gap-md">
-            <input type="file" accept=".csv,text/csv" className="input input-auto" />
+            <input
+              type="file"
+              accept=".csv,text/csv"
+              className="input input-auto"
+              onChange={e => setFile(e.target.files?.[0] || null)}
+              key={file ? file.name : "empty"} // Reset file input
+            />
             <label className="check-wrap">
-              <input type="checkbox" /> 기존 목록에 합치기
+              <input
+                type="checkbox"
+                checked={mergeCsv}
+                onChange={e => setMergeCsv(e.target.checked)}
+              /> 기존 목록에 합치기
             </label>
-            <Button variant="secondary">CSV 반영</Button>
+            <Button
+              variant="secondary"
+              onClick={handleImport}
+              disabled={isImporting || !file}
+            >
+              {isImporting ? "가져오는 중..." : "CSV 반영"}
+            </Button>
           </Cluster>
         </Card.Body>
       </Card>
@@ -263,13 +434,15 @@ function NewsletterRecipientsView() {
               <Card.Description>목록에서 그룹을 바꿀 수 있습니다 · 수신 체크 해제 시 발송 제외</Card.Description>
             </div>
             <Cluster className="gap-sm">
-              <Button variant="secondary" size="sm">+ 행 추가</Button>
-              <Button variant="primary" size="sm">저장</Button>
+              <Button variant="secondary" size="sm" onClick={addRow}>+ 행 추가</Button>
+              <Button variant="primary" size="sm" onClick={handleSave} disabled={isSaving || isLoading}>
+                {isSaving ? "저장 중..." : "저장"}
+              </Button>
             </Cluster>
           </Cluster>
         </Card.Header>
         <Card.Body>
-          <div className="table-wrap">
+          <div className="table-wrap table-scroll">
             <table className="table-base">
               <thead>
                 <tr>
@@ -282,11 +455,70 @@ function NewsletterRecipientsView() {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td colSpan={6} className="cell-empty">
-                    수신자가 없습니다. 「+ 행 추가」 또는 위 CSV 가져오기를 사용하세요.
-                  </td>
-                </tr>
+                {isLoading ? (
+                  <tr>
+                    <td colSpan={6} className="cell-empty">
+                      불러오는 중...
+                    </td>
+                  </tr>
+                ) : recipients.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="cell-empty">
+                      수신자가 없습니다. 「+ 행 추가」 또는 위 CSV 가져오기를 사용하세요.
+                    </td>
+                  </tr>
+                ) : (
+                  recipients.map((row, idx) => (
+                    <tr key={idx}>
+                      <td className="col-check text-center">
+                        <input
+                          type="checkbox"
+                          checked={row.active}
+                          onChange={(e) => updateRow(idx, "active", e.target.checked)}
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          className="input input-auto"
+                          value={row.group}
+                          onChange={(e) => updateRow(idx, "group", e.target.value)}
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="email"
+                          className="input input-auto"
+                          value={row.email}
+                          onChange={(e) => updateRow(idx, "email", e.target.value)}
+                          placeholder="email@company.com"
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          className="input input-auto"
+                          value={row.name}
+                          onChange={(e) => updateRow(idx, "name", e.target.value)}
+                          placeholder="이름"
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          className="input input-auto"
+                          value={row.note}
+                          onChange={(e) => updateRow(idx, "note", e.target.value)}
+                        />
+                      </td>
+                      <td className="col-action text-center">
+                        <button type="button" className="btn-icon" onClick={() => removeRow(idx)} aria-label="삭제">
+                          &times;
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
