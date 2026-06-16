@@ -70,9 +70,11 @@ export function MeetingResultView({ result, meta, onReset }: MeetingResultViewPr
                   variant={copyStatus === "success" ? "primary" : "secondary"}
                   size="sm"
                   onClick={handleCopy}
+                  aria-live="polite"
                 >
-                  {copyStatus === "success" ? "복사 완료!" : copyStatus === "error" ? "복사 실패" : "복사하기"}
+                  {copyStatus === "success" ? "✅ 복사 완료!" : copyStatus === "error" ? "❌ 복사 실패" : "복사하기"}
                 </Button>
+
                 <Button variant="ghost" size="sm" onClick={onReset}>
                   초기화
                 </Button>

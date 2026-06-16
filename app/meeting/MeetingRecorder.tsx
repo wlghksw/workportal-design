@@ -92,8 +92,9 @@ export function MeetingRecorder({
         setElapsedMs(prev => prev + 1000);
       }, 1000);
 
-    } catch (err: any) {
-      onValidationError(err.message || "마이크 접근 중 오류가 발생했습니다.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "마이크 접근 중 오류가 발생했습니다.";
+      onValidationError(msg);
       setRecState("idle");
     }
   };

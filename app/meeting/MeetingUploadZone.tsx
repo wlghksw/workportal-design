@@ -133,14 +133,16 @@ export function MeetingUploadZone({
                       className="icon-btn"
                       onClick={() => onFileMove(f.id, -1)}
                       disabled={disabled || i === 0}
-                      title="위로"
+                      title="위로 이동"
+                      aria-label={`${f.name} 위로 이동`}
                     >↑</button>
                     <button
                       type="button"
                       className="icon-btn"
                       onClick={() => onFileMove(f.id, 1)}
                       disabled={disabled || i === files.length - 1}
-                      title="아래로"
+                      title="아래로 이동"
+                      aria-label={`${f.name} 아래로 이동`}
                     >↓</button>
                     <button
                       type="button"
@@ -148,6 +150,7 @@ export function MeetingUploadZone({
                       onClick={() => onFileRemove(f.id)}
                       disabled={disabled}
                       title="삭제"
+                      aria-label={`${f.name} 삭제`}
                     >✕</button>
                   </div>
                 </div>

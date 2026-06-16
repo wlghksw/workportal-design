@@ -275,6 +275,12 @@ export function MeetingWorkspace() {
                 </div>
               )}
 
+              {stage === MEETING_PROCESS_STAGES.SUCCESS && (
+                <div className="alert alert-success" role="status">
+                  회의록 생성이 완료되었습니다. 아래에서 내용을 확인하세요.
+                </div>
+              )}
+
               {/* 메타 정보 입력 */}
               <Card variant="default">
                 <Card.Body>
