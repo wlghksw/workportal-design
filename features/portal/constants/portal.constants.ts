@@ -17,7 +17,7 @@ export const SERVICES: ServiceData[] = [
     title: "회의록 자동화",
     description: "회의 녹취 업로드 → 요약 · 결정사항 · 할일",
     host: "meeting.platformers.kr",
-    href: "/services/meeting/ui-page.html",
+    href: "/meeting",
     searchKeywords: "회의록 meeting 녹음",
     newTab: false,
     iconType: "meeting",

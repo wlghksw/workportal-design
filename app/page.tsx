@@ -522,7 +522,10 @@ export default function WorkPortalHomePage() {
                         </Link>
                       </li>
                       <li>
-                        <div className="portal-notice__link portal-notice__link--static">
+                        <Link
+                          href="/guide?service=meeting"
+                          className="portal-notice__link"
+                        >
                           <span className="portal-notice__title">
                             회의록 자동화
                           </span>
@@ -530,7 +533,7 @@ export default function WorkPortalHomePage() {
                             녹음 업로드 후 요약·결정사항·Teams 공유
                           </span>
                           <time className="portal-notice__date">서비스</time>
-                        </div>
+                        </Link>
                       </li>
                     </ul>
                   )}
