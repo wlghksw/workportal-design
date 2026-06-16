@@ -717,6 +717,15 @@
 }
 
 
+/* --- Progress Bar --- */
+.progress-bar-bg {
+  height: 8px; background: var(--border); border-radius: var(--radius-xl); overflow: hidden;
+}
+.progress-bar {
+  height: 100%; background: var(--primary); transition: width 0.3s ease;
+}
+.progress-bar--zero { width: 0; }
+
 /* --- Guide Page Styles --- */
 .guide-page { background: var(--background); }
 .guide-layout { display: flex; gap: var(--space-5); align-items: flex-start; }
