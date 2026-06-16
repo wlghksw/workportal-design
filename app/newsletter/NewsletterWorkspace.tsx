@@ -216,6 +216,7 @@ function NewsletterCreateView() {
                       size="sm"
                       disabled={generateState !== "success" || !generateResult?.preview_url}
                       onClick={() => generateResult?.preview_url && window.open(generateResult.preview_url, '_blank')}
+                      aria-label="새 창에서 미리보기 열기"
                     >새 탭</Button>
 
                     {generateState === "success" && generateResult?.download_url ? (
@@ -223,6 +224,7 @@ function NewsletterCreateView() {
                         href={generateResult.download_url}
                         download={generateResult.html_file}
                         className="btn btn--secondary btn--sm text-decoration-none text-inherit"
+                        aria-label="뉴스레터 HTML 파일 다운로드"
                       >
                         다운로드
                       </a>
@@ -232,7 +234,7 @@ function NewsletterCreateView() {
                   </Cluster>
                 </Cluster>
               </Card.Header>
-              <Card.Body>
+              <Card.Body aria-busy={generateState === "loading"}>
                 {generateState === "success" && generateResult ? (
                   <iframe
                     src={generateResult.preview_url}
@@ -407,6 +409,7 @@ function NewsletterRecipientsView() {
               className="input input-auto"
               onChange={e => setFile(e.target.files?.[0] || null)}
               key={file ? file.name : "empty"} // Reset file input
+              aria-label="수신자 목록 CSV 파일 선택"
             />
             <label className="check-wrap">
               <input
@@ -475,6 +478,7 @@ function NewsletterRecipientsView() {
                           type="checkbox"
                           checked={row.active}
                           onChange={(e) => updateRow(idx, "active", e.target.checked)}
+                          aria-label={`${row.name || row.email || idx + 1}번 수신 여부`}
                         />
                       </td>
                       <td>
@@ -483,6 +487,7 @@ function NewsletterRecipientsView() {
                           className="input input-auto"
                           value={row.group}
                           onChange={(e) => updateRow(idx, "group", e.target.value)}
+                          aria-label={`${idx + 1}번 그룹`}
                         />
                       </td>
                       <td>
@@ -492,6 +497,7 @@ function NewsletterRecipientsView() {
                           value={row.email}
                           onChange={(e) => updateRow(idx, "email", e.target.value)}
                           placeholder="email@company.com"
+                          aria-label={`${idx + 1}번 이메일`}
                         />
                       </td>
                       <td>
@@ -501,6 +507,7 @@ function NewsletterRecipientsView() {
                           value={row.name}
                           onChange={(e) => updateRow(idx, "name", e.target.value)}
                           placeholder="이름"
+                          aria-label={`${idx + 1}번 이름`}
                         />
                       </td>
                       <td>
@@ -509,10 +516,11 @@ function NewsletterRecipientsView() {
                           className="input input-auto"
                           value={row.note}
                           onChange={(e) => updateRow(idx, "note", e.target.value)}
+                          aria-label={`${idx + 1}번 비고`}
                         />
                       </td>
                       <td className="col-action text-center">
-                        <button type="button" className="btn-icon" onClick={() => removeRow(idx)} aria-label="삭제">
+                        <button type="button" className="btn-icon" onClick={() => removeRow(idx)} aria-label={`${row.name || row.email || idx + 1}번 수신자 삭제`}>
                           &times;
                         </button>
                       </td>

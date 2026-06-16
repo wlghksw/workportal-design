@@ -61,82 +61,85 @@ export function NewsletterForm({ onSubmit, isLoading }: NewsletterFormProps) {
   };
 
   return (
-    <Stack spacing="md">
-      <FormField 
-        label="URL 목록" 
-        htmlFor="urls" 
+    <Stack spacing="md" aria-busy={isLoading}>
+      <FormField
+        label="URL 목록"
+        htmlFor="urls"
         errorMessage={errors.urls}
       >
-        <Textarea 
-          id="urls" 
+        <Textarea
+          id="urls"
           value={urls}
           onChange={(e) => setUrls(e.target.value)}
           onBlur={() => handleBlur("urls")}
-          placeholder="https://blog.naver.com/...&#10;https://blog.naver.com/..." 
-          rows={6} 
+          placeholder="https://blog.naver.com/...&#10;https://blog.naver.com/..."
+          rows={6}
           disabled={isLoading}
+          aria-invalid={!!errors.urls}
         />
       </FormField>
-      
+
       <FormField label="메인 URL (선택)" htmlFor="featured">
-        <Input 
-          id="featured" 
+        <Input
+          id="featured"
           type="url"
           value={featured}
           onChange={(e) => setFeatured(e.target.value)}
-          placeholder="배너용 링크 (비우면 첫 글 자동 적용)" 
+          placeholder="배너용 링크 (비우면 첫 글 자동 적용)"
           disabled={isLoading}
         />
       </FormField>
-      
+
       <Cluster className="gap-md">
-        <FormField 
-          label="연도" 
-          htmlFor="year" 
+        <FormField
+          label="연도"
+          htmlFor="year"
           errorMessage={errors.year}
         >
-          <Input 
-            id="year" 
-            type="number" 
+          <Input
+            id="year"
+            type="number"
             value={year}
             onChange={(e) => setYear(e.target.value)}
             onBlur={() => handleBlur("year")}
-            placeholder="2024" 
+            placeholder="2024"
             min={2020}
             max={2099}
             disabled={isLoading}
+            aria-invalid={!!errors.year}
           />
         </FormField>
-        <FormField 
-          label="월" 
-          htmlFor="month" 
+        <FormField
+          label="월"
+          htmlFor="month"
           errorMessage={errors.month}
         >
-          <Input 
-            id="month" 
-            type="number" 
+          <Input
+            id="month"
+            type="number"
             value={month}
             onChange={(e) => setMonth(e.target.value)}
             onBlur={() => handleBlur("month")}
-            placeholder="12" 
+            placeholder="12"
             min={1}
             max={12}
             disabled={isLoading}
+            aria-invalid={!!errors.month}
           />
         </FormField>
       </Cluster>
-      
+
       <Cluster className="cluster-between mt-2">
         <label className="check-wrap">
-          <input 
-            type="checkbox" 
+          <input
+            type="checkbox"
             checked={allowRepeat}
             onChange={(e) => setAllowRepeat(e.target.checked)}
             disabled={isLoading}
           /> 이전 호 URL 포함
         </label>
-        <Button 
-          variant="primary" 
+        <Button
+          variant="primary"
           onClick={handleSubmit}
           disabled={!isValid || isLoading}
         >
