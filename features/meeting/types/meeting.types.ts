@@ -29,6 +29,36 @@ export interface MeetingHistoryItem extends MeetingMeta {
   createdAt: number;
 }
 
+// --- Domain & UI State Types ---
+
+export interface MeetingResult {
+  noteText: string;
+  summary?: string;
+  done?: string;
+  willDo?: string;
+  openQuestions?: string;
+  agenda?: string;
+  qualityWarnings?: string[];
+  downloadUrl?: string;
+}
+
+export interface MeetingFullState {
+  meta: MeetingMeta;
+  files: MeetingFile[];
+  activeTab: MeetingTabType;
+  stage: 'idle' | 'input' | 'uploading' | 'processing' | 'success' | 'error';
+  progress: {
+    percent: number;
+    statusText: string;
+    stage?: 'chunked' | 'stt' | 'summarize' | 'teams';
+  };
+  result: MeetingResult | null;
+  error: {
+    message: string;
+    detail?: string;
+  } | null;
+}
+
 // --- API Request & Response Types ---
 
 export interface MeetingUploadChunkRequest {
