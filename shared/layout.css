@@ -652,6 +652,45 @@
 .activity-footer { display: flex; align-items: center; justify-content: center; gap: var(--space-4); margin-top: var(--space-6); }
 .loading-placeholder { color: var(--text-muted); font-size: var(--font-body); text-align: center; padding: var(--space-8); }
 
+/* --- Form Checkbox --- */
+.check-wrap { display: flex; align-items: center; gap: var(--space-2); font-size: var(--font-body-sm); cursor: pointer; color: var(--text-sub); }
+.check-wrap input[type="checkbox"] { margin: 0; cursor: pointer; }
+
+/* --- Utilities --- */
+.text-decoration-none { text-decoration: none; }
+.mt-2 { margin-top: var(--space-2); }
+.gap-sm { gap: var(--space-2); }
+.gap-md { gap: var(--space-4); }
+.gap-lg { gap: var(--space-6); }
+
+/* Cluster Alignment */
+.cluster-center { align-items: center; }
+.cluster-between { justify-content: space-between; align-items: center; }
+.cluster-between-start { justify-content: space-between; align-items: flex-start; }
+
+/* --- Form Elements --- */
+.input-auto { width: auto; }
+
+/* --- Table Styles --- */
+.table-wrap { width: 100%; overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); }
+.table-base { width: 100%; border-collapse: collapse; text-align: left; font-size: var(--font-body-sm); }
+.table-base th, .table-base td { padding: var(--space-3); border-bottom: 1px solid var(--border); }
+.table-base th { background: var(--surface-subtle); font-weight: var(--font-semibold); color: var(--text-sub); }
+.table-base tr:last-child td { border-bottom: 0; }
+.table-base .col-check, .table-base .col-action { width: 60px; }
+.table-base .cell-empty { padding: var(--space-8); text-align: center; color: var(--text-muted); }
+
+/* --- Preview Placeholder --- */
+
+.preview-placeholder {
+  background: var(--surface-subtle);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-md);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: var(--space-10) var(--space-4); text-align: center; color: var(--text-muted);
+  min-height: 400px;
+}
+
 /* --- Guide Page Styles --- */
 .guide-page { background: var(--background); }
 .guide-layout { display: flex; gap: var(--space-5); align-items: flex-start; }
