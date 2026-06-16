@@ -200,9 +200,18 @@ export function MeetingWorkspace() {
       setErrorMessage(msg);
     }
   };
-  const handleCopyResult = () => {
-    // Copy logic will be implemented in the next phase
+
+  const handleReset = () => {
+    if (stage === MEETING_PROCESS_STAGES.PROCESSING || stage === MEETING_PROCESS_STAGES.UPLOADING) return;
+    if (!window.confirm("현재 회의 내용을 초기화할까요?\n(결과가 저장되지 않았으면 사라집니다.)")) return;
+
+    setStage(MEETING_PROCESS_STAGES.IDLE);
+    setResult(null);
+    setFiles([]);
+    setErrorMessage("");
+    setProgress({ percent: 0, text: "준비 중..." });
   };
+
   const isProcessing = stage === MEETING_PROCESS_STAGES.PROCESSING || stage === MEETING_PROCESS_STAGES.UPLOADING;
 
   return (
@@ -334,7 +343,7 @@ export function MeetingWorkspace() {
                 <MeetingResultView
                   result={result}
                   meta={meta}
-                  onCopy={handleCopyResult}
+                  onReset={handleReset}
                 />
               )}
             </Stack>
