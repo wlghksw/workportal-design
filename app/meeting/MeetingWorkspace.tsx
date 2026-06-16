@@ -18,15 +18,23 @@ import {
   MEETING_TABS,
   MeetingMeta,
   MeetingFile,
-  createDefaultMeetingMeta
+  MeetingResult,
+  createDefaultMeetingMeta,
+  MeetingProcessStage,
+  MEETING_PROCESS_STAGES
 } from "@/features/meeting";
 import { MeetingForm } from "./MeetingForm";
 import { MeetingUploadZone } from "./MeetingUploadZone";
+import { MeetingResultView } from "./MeetingResultView";
 
 export function MeetingWorkspace() {
   const [activeTab, setActiveTab] = useState<MeetingTabType>("record");
   const [meta, setMeta] = useState<MeetingMeta>(createDefaultMeetingMeta());
   const [files, setFiles] = useState<MeetingFile[]>([]);
+
+  const [stage, setStage] = useState<MeetingProcessStage>(MEETING_PROCESS_STAGES.IDLE);
+  const [progress, setProgress] = useState({ percent: 0, text: "준비 중..." });
+  const [result, setResult] = useState<MeetingResult | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleMetaChange = <K extends keyof MeetingMeta>(field: K, value: MeetingMeta[K]) => {
@@ -57,7 +65,11 @@ export function MeetingWorkspace() {
     }
 
     setFiles(prev => [...prev, ...validFiles]);
+    if (stage === MEETING_PROCESS_STAGES.IDLE && validFiles.length > 0) {
+      setStage(MEETING_PROCESS_STAGES.INPUT);
+    }
   };
+
   const handleFileRemove = (id: string) => {
     setFiles(prev => prev.filter(f => f.id !== id));
   };
@@ -80,10 +92,20 @@ export function MeetingWorkspace() {
     return files.length > 0 && meta.title.trim().length > 0;
   }, [files, meta.title]);
 
-  const handleSubmit = () => {
-    if (!isValid) return;
-    // API logic will be in next commit
+  const handleSubmit = async () => {
+    if (!isValid || stage === MEETING_PROCESS_STAGES.PROCESSING) return;
+
+    setErrorMessage("");
+    setStage(MEETING_PROCESS_STAGES.PROCESSING);
+    setProgress({ percent: 5, text: "파일 분석을 시작합니다..." });
+
+    // API logic will be implemented in the next phase
   };
+
+  const handleCopyResult = () => {
+    // Copy logic will be implemented in the next phase
+  };
+  const isProcessing = stage === MEETING_PROCESS_STAGES.PROCESSING || stage === MEETING_PROCESS_STAGES.UPLOADING;
 
   return (
     <>
@@ -141,7 +163,7 @@ export function MeetingWorkspace() {
               {/* 메타 정보 입력 */}
               <Card variant="default">
                 <Card.Body>
-                  <MeetingForm data={meta} onChange={handleMetaChange} />
+                  <MeetingForm data={meta} onChange={handleMetaChange} disabled={isProcessing} />
                 </Card.Body>
               </Card>
 
@@ -154,6 +176,7 @@ export function MeetingWorkspace() {
                       type="button"
                       className={cx("tab", activeTab === tab.id && "active")}
                       onClick={() => setActiveTab(tab.id)}
+                      disabled={isProcessing}
                     >
                       {tab.icon} {tab.label}
                     </button>
@@ -169,6 +192,7 @@ export function MeetingWorkspace() {
                         onFileRemove={handleFileRemove}
                         onFileMove={handleFileMove}
                         onValidationError={setErrorMessage}
+                        disabled={isProcessing}
                       />
                     ) : (
                       <div className="meeting-input-placeholder">
@@ -185,43 +209,36 @@ export function MeetingWorkspace() {
                 variant="primary"
                 fullWidth
                 size="lg"
-                disabled={!isValid}
+                disabled={!isValid || isProcessing}
                 onClick={handleSubmit}
               >
-                회의록 생성 {meta.postToTeams ? "& Teams 공유" : ""}
-                {files.length > 1 ? ` (${files.length}개 파일)` : ""}
+                {isProcessing ? "처리 중..." : `회의록 생성 ${meta.postToTeams ? "& Teams 공유" : ""}${files.length > 1 ? ` (${files.length}개 파일)` : ""}`}
               </Button>
 
-              {/* 진행 상태 (Hidden by default) */}
-              <div className="meeting-progress-wrap" hidden>
-                <Card variant="soft">
-                  <Card.Body>
-                    <Stack spacing="sm">
-                      <div className="progress-bar-bg">
-                        <div className="progress-bar progress-bar--zero"></div>
-                      </div>
-                      <p className="text-caption text-center">준비 중...</p>
-                    </Stack>
-                  </Card.Body>
-                </Card>
-              </div>
+              {/* 진행 상태 */}
+              {isProcessing && (
+                <div className="meeting-progress-wrap">
+                  <Card variant="soft">
+                    <Card.Body aria-busy="true">
+                      <Stack spacing="sm">
+                        <div className="progress-bar-bg">
+                          <div className="progress-bar progress-bar--loading"></div>
+                        </div>
+                        <p className="text-caption text-center">{progress.text}</p>
+                      </Stack>
+                    </Card.Body>
+                  </Card>
+                </div>
+              )}
 
-              {/* 결과 영역 (Hidden by default) */}
-              <section className="meeting-result-wrap" hidden aria-labelledby="result-title">
-                <Card variant="elevated">
-                  <Card.Header>
-                    <Cluster className="cluster-between">
-                      <Card.Title id="result-title">자동 생성된 회의록</Card.Title>
-                      <Badge variant="success" soft>Teams 공유 완료</Badge>
-                    </Cluster>
-                  </Card.Header>
-                  <Card.Body>
-                    <div className="meeting-result-content">
-                      <p className="text-muted">여기에 생성된 회의록 본문이 표시됩니다.</p>
-                    </div>
-                  </Card.Body>
-                </Card>
-              </section>
+              {/* 결과 영역 */}
+              {stage === MEETING_PROCESS_STAGES.SUCCESS && result && (
+                <MeetingResultView
+                  result={result}
+                  meta={meta}
+                  onCopy={handleCopyResult}
+                />
+              )}
             </Stack>
           </main>
         </div>
