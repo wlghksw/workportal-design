@@ -1,4 +1,11 @@
-@import url("../shared/tokens.css");
+@import url("../shared/colors.css");
+@import url("../shared/spacing.css");
+@import url("../shared/typography.css");
+@import url("../shared/buttons.css");
+@import url("../shared/cards.css");
+@import url("../shared/inputs.css");
+@import url("../shared/badges.css");
+@import url("../shared/layout.css");
 @import url("../shared/portal-header.css");
 
 /* Base reset for Next.js app */
