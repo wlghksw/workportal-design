@@ -39,7 +39,7 @@ export const SERVICES: ServiceData[] = [
     title: "교육 뉴스레터",
     description: "블로그 링크 → HTML 뉴스레터 생성 · 미리보기 · 메일 발행",
     host: "newsletter.platformers.kr",
-    href: "/services/newsletter/web/index.html",
+    href: "/newsletter",
     searchKeywords: "뉴스레터 newsletter 교육 메일 소식지",
     newTab: false,
     iconType: "newsletter",
