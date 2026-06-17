@@ -11,6 +11,7 @@ import {
   Button,
   cx,
 } from "@/components";
+import { PptForm } from "./PptForm";
 import {
   PPT_WORK_MODES,
   PPT_CATEGORIES,
@@ -18,6 +19,7 @@ import {
   PptProcessStage,
   createDefaultPptRequest,
   createDefaultPptUiState,
+  PptGenerateRequest,
 } from "@/features/ppt";
 
 /**
@@ -26,17 +28,20 @@ import {
 export function PptWorkspace() {
   const [stage, setStage] = useState<PptProcessStage>(PPT_PROCESS_STAGES.IDLE);
   const [uiState, setUiState] = useState(createDefaultPptUiState());
-  const [request, setRequest] = useState(createDefaultPptRequest());
 
-  // Placeholder handlers
-  const handleModeSelect = (mode: any) => {
-    setUiState(prev => ({ ...prev, workMode: mode }));
-    setRequest(prev => ({ ...prev, mode }));
-  };
+  const handleGenerate = async (data: PptGenerateRequest) => {
+    // UI 상태 동기화 및 에러 초기화 (API 연동 전 단계)
+    setUiState(prev => ({
+      ...prev,
+      workMode: data.mode,
+      category: data.category,
+      errorMessage: null
+    }));
 
-  const handleCategorySelect = (cat: any) => {
-    setUiState(prev => ({ ...prev, category: cat }));
-    setRequest(prev => ({ ...prev, category: cat }));
+    // 현재는 입력 폼 확인 단계이므로 스테이지 전환은 하지 않음
+    if (stage === PPT_PROCESS_STAGES.IDLE) {
+      setStage(PPT_PROCESS_STAGES.INPUT);
+    }
   };
 
   return (
@@ -67,90 +72,10 @@ export function PptWorkspace() {
         <div className="ppt-app">
           <div className="ppt-grid">
             {/* 왼쪽: 입력 영역 */}
-            <section className="ppt-card">
-              {/* 작업 모드 */}
-              <div>
-                <div className="ppt-section-title">
-                  <span className="ppt-required-dot"></span>작업 모드
-                </div>
-                <div className="ppt-category-grid">
-                  {PPT_WORK_MODES.map(mode => (
-                    <button
-                      key={mode.id}
-                      type="button"
-                      className={cx("ppt-category-card", uiState.workMode === mode.id && "active")}
-                      onClick={() => handleModeSelect(mode.id)}
-                    >
-                      <span className="ppt-cat-icon">{mode.icon}</span>
-                      <div className="ppt-cat-body">
-                        <div className="ppt-cat-title">{mode.label}</div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* 제안서 유형 (신규 모드일 때만) */}
-              {uiState.workMode === "new" && (
-                <div>
-                  <div className="ppt-section-title">
-                    <span className="ppt-required-dot"></span>제안서 유형
-                  </div>
-                  <div className="ppt-category-grid">
-                    {PPT_CATEGORIES.map(cat => (
-                      <button
-                        key={cat.id}
-                        type="button"
-                        className={cx("ppt-category-card", uiState.category === cat.id && "active")}
-                        onClick={() => handleCategorySelect(cat.id)}
-                      >
-                        <span className="ppt-cat-icon">{cat.icon}</span>
-                        <div className="ppt-cat-body">
-                          <div className="ppt-cat-title">{cat.label}</div>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* 파일 업로드 placeholder */}
-              <div>
-                <div className="ppt-section-title">
-                  <span className="ppt-required-dot"></span>파일 업로드
-                </div>
-                <div className="ppt-drop-zone">
-                  <div className="ppt-drop-icon">📂</div>
-                  <div className="ppt-drop-text-main">문서 및 이미지를 드래그하세요</div>
-                  <div className="ppt-drop-text-sub">PDF, DOCX, XLSX, JPG 지원</div>
-                </div>
-              </div>
-
-              {/* 추가 입력 placeholder */}
-              <Stack spacing="md">
-                <div>
-                  <div className="ppt-section-title">대상 고객군 (선택)</div>
-                  <div className="ppt-placeholder-box ppt-placeholder-box--sm">
-                    고객군 선택 필드 준비 중...
-                  </div>
-                </div>
-                <div>
-                  <div className="ppt-section-title">추가 지시사항</div>
-                  <div className="ppt-placeholder-box">
-                    지시사항 입력 영역 준비 중...
-                  </div>
-                </div>
-              </Stack>
-
-              <Button
-                variant="primary"
-                size="lg"
-                fullWidth
-                disabled={stage !== PPT_PROCESS_STAGES.IDLE}
-              >
-                HTML 슬라이드 생성
-              </Button>
-            </section>
+            <PptForm
+              onSubmit={handleGenerate}
+              isLoading={stage === PPT_PROCESS_STAGES.GENERATING || stage === PPT_PROCESS_STAGES.UPLOADING}
+            />
 
             {/* 오른쪽: 정보 및 상태 영역 */}
             <aside className="ppt-side-info">
