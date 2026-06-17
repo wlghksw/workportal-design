@@ -4,7 +4,6 @@ import { useState, useRef, useMemo, ChangeEvent } from "react";
 import {
   Stack,
   Input,
-  Textarea,
   Button,
   cx,
 } from "@/components";
@@ -150,10 +149,10 @@ export function PptForm({ onSubmit, isLoading }: PptFormProps) {
   return (
     <div className="ppt-card input-side">
       {/* 작업 모드 */}
-      <div>
-        <div className="ppt-section-title">
+      <fieldset className="ppt-form-group">
+        <legend className="ppt-section-title">
           <span className="ppt-required-dot"></span>작업 모드
-        </div>
+        </legend>
         <div className="ppt-category-grid">
           {PPT_WORK_MODES.map((m) => (
             <button
@@ -164,21 +163,21 @@ export function PptForm({ onSubmit, isLoading }: PptFormProps) {
               disabled={isLoading}
               aria-pressed={mode === m.id}
             >
-              <span className="ppt-cat-icon">{m.icon}</span>
+              <span className="ppt-cat-icon" aria-hidden="true">{m.icon}</span>
               <div className="ppt-cat-body">
                 <div className="ppt-cat-title">{m.label}</div>
               </div>
             </button>
           ))}
         </div>
-      </div>
+      </fieldset>
 
       {/* 제안서 유형 (신규 모드일 때만) */}
       {mode === "new" && (
-        <div>
-          <div className="ppt-section-title">
+        <fieldset className="ppt-form-group">
+          <legend className="ppt-section-title">
             <span className="ppt-required-dot"></span>제안서 유형
-          </div>
+          </legend>
           <div className="ppt-category-grid">
             {PPT_CATEGORIES.map((c) => (
               <button
@@ -189,22 +188,22 @@ export function PptForm({ onSubmit, isLoading }: PptFormProps) {
                 disabled={isLoading}
                 aria-pressed={category === c.id}
               >
-                <span className="ppt-cat-icon">{c.icon}</span>
+                <span className="ppt-cat-icon" aria-hidden="true">{c.icon}</span>
                 <div className="ppt-cat-body">
                   <div className="ppt-cat-title">{c.label}</div>
                 </div>
               </button>
             ))}
           </div>
-        </div>
+        </fieldset>
       )}
 
       {/* 기존 PPT 업로드 (병합 모드일 때만) */}
       {mode === "append" && (
-        <div>
-          <div className="ppt-section-title">
+        <div className="ppt-form-group">
+          <h3 className="ppt-section-title">
             <span className="ppt-required-dot"></span>기존 완성 PPTX 업로드
-          </div>
+          </h3>
           {!basePptx ? (
             <div
               className="ppt-drop-zone"
@@ -221,7 +220,7 @@ export function PptForm({ onSubmit, isLoading }: PptFormProps) {
                 accept=".pptx"
                 hidden
               />
-              <div className="ppt-drop-icon">📊</div>
+              <div className="ppt-drop-icon" aria-hidden="true">📊</div>
               <div className="ppt-drop-text-main">기존 PPTX 파일을 업로드하세요</div>
               <div className="ppt-drop-text-sub">확장자 .pptx 파일만 지원</div>
             </div>
@@ -244,11 +243,11 @@ export function PptForm({ onSubmit, isLoading }: PptFormProps) {
       )}
 
       {/* 파일 업로드 */}
-      <div>
-        <div className="ppt-section-title">
+      <div className="ppt-form-group">
+        <h3 className="ppt-section-title">
           <span className="ppt-required-dot"></span>
           {mode === "new" ? "파일 업로드" : "추가할 원천 내용 문서들 업로드"}
-        </div>
+        </h3>
         <div
           className="ppt-drop-zone"
           onClick={() => !isLoading && fileInputRef.current?.click()}
@@ -264,7 +263,7 @@ export function PptForm({ onSubmit, isLoading }: PptFormProps) {
             multiple
             hidden
           />
-          <div className="ppt-drop-icon">📂</div>
+          <div className="ppt-drop-icon" aria-hidden="true">📂</div>
           <div className="ppt-drop-text-main">문서 및 이미지를 드래그하세요</div>
           <div className="ppt-drop-text-sub">{files.length > 0 ? `${files.length}개 파일 선택됨` : "PDF, DOCX, XLSX, JPG 지원"}</div>
         </div>
@@ -289,8 +288,10 @@ export function PptForm({ onSubmit, isLoading }: PptFormProps) {
       </div>
 
       {/* 대상 고객군 */}
-      <div>
-        <div className="ppt-section-title">대상 고객군 <span className="ppt-opt-text">(선택)</span></div>
+      <div className="ppt-form-group">
+        <label className="ppt-section-title" htmlFor="targetAudience">
+          대상 고객군 <span className="ppt-opt-text">(선택)</span>
+        </label>
         <select
           id="targetAudience"
           className="ppt-select"
@@ -310,8 +311,8 @@ export function PptForm({ onSubmit, isLoading }: PptFormProps) {
       </div>
 
       {/* 추가 지시사항 */}
-      <div>
-        <div className="ppt-section-title">추가 지시사항</div>
+      <div className="ppt-form-group">
+        <label className="ppt-section-title" htmlFor="instructions">추가 지시사항</label>
         <textarea
           id="instructions"
           className="chat-textarea"

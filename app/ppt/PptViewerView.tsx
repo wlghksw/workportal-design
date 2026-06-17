@@ -15,22 +15,22 @@ export function PptViewerView({ data, onClose }: PptViewerViewProps) {
   const slides = data.slides_data?.slides || [];
 
   return (
-    <div className="ppt-viewer">
-      <div className="ppt-viewer-controls">
-        <Button variant="ghost" size="sm" disabled>
+    <main className="ppt-viewer" aria-label="프레젠테이션 모드">
+      <nav className="ppt-viewer-controls" aria-label="뷰어 도구">
+        <Button variant="ghost" size="sm" disabled aria-label="PDF로 저장 (준비 중)">
           📥 PDF 저장 (준비 중)
         </Button>
-        <Button variant="primary" size="sm" onClick={onClose}>
+        <Button variant="primary" size="sm" onClick={onClose} aria-label="프레젠테이션 종료">
           닫기
         </Button>
-      </div>
+      </nav>
 
-      <Stack spacing="lg" className="ppt-slides-list">
+      <Stack spacing="lg" className="ppt-slides-list" aria-label="슬라이드 목록">
         {slides.map((slide, idx) => (
-          <section key={idx} className="ppt-slide-view">
+          <article key={idx} className="ppt-slide-view" aria-label={`${idx + 1}번 슬라이드`}>
             <div className="ppt-slide-padding">
               <div className="ppt-slide-header">
-                <div className="ppt-slide-num">{idx + 1}</div>
+                <div className="ppt-slide-num" aria-hidden="true">{idx + 1}</div>
                 <div>
                   <h2 className="ppt-slide-title">
                     {slide.title}
@@ -46,12 +46,12 @@ export function PptViewerView({ data, onClose }: PptViewerViewProps) {
               </ul>
             </div>
 
-            <div className="ppt-slide-footer">
+            <div className="ppt-slide-footer" aria-hidden="true">
               {idx + 1} / {slides.length}
             </div>
-          </section>
+          </article>
         ))}
       </Stack>
-    </div>
+    </main>
   );
 }

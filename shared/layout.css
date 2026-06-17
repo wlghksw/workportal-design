@@ -1327,6 +1327,14 @@ button.site-nav__item {
   gap: 1.5rem;
 }
 
+/* Form Semantic Reset */
+.ppt-form-group {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-inline-size: 0;
+}
+
 .ppt-section-title {
   font-size: 0.95rem;
   font-weight: 700;
@@ -1335,6 +1343,14 @@ button.site-nav__item {
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+/* Legend reset for PPT domain */
+legend.ppt-section-title {
+  display: flex;
+  width: 100%;
+  padding: 0;
+  border: 0;
 }
 
 .ppt-required-dot {
@@ -1607,9 +1623,18 @@ button.site-nav__item {
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* --- Accessibility Utils --- */
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
+}
+
 @media (max-width: 960px) {
   .ppt-grid { grid-template-columns: 1fr; }
   .ppt-editor-container { grid-template-columns: 1fr; }
+  .ppt-editor-container.collapsed { grid-template-columns: 1fr; }
+  .pane-chat, .pane-library { display: none; }
+  .pane-preview { width: 100vw; height: calc(100vh - 54px); }
 }
 
 @media print {

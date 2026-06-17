@@ -27,10 +27,10 @@ export function PptResultView({ data, onReset, onEdit, onView }: PptResultViewPr
 
   return (
     <div className="ppt-result-panel" role="status" aria-live="polite">
-      <div className="ppt-success-icon">🎉</div>
-      <div className="ppt-success-text">생성 완료!</div>
+      <div className="ppt-success-icon" aria-hidden="true">🎉</div>
+      <h2 className="ppt-success-text">제안서 생성이 완료되었습니다!</h2>
 
-      <div className="ppt-btn-group">
+      <nav className="ppt-btn-group" aria-label="결과 활용 메뉴">
         <button type="button" className="btn-download" onClick={onView}>
           웹 슬라이드 열기 🚀
         </button>
@@ -40,19 +40,19 @@ export function PptResultView({ data, onReset, onEdit, onView }: PptResultViewPr
         <button type="button" className="btn-download btn-download--reset" onClick={handleReset}>
           초기화
         </button>
-      </div>
+      </nav>
 
       <div className="ppt-btn-group">
         {isReport ? (
-          <a href={docxUrl} download className="btn-download btn-download--docx">
+          <a href={docxUrl} download className="btn-download btn-download--docx" aria-label="보고서 DOCX 파일 다운로드">
             DOCX 다운로드
           </a>
         ) : (
           <>
-            <a href={pptxUrl} download className="btn-download btn-download--gray">
+            <a href={pptxUrl} download className="btn-download btn-download--gray" aria-label="기본 PPTX 파일 다운로드">
               PPTX
             </a>
-            <a href={premiumPptxUrl} download className="btn-download btn-download--premium">
+            <a href={premiumPptxUrl} download className="btn-download btn-download--premium" aria-label="고품질 프리미엄 PPTX 파일 다운로드">
               프리미엄 PPTX ⭐
             </a>
           </>

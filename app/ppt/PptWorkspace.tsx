@@ -131,6 +131,8 @@ export function PptWorkspace() {
 
       <Page>
         <div className="ppt-app">
+          <h1 className="sr-only">PPT·제안서 자동 생성 서비스</h1>
+
           <div className="ppt-grid">
             {/* 왼쪽: 입력 또는 결과 영역 */}
             <main className="ppt-main-content">
@@ -157,11 +159,11 @@ export function PptWorkspace() {
 
                 {/* 생성 중 프로그레스 플레이스홀더 */}
                 {isProcessing && (
-                  <div className="ppt-card" aria-busy="true">
+                  <div className="ppt-card" aria-busy="true" role="status">
                     <Stack spacing="md">
-                      <div className="ppt-section-title">
+                      <h2 className="ppt-section-title">
                         {stage === PPT_PROCESS_STAGES.UPLOADING ? "파일 업로드 중..." : "AI 슬라이드 생성 중..."}
-                      </div>
+                      </h2>
                       <div className="progress-bar-bg">
                         <div className="progress-bar progress-bar--loading"></div>
                       </div>
@@ -174,12 +176,11 @@ export function PptWorkspace() {
               </Stack>
             </main>
 
-
             {/* 오른쪽: 정보 및 상태 영역 */}
-            <aside className="ppt-side-info">
+            <aside className="ppt-side-info" aria-label="서비스 정보 및 가이드">
               <Stack spacing="lg">
-                <div className="ppt-card">
-                  <div className="ppt-section-title">수주 기획 및 디자인 규정</div>
+                <section className="ppt-card">
+                  <h2 className="ppt-section-title">수주 기획 및 디자인 규정</h2>
                   <div className="ppt-rules-box">
                     <ul className="ppt-rules-list">
                       <li>에듀올랩 그레이시 블루 (#F8FAFC) 캔버스</li>
@@ -190,8 +191,8 @@ export function PptWorkspace() {
                     </ul>
                   </div>
 
-                  <div className="ppt-section-title">생성 상태</div>
-                  <div className="ppt-step-list">
+                  <h2 className="ppt-section-title">생성 상태</h2>
+                  <nav className="ppt-step-list" aria-label="진행 단계">
                     <div className={cx(
                       "ppt-step",
                       stage === PPT_PROCESS_STAGES.IDLE && "active",
@@ -215,35 +216,35 @@ export function PptWorkspace() {
                       <div className="ppt-step-icon">3</div>
                       <span>HTML 인라인 슬라이드 렌더링</span>
                     </div>
-                  </div>
-                </div>
+                  </nav>
+                </section>
 
-                <div className="ppt-card">
-                  <div className="ppt-section-title">HOW IT WORKS</div>
+                <section className="ppt-card">
+                  <h2 className="ppt-section-title">HOW IT WORKS</h2>
                   <div className="ppt-how-list">
                     <div className="ppt-how-step">
-                      <div className="ppt-how-num">01</div>
+                      <div className="ppt-how-num" aria-hidden="true">01</div>
                       <div>
-                        <div className="ppt-how-text-title">멀티자료 분석</div>
-                        <div className="ppt-how-text-desc">기획서와 교구 이미지를 통합 분석합니다.</div>
+                        <h3 className="ppt-how-text-title">멀티자료 분석</h3>
+                        <p className="ppt-how-text-desc">기획서와 교구 이미지를 통합 분석합니다.</p>
                       </div>
                     </div>
                     <div className="ppt-how-step">
-                      <div className="ppt-how-num">02</div>
+                      <div className="ppt-how-num" aria-hidden="true">02</div>
                       <div>
-                        <div className="ppt-how-text-title">비전 매칭</div>
-                        <div className="ppt-how-text-desc">이미지 기반으로 최적의 레이아웃을 배치합니다.</div>
+                        <h3 className="ppt-how-text-title">비전 매칭</h3>
+                        <p className="ppt-how-text-desc">이미지 기반으로 최적의 레이아웃을 배치합니다.</p>
                       </div>
                     </div>
                     <div className="ppt-how-step">
-                      <div className="ppt-how-num">03</div>
+                      <div className="ppt-how-num" aria-hidden="true">03</div>
                       <div>
-                        <div className="ppt-how-text-title">독립형 HTML</div>
-                        <div className="ppt-how-text-desc">별도 툴 없이 브라우저에서 즉시 프레젠테이션.</div>
+                        <h3 className="ppt-how-text-title">독립형 HTML</h3>
+                        <p className="ppt-how-text-desc">별도 툴 없이 브라우저에서 즉시 프레젠테이션.</p>
                       </div>
                     </div>
                   </div>
-                </div>
+                </section>
               </Stack>
             </aside>
           </div>
