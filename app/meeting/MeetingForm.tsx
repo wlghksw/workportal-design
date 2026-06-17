@@ -11,8 +11,9 @@ interface MeetingFormProps {
 
 export function MeetingForm({ data, onChange, disabled }: MeetingFormProps) {
   return (
-    <div className="meta-grid">
-      <FormField label="회의 제목" htmlFor="title">
+    <div className="meeting-meta-grid">
+      <div className="field">
+        <label htmlFor="title">회의 제목</label>
         <Input
           id="title"
           value={data.title}
@@ -20,8 +21,9 @@ export function MeetingForm({ data, onChange, disabled }: MeetingFormProps) {
           placeholder="예: 4월 마케팅 전략 회의"
           disabled={disabled}
         />
-      </FormField>
-      <FormField label="참석자" htmlFor="participants">
+      </div>
+      <div className="field">
+        <label htmlFor="participants">참석자 (쉼표 구분)</label>
         <Input
           id="participants"
           value={data.participants}
@@ -29,8 +31,9 @@ export function MeetingForm({ data, onChange, disabled }: MeetingFormProps) {
           placeholder="예: 김철수, 이영희"
           disabled={disabled}
         />
-      </FormField>
-      <FormField label="Teams 공유 팀" htmlFor="team">
+      </div>
+      <div className="field">
+        <label htmlFor="team">Teams 공유 팀</label>
         <Select
           id="team"
           value={data.team}
@@ -56,9 +59,10 @@ export function MeetingForm({ data, onChange, disabled }: MeetingFormProps) {
           />
           Teams로 공유
         </label>
-      </FormField>
-      <Cluster className="cluster-center gap-md mt-2">
-        <FormField label="날짜" htmlFor="date">
+      </div>
+      <div className="meeting-meta-grid">
+        <div className="field">
+          <label htmlFor="date">날짜</label>
           <Input
             id="date"
             type="date"
@@ -66,8 +70,9 @@ export function MeetingForm({ data, onChange, disabled }: MeetingFormProps) {
             onChange={(e) => onChange("meetingDate", e.target.value)}
             disabled={disabled}
           />
-        </FormField>
-        <FormField label="장소" htmlFor="location">
+        </div>
+        <div className="field">
+          <label htmlFor="location">장소</label>
           <Input
             id="location"
             value={data.location}
@@ -75,8 +80,8 @@ export function MeetingForm({ data, onChange, disabled }: MeetingFormProps) {
             placeholder="예: 본사 회의실"
             disabled={disabled}
           />
-        </FormField>
-      </Cluster>
+        </div>
+      </div>
     </div>
   );
 }
