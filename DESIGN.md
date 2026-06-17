@@ -1775,7 +1775,8 @@ export default function RootLayout({
 [완료] 8. 이용 가이드 페이지(/guide) 정적 콘텐츠 Next.js 라우트 이전 완수
 [완료] 9. 교육 뉴스레터 서비스(/newsletter) 도메인 로직 및 UI Next.js 이전 완수
 [완료] 10. 회의록 자동화 서비스(/meeting) Next.js 마이그레이션 (Chunk 업로드 · Polling · 녹음 복구)
-[예정] 11. E-Book 동화책 및 PPT 제안서 메이커 서비스 React 전환 및 연동
+[완료] 11. PPT 제안서 메이커 서비스(/ppt) Next.js 마이그레이션 (파일 분석 · 3-Pane 에디터 · 발표자 뷰어)
+[예정] 12. E-Book 동화책 메이커 서비스 React 전환 및 전사적 연동
 ```
 
 ---
@@ -1809,6 +1810,7 @@ export default function RootLayout({
 - [x] WorkPortal 홈 화면 (app/page.tsx) 마이그레이션 및 API 연동
 - [x] WorkPortal 로그인 페이지 (app/login/page.tsx) 및 인증 로직 구현
 - [x] WorkPortal 사용 이력 페이지 (app/activity/page.tsx) 및 필터/페이징 구현
+- [x] AI PPT 제안서 서비스 (app/ppt/page.tsx) 전체 마이그레이션 (에디터/뷰어 포함)
 
 
 ### React UI Components (Implementation)
@@ -1836,4 +1838,23 @@ export default function RootLayout({
 8. 카드는 class="card ..." 형태로 작성한다.
 9. 신규 UI와 이전 대상 UI는 React + TypeScript 컴포넌트 기준으로 작성한다.
 10. 최종적으로 Next.js App Router 기반 구조로 이전한다.
+```
+
+---
+
+## 16. Verification Commands
+
+모든 마이그레이션 작업 및 UI 수정 후에는 다음 명령어를 통해 무결성을 검증한다.
+
+```bash
+# 1. 스타일 및 패턴 검증 (인라인 스타일, console.log 등 금지 패턴 체크)
+! grep -R "style={{" app components features
+! grep -R "console.log" app components features
+! grep -R "dangerouslySetInnerHTML\|innerHTML\|document.querySelector" app components features
+
+# 2. 타입 및 빌드 검증
+pnpm build
+
+# 3. 린트 검증
+pnpm lint
 ```
