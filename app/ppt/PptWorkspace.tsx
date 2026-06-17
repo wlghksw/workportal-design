@@ -122,12 +122,10 @@ export function PptWorkspace() {
             <span className="brand__sub">PPT·제안서</span>
           </Link>
         }
-      >
-        <div className="site-header__spacer" />
-        <div className="site-header__actions">
+        actions={
           <Link href="/" className="topbar__btn">워크포탈</Link>
-        </div>
-      </PortalHeader>
+        }
+      />
 
       <Page>
         <div className="ppt-app">
