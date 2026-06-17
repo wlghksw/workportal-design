@@ -50,7 +50,7 @@ export const SERVICES: ServiceData[] = [
     title: "PPT·제안서",
     description: "문서 업로드 → HTML·PPT 제안서 자동 생성",
     host: "ppt.platformers.kr",
-    href: "/services/ppt/templates/index.html",
+    href: "/ppt",
     searchKeywords: "ppt 제안서 proposal",
     newTab: false,
     iconType: "ppt",

@@ -535,6 +535,20 @@ export default function WorkPortalHomePage() {
                           <time className="portal-notice__date">서비스</time>
                         </Link>
                       </li>
+                      <li>
+                        <Link
+                          href="/guide?service=ppt"
+                          className="portal-notice__link"
+                        >
+                          <span className="portal-notice__title">
+                            PPT·제안서 생성
+                          </span>
+                          <span className="portal-notice__desc">
+                            문서 업로드 후 HTML·PPT 제안서 자동 생성
+                          </span>
+                          <time className="portal-notice__date">서비스</time>
+                        </Link>
+                      </li>
                     </ul>
                   )}
                 </Card.Body>
