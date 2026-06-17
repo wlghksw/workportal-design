@@ -24,6 +24,9 @@ import {
   createDefaultPptUiState,
   PptGenerateRequest,
   PptSessionData,
+  generatePpt,
+  appendPpt,
+  getPptSession,
 } from "@/features/ppt";
 
 /**
@@ -36,16 +39,36 @@ export function PptWorkspace() {
   const [sessionData, setSessionData] = useState<PptSessionData | null>(null);
 
   const handleGenerate = async (data: PptGenerateRequest) => {
-    // UI 상태 동기화
-    setUiState(prev => ({
-      ...prev,
-      workMode: data.mode,
-      category: data.category,
-    }));
-    setErrorMessage(null);
+    if (stage === PPT_PROCESS_STAGES.UPLOADING || stage === PPT_PROCESS_STAGES.GENERATING) {
+      return;
+    }
 
-    // 현재는 UI 구현 단계이므로 실제 API 연동 로직은 비워둠
-    setStage(PPT_PROCESS_STAGES.INPUT);
+    setErrorMessage(null);
+    setStage(PPT_PROCESS_STAGES.UPLOADING);
+
+    try {
+      // 1. 생성 요청 (신규 또는 병합)
+      const res = data.mode === "new"
+        ? await generatePpt(data)
+        : await appendPpt(data);
+
+      setStage(PPT_PROCESS_STAGES.GENERATING);
+
+      // 2. 세션 정보 조회
+      const session = await getPptSession(res.session_id);
+
+      setSessionData(session);
+      setUiState(prev => ({
+        ...prev,
+        workMode: data.mode,
+        category: data.category,
+      }));
+      setStage(PPT_PROCESS_STAGES.SUCCESS);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "PPT 생성 중 오류가 발생했습니다.";
+      setErrorMessage(msg);
+      setStage(PPT_PROCESS_STAGES.ERROR);
+    }
   };
 
   const handleReset = () => {
