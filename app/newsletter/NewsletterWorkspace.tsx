@@ -34,48 +34,48 @@ export function NewsletterWorkspace() {
   const [activeView, setActiveView] = useState<NewsletterViewType>("create");
 
   return (
-    <>
-      <PortalHeader
-        logo={
-          <Link href="/" className="text-decoration-none">
-            <Cluster className="cluster-center gap-sm">
-              <Image
-                src="/shared/eduallab-logo.png"
-                alt="에듀올랩"
-                width={120}
-                height={40}
-                className="brand__logo"
-              />
-              <span className="text-title-sm text-default">교육 소식지</span>
-            </Cluster>
-          </Link>
-        }
-      >
-        <nav className="site-nav" aria-label="주요 메뉴">
-          <button
-            className={cx("site-nav__item tab", activeView === "create" && "is-active")}
-            onClick={() => setActiveView("create")}
-            type="button"
-          >
-            만들기
-          </button>
-          <button
-            className={cx("site-nav__item tab", activeView === "recipients" && "is-active")}
-            onClick={() => setActiveView("recipients")}
-            type="button"
-          >
-            수신자
-          </button>
-          <Link href="/" className="site-nav__item tab">
-            워크포탈 홈
-          </Link>
-        </nav>
-      </PortalHeader>
+    <div className="newsletter-app">
+      <div className="site-header-group">
+        <PortalHeader
+          logo={
+            <Link href="/" className="text-decoration-none">
+              <Cluster className="cluster-center gap-sm">
+                <Image
+                  src="/shared/eduallab-logo.png"
+                  alt="에듀올랩"
+                  width={120}
+                  height={40}
+                  className="brand__logo"
+                />
+                <span className="text-title-sm text-body">교육 소식지</span>
+              </Cluster>
+            </Link>
+          }
+        >
+          <div className="site-header__spacer" />
+          <nav className="site-nav" aria-label="메뉴">
+            <button
+              className={cx("site-nav__item", activeView === "create" && "is-active")}
+              onClick={() => setActiveView("create")}
+              type="button"
+            >
+              만들기
+            </button>
+            <button
+              className={cx("site-nav__item", activeView === "recipients" && "is-active")}
+              onClick={() => setActiveView("recipients")}
+              type="button"
+            >
+              수신자
+            </button>
+          </nav>
+        </PortalHeader>
+      </div>
 
-      <Page>
+      <main className="newsletter-page">
         {activeView === "create" ? <NewsletterCreateView /> : <NewsletterRecipientsView />}
-      </Page>
-    </>
+      </main>
+    </div>
   );
 }
 
@@ -143,165 +143,212 @@ function NewsletterCreateView() {
   );
 
   return (
-    <Stack spacing="lg">
-      <header className="page-header">
-        <h1 className="text-title-lg">뉴스레터 만들기</h1>
-        <p className="text-subtitle">네이버 블로그 링크를 붙여넣으면 발송용 HTML을 자동 생성합니다.</p>
+    <>
+      <header className="newsletter-page-hero">
+        <h1 className="newsletter-page-title">뉴스레터 만들기</h1>
+        <p className="newsletter-page-subtitle">네이버 블로그 링크를 붙여넣으면 발송용 HTML을 자동 생성합니다</p>
       </header>
 
-      {generateState === "error" && (
-        <div className="alert alert-error" role="alert">
-          {errorMessage || "생성에 실패했습니다."}
+      <nav className="newsletter-steps" aria-label="진행 단계">
+        <div className={cx("newsletter-step", generateState === "idle" && "active", (generateState === "success" || generateState === "loading") && "done")}>
+          <span className="newsletter-step__n">1</span>
+          <span className="newsletter-step__label">링크 입력</span>
+        </div>
+        <div className={cx("newsletter-step", generateState === "loading" && "active", generateState === "success" && "done")}>
+          <span className="newsletter-step__n">2</span>
+          <span className="newsletter-step__label">자동 생성</span>
+        </div>
+        <div className={cx("newsletter-step", generateState === "success" && "active")}>
+          <span className="newsletter-step__n">3</span>
+          <span className="newsletter-step__label">검수 · 발행</span>
+        </div>
+      </nav>
+
+      {errorMessage && (
+        <div className="alert alert--error" role="alert">
+          {errorMessage}
         </div>
       )}
 
       {sendErrorMsg && (
-        <div className="alert alert-error" role="alert">
+        <div className="alert alert--error" role="alert">
           {sendErrorMsg}
         </div>
       )}
 
       {generateState === "success" && generateResult && !sendSuccessMsg && (
-        <div className="alert alert-success" role="status">
+        <div className="alert alert--success" role="status">
           {generateResult.issue_label} 완료 · 미리보기 {generateResult.size_kb}KB. 확인 후 메일 발행하세요.
         </div>
       )}
 
       {sendSuccessMsg && (
-        <div className="alert alert-success" role="status">
+        <div className="alert alert--success" role="status">
           {sendSuccessMsg}
         </div>
       )}
 
-      <div className="portal-layout">
-        <div className="portal-layout__main">
-          <Stack spacing="lg">
-            <Card variant="default">
-              <Card.Header>
-                <Card.Title>블로그 링크</Card.Title>
-                <Card.Description>한 줄에 URL 하나씩 · 3~8개</Card.Description>
-              </Card.Header>
-              <Card.Body>
-                <NewsletterForm onSubmit={handleGenerate} isLoading={generateState === "loading"} />
-              </Card.Body>
-            </Card>
+      <div className="newsletter-grid">
+        <div className="newsletter-section">
+          <div className="newsletter-card">
+            <div className="newsletter-card-title">
+              <div className="newsletter-card-title-row">
+                <div className="newsletter-card-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                </div>
+                <div>
+                  <h2>블로그 링크</h2>
+                  <p>한 줄에 URL 하나씩 · 3~8개</p>
+                </div>
+              </div>
+            </div>
+            <div className="newsletter-card-body">
+              <NewsletterForm onSubmit={handleGenerate} isLoading={generateState === "loading"} />
+            </div>
+          </div>
 
-            {generateState === "success" && generateResult && (
-              <Card variant="default">
-                <Card.Header>
-                  <Card.Title>생성 완료 요약</Card.Title>
-                </Card.Header>
-                <Card.Body>
-                  <Stack spacing="md">
-                    <p className="text-body-sm">
-                      <Badge variant="success" soft size="sm">완료</Badge> {generateResult.issue_label} · 카드 {generateResult.urls_used.length}개
-                    </p>
-                    <ul className="text-body-sm text-muted preview-url-list">
-                      {generateResult.urls_used.map((url, i) => (
-                        <li key={i}>{url}</li>
-                      ))}
-                    </ul>
-                  </Stack>
-                </Card.Body>
-              </Card>
-            )}
+          <div className="newsletter-card">
+            <div className="newsletter-card-title">
+              <div className="newsletter-card-title-row">
+                <div className="newsletter-card-icon newsletter-card-icon--eye">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </div>
+                <h2>미리보기</h2>
+              </div>
+              <div className="btn-row">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  disabled={generateState !== "success" || !generateResult?.preview_url}
+                  onClick={() => generateResult?.preview_url && window.open(generateResult.preview_url, '_blank')}
+                  aria-label="새 창에서 미리보기 열기"
+                  className="btn-ghost"
+                >새 탭</Button>
 
-            <Card variant="default">
-              <Card.Header>
-                <Cluster className="cluster-between">
-                  <Card.Title>미리보기</Card.Title>
-                  <Cluster className="gap-sm">
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      disabled={generateState !== "success" || !generateResult?.preview_url}
-                      onClick={() => generateResult?.preview_url && window.open(generateResult.preview_url, '_blank')}
-                      aria-label="새 창에서 미리보기 열기"
-                    >새 탭</Button>
-
-                    {generateState === "success" && generateResult?.download_url ? (
-                      <a
-                        href={generateResult.download_url}
-                        download={generateResult.html_file}
-                        className="btn btn--secondary btn--sm text-decoration-none text-inherit"
-                        aria-label="뉴스레터 HTML 파일 다운로드"
-                      >
-                        다운로드
-                      </a>
-                    ) : (
-                      <Button variant="secondary" size="sm" disabled>다운로드</Button>
-                    )}
-                  </Cluster>
-                </Cluster>
-              </Card.Header>
-              <Card.Body aria-busy={generateState === "loading"}>
-                {generateState === "success" && generateResult ? (
-                  <iframe
-                    src={generateResult.preview_url}
-                    className="preview-frame"
-                    title="뉴스레터 미리보기"
-                  />
+                {generateState === "success" && generateResult?.download_url ? (
+                  <a
+                    href={generateResult.download_url}
+                    download={generateResult.html_file}
+                    className="btn btn-ghost btn--sm text-decoration-none text-inherit"
+                    aria-label="뉴스레터 HTML 파일 다운로드"
+                  >
+                    다운로드
+                  </a>
                 ) : (
-                  <div className="preview-placeholder">
-                    {generateState === "loading" ? (
-                      <p>생성 중입니다. 잠시만 기다려주세요...</p>
-                    ) : (
-                      <p>링크 입력 후<br/>「뉴스레터 만들기」를 누르면<br/>여기에 표시됩니다</p>
-                    )}
-                  </div>
+                  <Button variant="ghost" size="sm" disabled className="btn-ghost">다운로드</Button>
                 )}
-              </Card.Body>
-            </Card>
-          </Stack>
+              </div>
+            </div>
+            <div className="newsletter-preview-wrap">
+              {generateState === "success" && generateResult ? (
+                <iframe
+                  src={generateResult.preview_url}
+                  className="preview-frame"
+                  title="뉴스레터 미리보기"
+                />
+              ) : (
+                <div className="newsletter-preview-empty">
+                  <div className="newsletter-preview-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                  </div>
+                  {generateState === "loading" ? (
+                    <p>생성 중입니다. 잠시만 기다려주세요...</p>
+                  ) : (
+                    <p>링크 입력 후<br/>「뉴스레터 만들기」를 누르면<br/>여기에 표시됩니다</p>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {generateState === "success" && generateResult && (
+            <div className="newsletter-card">
+              <div className="newsletter-card-title">
+                <div className="newsletter-card-title-row">
+                  <div className="newsletter-card-icon newsletter-card-icon--green">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+                  </div>
+                  <h2>생성 완료</h2>
+                </div>
+              </div>
+              <div className="newsletter-card-body">
+                <p className="text-body-sm">
+                  <Badge variant="success" soft size="sm" className="badge-ok">완료</Badge> {generateResult.issue_label} · 카드 {generateResult.urls_used.length}개
+                </p>
+                <ul className="result-list">
+                  {generateResult.urls_used.map((url, i) => (
+                    <li key={i}>{url}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
         </div>
 
-        <aside className="portal-layout__side">
-          <Stack spacing="lg">
-            <Card variant="soft">
-              <Card.Header>
-                <Cluster className="cluster-between">
-                  <Card.Title className="text-body-lg">메일 발행</Card.Title>
-                  {mailReadyBadge}
-                </Cluster>
-              </Card.Header>
-              <Card.Body>
-                <Stack spacing="md">
-                  <div>
-                    <span className="text-caption">발신: </span>
-                    <span className="text-body-sm font-semibold">{mailStatus?.sender || "-"}</span>
-                  </div>
-                  <div>
-                    <span className="text-caption">수신: </span>
-                    <span className="text-body-sm font-semibold">{mailStatus?.recipient_count || 0}명</span>
-                  </div>
-                  <p className="text-caption text-muted">
-                    {mailStatus?.ready && generateState === "success" ? "미리보기 확인 후 「메일 발행」을 누르면 BCC로 발송됩니다." : "생성 후 미리보기를 확인하고 발행하세요."}
-                  </p>
-                  <Button
-                    variant="primary"
-                    fullWidth
-                    disabled={generateState !== "success" || !mailStatus?.ready || isSending || !(generateResult?.send_html_file || generateResult?.html_file)}
-                    onClick={handleSendMail}
-                  >
-                    {isSending ? "발송 중..." : "메일 발행"}
-                  </Button>
-                </Stack>
-              </Card.Body>
-            </Card>
+        <aside className="newsletter-sidebar">
+          <div className="newsletter-side-card newsletter-mail-card">
+            <div className="newsletter-side-card-head">
+              <span className="newsletter-side-card-title">메일 발행</span>
+              <span className={cx("cnt-pill", mailStatus?.ready ? "cnt-pill--ok" : "cnt-pill--warn")}>
+                {mailStatus?.ready ? "발행 가능" : "확인 중"}
+              </span>
+            </div>
+            <div className="newsletter-side-card-body">
+              <div className="newsletter-mail-from">
+                <span className="newsletter-mail-from__label">발신</span>
+                <span className="newsletter-mail-from__addr">{mailStatus?.sender || "-"}</span>
+              </div>
+              <div className="newsletter-mail-from">
+                <span className="newsletter-mail-from__label">수신</span>
+                <span className="newsletter-mail-from__addr">{mailStatus?.recipient_count || 0}명</span>
+              </div>
+              <div className="newsletter-mail-hint">
+                {mailStatus?.ready && generateState === "success" ? "미리보기 확인 후 「메일 발행」을 누르면 BCC로 발송됩니다." : "생성 후 미리보기를 확인하고 발행하세요."}
+              </div>
+              <Button
+                variant="primary"
+                fullWidth
+                disabled={generateState !== "success" || !mailStatus?.ready || isSending || !(generateResult?.send_html_file || generateResult?.html_file)}
+                onClick={handleSendMail}
+                className="btn-send btn--block"
+              >
+                {isSending ? "발송 중..." : "메일 발행"}
+              </Button>
+            </div>
+          </div>
 
+          <div className="newsletter-side-card">
+            <div className="newsletter-side-card-head">
+              <span className="newsletter-side-card-title">발행 흐름</span>
+            </div>
+            <div className="newsletter-side-card-body">
+              <div className="newsletter-flow-item">
+                <div className="newsletter-flow-n">1</div>
+                <div className="flow-text"><b>링크 입력</b> 후 생성</div>
+              </div>
+              <div className="newsletter-flow-item">
+                <div className="newsletter-flow-n">2</div>
+                <div className="flow-text"><b>미리보기</b> 검수</div>
+              </div>
+              <div className="newsletter-flow-item">
+                <div className="newsletter-flow-n">3</div>
+                <div className="flow-text"><b>메일 발행</b> (BCC)</div>
+              </div>
+            </div>
+          </div>
 
-            <Card variant="soft">
-              <Card.Header>
-                <Card.Title className="text-body-lg">이번 호 제외 URL</Card.Title>
-              </Card.Header>
-              <Card.Body>
-                <p className="text-caption text-muted">조회 중...</p>
-              </Card.Body>
-            </Card>
-          </Stack>
+          <div className="newsletter-side-card">
+            <div className="newsletter-side-card-head">
+              <span className="newsletter-side-card-title">이번 호 제외 URL</span>
+              <span className="cnt-pill">...</span>
+            </div>
+            <div className="newsletter-side-card-body">
+              <p className="text-caption text-muted">조회 중...</p>
+            </div>
+          </div>
         </aside>
       </div>
-    </Stack>
+    </>
   );
 }
 
@@ -384,31 +431,33 @@ function NewsletterRecipientsView() {
   };
 
   return (
-    <Stack spacing="lg">
-      <header className="page-header">
-        <h1 className="text-title-lg">수신자 관리</h1>
-        <p className="text-subtitle">발송 대상을 추가·수정합니다. 저장 후 「만들기」에서 메일을 발행하세요.</p>
+    <div className="newsletter-section">
+      <header className="newsletter-page-hero">
+        <h1 className="newsletter-page-title">수신자 관리</h1>
+        <p className="newsletter-page-subtitle">발송 대상을 추가·수정합니다. 저장 후 「만들기」에서 메일을 발행하세요.</p>
       </header>
 
       {alertMsg && (
-        <div className={`alert alert-${alertMsg.type}`} role={alertMsg.type === "error" ? "alert" : "status"}>
+        <div className={`alert alert--${alertMsg.type}`} role={alertMsg.type === "error" ? "alert" : "status"}>
           {alertMsg.text}
         </div>
       )}
 
-      <Card variant="default">
-        <Card.Header>
-          <Card.Title>CSV 가져오기</Card.Title>
-          <Card.Description>1열 그룹 · 2열 이름 · 3열 이메일 (UTF-8 권장)</Card.Description>
-        </Card.Header>
-        <Card.Body>
-          <Cluster className="cluster-center gap-md">
+      <div className="newsletter-card">
+        <div className="newsletter-card-title">
+          <div>
+            <h2>CSV 가져오기</h2>
+            <p>1열 <strong>그룹</strong> · 2열 <strong>이름</strong> · 3열 <strong>이메일</strong> (UTF-8 권장)</p>
+          </div>
+        </div>
+        <div className="newsletter-card-body">
+          <div className="csv-import-row">
             <input
               type="file"
               accept=".csv,text/csv"
               className="input input-auto"
               onChange={e => setFile(e.target.files?.[0] || null)}
-              key={file ? file.name : "empty"} // Reset file input
+              key={file ? file.name : "empty"}
               aria-label="수신자 목록 CSV 파일 선택"
             />
             <label className="check-wrap">
@@ -419,34 +468,35 @@ function NewsletterRecipientsView() {
               /> 기존 목록에 합치기
             </label>
             <Button
-              variant="secondary"
+              variant="primary"
               onClick={handleImport}
               disabled={isImporting || !file}
+              className="btn-primary"
             >
               {isImporting ? "가져오는 중..." : "CSV 반영"}
             </Button>
-          </Cluster>
-        </Card.Body>
-      </Card>
+          </div>
+        </div>
+      </div>
 
-      <Card variant="default">
-        <Card.Header>
-          <Cluster className="cluster-between-start">
+      <div className="newsletter-card">
+        <div className="newsletter-card-title">
+          <div className="newsletter-card-title-row">
             <div>
-              <Card.Title>수신자 목록</Card.Title>
-              <Card.Description>목록에서 그룹을 바꿀 수 있습니다 · 수신 체크 해제 시 발송 제외</Card.Description>
+              <h2>수신자 목록</h2>
+              <p>목록에서 그룹을 바꿀 수 있습니다 · 수신 체크 해제 시 발송 제외</p>
             </div>
-            <Cluster className="gap-sm">
-              <Button variant="secondary" size="sm" onClick={addRow}>+ 행 추가</Button>
-              <Button variant="primary" size="sm" onClick={handleSave} disabled={isSaving || isLoading}>
-                {isSaving ? "저장 중..." : "저장"}
-              </Button>
-            </Cluster>
-          </Cluster>
-        </Card.Header>
-        <Card.Body>
-          <div className="table-wrap table-scroll">
-            <table className="table-base">
+          </div>
+          <div className="btn-row">
+            <Button variant="ghost" size="sm" onClick={addRow} className="btn-ghost">+ 행 추가</Button>
+            <Button variant="primary" size="sm" onClick={handleSave} disabled={isSaving || isLoading} className="btn-primary">
+              {isSaving ? "저장 중..." : "저장"}
+            </Button>
+          </div>
+        </div>
+        <div className="newsletter-card-body">
+          <div className="newsletter-recipient-table-wrap">
+            <table className="newsletter-table">
               <thead>
                 <tr>
                   <th className="col-check">수신</th>
@@ -530,8 +580,14 @@ function NewsletterRecipientsView() {
               </tbody>
             </table>
           </div>
-        </Card.Body>
-      </Card>
-    </Stack>
+          <div className="recipient-foot">
+            <Button variant="ghost" size="sm" onClick={addRow} className="btn-ghost">+ 행 추가</Button>
+            <Button variant="primary" size="sm" onClick={handleSave} disabled={isSaving || isLoading} className="btn-primary">
+              {isSaving ? "저장 중..." : "저장"}
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
