@@ -13,6 +13,8 @@ import {
 } from "@/components";
 import { PptForm } from "./PptForm";
 import { PptResultView } from "./PptResultView";
+import { PptEditorView } from "./PptEditorView";
+import { PptViewerView } from "./PptViewerView";
 import {
   PPT_WORK_MODES,
   PPT_CATEGORIES,
@@ -43,7 +45,6 @@ export function PptWorkspace() {
     setErrorMessage(null);
 
     // 현재는 UI 구현 단계이므로 실제 API 연동 로직은 비워둠
-    // stage 전환은 외부에서 수동으로 하거나 추후 API 연동 시 처리
     setStage(PPT_PROCESS_STAGES.INPUT);
   };
 
@@ -51,10 +52,38 @@ export function PptWorkspace() {
     setStage(PPT_PROCESS_STAGES.IDLE);
     setSessionData(null);
     setErrorMessage(null);
+    setUiState(createDefaultPptUiState());
+  };
+
+  const handleStartEditor = () => {
+    setStage(PPT_PROCESS_STAGES.EDITING);
+  };
+
+  const handleStartViewer = () => {
+    setStage(PPT_PROCESS_STAGES.PREVIEW);
+  };
+
+  const handleUiStateChange = (updates: Partial<typeof uiState>) => {
+    setUiState(prev => ({ ...prev, ...updates }));
   };
 
   const isProcessing = stage === PPT_PROCESS_STAGES.UPLOADING || stage === PPT_PROCESS_STAGES.GENERATING;
 
+  // 뷰어 모드 (전체화면 오버레이 느낌)
+  if (stage === PPT_PROCESS_STAGES.PREVIEW && sessionData) {
+    return <PptViewerView data={sessionData} onClose={() => setStage(PPT_PROCESS_STAGES.EDITING)} />;
+  }
+
+  // 에디터 모드 (3-Pane 레이아웃)
+  if (stage === PPT_PROCESS_STAGES.EDITING && sessionData) {
+    return (
+      <PptEditorView
+        data={sessionData}
+        uiState={uiState}
+        onUiStateChange={handleUiStateChange}
+      />
+    );
+  }
   return (
     <>
       <PortalHeader
@@ -95,6 +124,8 @@ export function PptWorkspace() {
                   <PptResultView
                     data={sessionData}
                     onReset={handleReset}
+                    onEdit={handleStartEditor}
+                    onView={handleStartViewer}
                   />
                 ) : (
                   <PptForm
@@ -102,6 +133,7 @@ export function PptWorkspace() {
                     isLoading={isProcessing}
                   />
                 )}
+
                 {/* 생성 중 프로그레스 플레이스홀더 */}
                 {isProcessing && (
                   <div className="ppt-card" aria-busy="true">
@@ -120,6 +152,7 @@ export function PptWorkspace() {
                 )}
               </Stack>
             </main>
+
 
             {/* 오른쪽: 정보 및 상태 영역 */}
             <aside className="ppt-side-info">

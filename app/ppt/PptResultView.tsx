@@ -1,17 +1,19 @@
 "use client";
 
 import { PptSessionData } from "@/features/ppt";
-import { Stack, Cluster, Button } from "@/components";
+import { Stack, Button } from "@/components";
 
 interface PptResultViewProps {
   data: PptSessionData;
   onReset: () => void;
+  onEdit: () => void;
+  onView: () => void;
 }
 
 /**
  * PPT 생성 결과 미리보기 및 다운로드 영역
  */
-export function PptResultView({ data, onReset }: PptResultViewProps) {
+export function PptResultView({ data, onReset, onEdit, onView }: PptResultViewProps) {
   const isReport = data.category === "report";
   const slideCount = data.slides_data?.slides.length || 0;
 
@@ -24,18 +26,16 @@ export function PptResultView({ data, onReset }: PptResultViewProps) {
           </div>
 
           <div className="ppt-result-meta">
-            <Cluster className="gap-md">
+            <div className="ppt-result-stat">
+              <span className="label">유형</span>
+              <span className="value">{isReport ? "서면 보고서" : "B2B 제안서"}</span>
+            </div>
+            {!isReport && (
               <div className="ppt-result-stat">
-                <span className="label">유형</span>
-                <span className="value">{isReport ? "서면 보고서" : "B2B 제안서"}</span>
+                <span className="label">슬라이드</span>
+                <span className="value">{slideCount}장</span>
               </div>
-              {!isReport && (
-                <div className="ppt-result-stat">
-                  <span className="label">슬라이드</span>
-                  <span className="value">{slideCount}장</span>
-                </div>
-              )}
-            </Cluster>
+            )}
           </div>
 
           <div className="ppt-preview-canvas">
@@ -52,17 +52,20 @@ export function PptResultView({ data, onReset }: PptResultViewProps) {
           </div>
 
           <div className="ppt-result-actions">
-            <Cluster className="cluster-between">
+            <div className="ppt-result-actions-inner">
               <Button variant="ghost" onClick={onReset}>
                 처음으로
               </Button>
-              <Cluster className="gap-sm">
-                <Button variant="secondary" disabled>
-                  에디터 열기 (준비 중)
+              <div className="ppt-result-actions-group">
+                <Button variant="secondary" onClick={onView}>
+                  발표자 모드
+                </Button>
+                <Button variant="primary" onClick={onEdit}>
+                  에디터 열기
                 </Button>
                 {/* 다운로드 URL이 있는 경우에만 버튼 표시 (현재 데이터 모델에는 없음) */}
-              </Cluster>
-            </Cluster>
+              </div>
+            </div>
           </div>
         </div>
 
