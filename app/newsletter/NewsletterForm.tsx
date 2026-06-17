@@ -61,41 +61,41 @@ export function NewsletterForm({ onSubmit, isLoading }: NewsletterFormProps) {
   };
 
   return (
-    <Stack spacing="md" aria-busy={isLoading}>
-      <FormField
-        label="URL 목록"
-        htmlFor="urls"
-        errorMessage={errors.urls}
-      >
+    <div className="newsletter-section" aria-busy={isLoading}>
+      <div className="newsletter-field">
+        <label htmlFor="urls">URL 목록</label>
         <Textarea
           id="urls"
           value={urls}
           onChange={(e) => setUrls(e.target.value)}
           onBlur={() => handleBlur("urls")}
           placeholder="https://blog.naver.com/...&#10;https://blog.naver.com/..."
+          className="textarea"
           rows={6}
           disabled={isLoading}
           aria-invalid={!!errors.urls}
         />
-      </FormField>
+        {errors.urls && touched.urls && <p className="field__error">{errors.urls}</p>}
+      </div>
 
-      <FormField label="메인 URL (선택)" htmlFor="featured">
+      <div className="newsletter-field">
+        <label htmlFor="featured">
+          메인 URL <span className="opt">선택 — 목록 밖 링크 가능, 비우면 첫 글</span>
+        </label>
         <Input
           id="featured"
           type="url"
           value={featured}
           onChange={(e) => setFeatured(e.target.value)}
-          placeholder="배너용 링크 (비우면 첫 글 자동 적용)"
+          placeholder="배너용 링크 (블로그·랜딩 페이지 등)"
+          className="input"
           disabled={isLoading}
         />
-      </FormField>
+      </div>
 
-      <Cluster className="gap-md">
-        <FormField
-          label="연도"
-          htmlFor="year"
-          errorMessage={errors.year}
-        >
+      <div className="newsletter-field-row">
+        <div className="newsletter-field">
+          <label htmlFor="year">연도</label>
           <Input
             id="year"
             type="number"
@@ -103,17 +103,16 @@ export function NewsletterForm({ onSubmit, isLoading }: NewsletterFormProps) {
             onChange={(e) => setYear(e.target.value)}
             onBlur={() => handleBlur("year")}
             placeholder="2024"
+            className="input"
             min={2020}
             max={2099}
             disabled={isLoading}
             aria-invalid={!!errors.year}
           />
-        </FormField>
-        <FormField
-          label="월"
-          htmlFor="month"
-          errorMessage={errors.month}
-        >
+          {errors.year && touched.year && <p className="field__error">{errors.year}</p>}
+        </div>
+        <div className="newsletter-field">
+          <label htmlFor="month">월</label>
           <Input
             id="month"
             type="number"
@@ -121,15 +120,17 @@ export function NewsletterForm({ onSubmit, isLoading }: NewsletterFormProps) {
             onChange={(e) => setMonth(e.target.value)}
             onBlur={() => handleBlur("month")}
             placeholder="12"
+            className="input"
             min={1}
             max={12}
             disabled={isLoading}
             aria-invalid={!!errors.month}
           />
-        </FormField>
-      </Cluster>
+          {errors.month && touched.month && <p className="field__error">{errors.month}</p>}
+        </div>
+      </div>
 
-      <Cluster className="cluster-between mt-2">
+      <div className="newsletter-form-foot">
         <label className="check-wrap">
           <input
             type="checkbox"
@@ -142,10 +143,12 @@ export function NewsletterForm({ onSubmit, isLoading }: NewsletterFormProps) {
           variant="primary"
           onClick={handleSubmit}
           disabled={!isValid || isLoading}
+          className="btn-primary"
         >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="btn-icon-svg"><polygon points="5 3 19 12 5 21 5 3"/></svg>
           {isLoading ? "생성 중..." : "뉴스레터 만들기"}
         </Button>
-      </Cluster>
-    </Stack>
+      </div>
+    </div>
   );
 }

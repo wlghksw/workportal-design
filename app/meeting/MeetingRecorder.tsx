@@ -130,22 +130,13 @@ export function MeetingRecorder({
   }, []);
 
   return (
-    <div className="record-zone">
-      <Stack spacing="md">
-        <div className="rec-timer-wrap">
-          <div className="rec-timer" aria-live="polite">
-            {formatTime(elapsedMs)}
-          </div>
-          <div className="rec-status-text" role="status">
-            {recState === "recording" ? "🔴 녹음 중" : recState === "paused" ? "⏸ 일시정지" : "준비 완료"}
-          </div>
-        </div>
-
-        <Cluster className="cluster-center gap-md">
+    <div className={cx("meeting-record-zone", recState === "recording" && "recording", recState === "paused" && "paused")}>
+      <Stack spacing="md" className="cluster-center">
+        <div className="rec-controls">
           {recState === "idle" ? (
             <button
               type="button"
-              className="rec-btn-main"
+              className="meeting-rec-btn"
               onClick={startRecording}
               disabled={disabled}
               aria-label="녹음 시작"
@@ -156,30 +147,57 @@ export function MeetingRecorder({
             <>
               <button
                 type="button"
-                className={cx("rec-btn-main", recState === "recording" && "rec-btn-main--recording")}
+                className={cx("meeting-rec-btn", recState === "paused" && "meeting-rec-btn--pause")}
                 onClick={recState === "recording" ? pauseRecording : resumeRecording}
                 disabled={disabled}
                 aria-label={recState === "recording" ? "녹음 일시정지" : "녹음 재개"}
               >
                 {recState === "recording" ? "⏸" : "▶"}
               </button>
-              <Button
-                variant="danger"
+              <button
+                type="button"
+                className="meeting-rec-btn meeting-rec-btn--finish"
                 onClick={stopRecording}
                 disabled={disabled}
                 aria-label="녹음 중지 및 저장"
               >
-                ⏹ 중지 및 저장
-              </Button>
+                ⏹
+              </button>
             </>
           )}
+        </div>
+
+        <div className="rec-hint">
+          {recState === "idle"
+            ? "🎙️ 눌러 녹음 · ⏸ 일시정지 · ⏹ 종료 후 파일로 저장"
+            : recState === "recording"
+              ? "녹음 중 — ⏸ 잠깐 멈춤 · ⏹ 끝내고 파일로 저장"
+              : "일시정지 — ▶ 이어서 녹음 · ⏹ 끝내고 파일로 저장"}
+        </div>
+
+        <div className="meeting-waveform">
+          <div className="meeting-wave-bar"></div>
+          <div className="meeting-wave-bar"></div>
+          <div className="meeting-wave-bar"></div>
+          <div className="meeting-wave-bar"></div>
+          <div className="meeting-wave-bar"></div>
+          <div className="meeting-wave-bar"></div>
+          <div className="meeting-wave-bar"></div>
+          <div className="meeting-wave-bar"></div>
+          <div className="meeting-wave-bar"></div>
+          <div className="meeting-wave-bar"></div>
+          <div className="meeting-wave-bar"></div>
+          <div className="meeting-wave-bar"></div>
+        </div>
+
+        <Cluster className="cluster-center gap-sm">
+          <div className={cx("rec-dot", (recState === "recording") && "show")}></div>
+          <div className="rec-time" aria-live="polite">
+            {formatTime(elapsedMs)}
+          </div>
         </Cluster>
 
-        <p className="drop-hint">
-          {recState === "idle"
-            ? "🎙️ 버튼을 눌러 녹음을 시작하세요."
-            : "중지 버튼을 누르면 녹음이 종료되고 파일 목록에 추가됩니다."}
-        </p>
+        <div className="annotation">녹음 시 브라우저에서 마이크 허용을 눌러주세요.</div>
       </Stack>
     </div>
   );

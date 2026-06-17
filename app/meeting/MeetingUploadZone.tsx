@@ -89,7 +89,7 @@ export function MeetingUploadZone({
   return (
     <Stack spacing="md">
       <div
-        className={cx("drop-zone", isOver && "drop-zone--over")}
+        className={cx("meeting-drop-zone", isOver && "over")}
         onClick={() => !disabled && fileInputRef.current?.click()}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -100,8 +100,8 @@ export function MeetingUploadZone({
         aria-label="녹음 파일 선택"
       >
         <div className="drop-icon">📁</div>
-        <div className="drop-text">녹음 파일을 여기 끌어다 놓거나 클릭하세요</div>
-        <div className="drop-hint">m4a · mp3 · wav 등 최대 1GB · 여러 파일 가능</div>
+        <div className="drop-text">녹음 파일을 여기 끌어다 놓거나 클릭하세요 (여러 파일 가능)</div>
+        <div className="drop-hint">m4a · mp3 · wav · caf 등 최대 1GB · 여러 파일 가능</div>
         <input
           type="file"
           ref={fileInputRef}
@@ -113,51 +113,47 @@ export function MeetingUploadZone({
       </div>
 
       {files.length > 0 && (
-        <Card variant="soft" className="files-section">
-          <Card.Header>
-            <Card.Title className="text-body-sm font-semibold">첨부된 녹음 파일</Card.Title>
-            <Card.Description>순서대로 하나의 회의로 처리합니다.</Card.Description>
-          </Card.Header>
-          <Card.Body>
-            <div className="file-list">
-              {files.map((f, i) => (
-                <div key={f.id} className="file-row">
-                  <div className="idx">{String(i + 1).padStart(2, '0')}</div>
-                  <div className="meta">
-                    <div className="name">{f.name}</div>
-                    <div className="size">{formatBytes(f.size)}</div>
-                  </div>
-                  <div className="actions">
-                    <button
-                      type="button"
-                      className="icon-btn"
-                      onClick={() => onFileMove(f.id, -1)}
-                      disabled={disabled || i === 0}
-                      title="위로 이동"
-                      aria-label={`${f.name} 위로 이동`}
-                    >↑</button>
-                    <button
-                      type="button"
-                      className="icon-btn"
-                      onClick={() => onFileMove(f.id, 1)}
-                      disabled={disabled || i === files.length - 1}
-                      title="아래로 이동"
-                      aria-label={`${f.name} 아래로 이동`}
-                    >↓</button>
-                    <button
-                      type="button"
-                      className="icon-btn danger"
-                      onClick={() => onFileRemove(f.id)}
-                      disabled={disabled}
-                      title="삭제"
-                      aria-label={`${f.name} 삭제`}
-                    >✕</button>
-                  </div>
+        <div className="files-section">
+          <div className="section-label files-section__title">첨부된 녹음 파일</div>
+          <p className="files-section__hint">아래 순서대로 하나의 회의로 합쳐 처리합니다. 순서 변경·삭제 가능</p>
+          <div className="file-list">
+            {files.map((f, i) => (
+              <div key={f.id} className="file-row">
+                <div className="idx">{String(i + 1).padStart(2, '0')}</div>
+                <div className="meta">
+                  <div className="name">{f.name}</div>
+                  <div className="size">{formatBytes(f.size)}</div>
                 </div>
-              ))}
-            </div>
-          </Card.Body>
-        </Card>
+                <div className="actions">
+                  <button
+                    type="button"
+                    className="icon-btn"
+                    onClick={() => onFileMove(f.id, -1)}
+                    disabled={disabled || i === 0}
+                    title="위로 이동"
+                    aria-label={`${f.name} 위로 이동`}
+                  >↑</button>
+                  <button
+                    type="button"
+                    className="icon-btn"
+                    onClick={() => onFileMove(f.id, 1)}
+                    disabled={disabled || i === files.length - 1}
+                    title="아래로 이동"
+                    aria-label={`${f.name} 아래로 이동`}
+                  >↓</button>
+                  <button
+                    type="button"
+                    className="icon-btn danger"
+                    onClick={() => onFileRemove(f.id)}
+                    disabled={disabled}
+                    title="삭제"
+                    aria-label={`${f.name} 삭제`}
+                  >✕</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
     </Stack>
   );
