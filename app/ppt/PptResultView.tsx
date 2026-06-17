@@ -1,6 +1,6 @@
 "use client";
 
-import { PptSessionData } from "@/features/ppt";
+import { PptSessionData, getPptDownloadUrl } from "@/features/ppt";
 import { Stack, Button } from "@/components";
 
 interface PptResultViewProps {
@@ -16,6 +16,16 @@ interface PptResultViewProps {
 export function PptResultView({ data, onReset, onEdit, onView }: PptResultViewProps) {
   const isReport = data.category === "report";
   const slideCount = data.slides_data?.slides.length || 0;
+
+  const handleReset = () => {
+    if (window.confirm("초기화하시겠습니까? 현재 생성된 결과는 저장되지 않은 경우 사라질 수 있습니다.")) {
+      onReset();
+    }
+  };
+
+  const pptxUrl = getPptDownloadUrl(data.session_id, "pptx");
+  const premiumPptxUrl = getPptDownloadUrl(data.session_id, "premium-pptx");
+  const docxUrl = getPptDownloadUrl(data.session_id, "docx");
 
   return (
     <div className="ppt-result-wrap" role="status" aria-live="polite">
@@ -53,17 +63,30 @@ export function PptResultView({ data, onReset, onEdit, onView }: PptResultViewPr
 
           <div className="ppt-result-actions">
             <div className="ppt-result-actions-inner">
-              <Button variant="ghost" onClick={onReset}>
-                처음으로
+              <Button variant="ghost" onClick={handleReset}>
+                초기화
               </Button>
               <div className="ppt-result-actions-group">
                 <Button variant="secondary" onClick={onView}>
                   발표자 모드
                 </Button>
-                <Button variant="primary" onClick={onEdit}>
+                <Button variant="secondary" onClick={onEdit}>
                   에디터 열기
                 </Button>
-                {/* 다운로드 URL이 있는 경우에만 버튼 표시 (현재 데이터 모델에는 없음) */}
+                {isReport ? (
+                  <a href={docxUrl} download className="btn btn--primary text-decoration-none">
+                    DOCX 다운로드
+                  </a>
+                ) : (
+                  <>
+                    <a href={pptxUrl} download className="btn btn--secondary text-decoration-none">
+                      PPTX
+                    </a>
+                    <a href={premiumPptxUrl} download className="btn btn--primary text-decoration-none">
+                      프리미엄 PPTX
+                    </a>
+                  </>
+                )}
               </div>
             </div>
           </div>
