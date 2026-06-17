@@ -12,6 +12,7 @@ import {
   cx,
 } from "@/components";
 import { PptForm } from "./PptForm";
+import { PptResultView } from "./PptResultView";
 import {
   PPT_WORK_MODES,
   PPT_CATEGORIES,
@@ -20,6 +21,7 @@ import {
   createDefaultPptRequest,
   createDefaultPptUiState,
   PptGenerateRequest,
+  PptSessionData,
 } from "@/features/ppt";
 
 /**
@@ -28,21 +30,30 @@ import {
 export function PptWorkspace() {
   const [stage, setStage] = useState<PptProcessStage>(PPT_PROCESS_STAGES.IDLE);
   const [uiState, setUiState] = useState(createDefaultPptUiState());
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [sessionData, setSessionData] = useState<PptSessionData | null>(null);
 
   const handleGenerate = async (data: PptGenerateRequest) => {
-    // UI 상태 동기화 및 에러 초기화 (API 연동 전 단계)
+    // UI 상태 동기화
     setUiState(prev => ({
       ...prev,
       workMode: data.mode,
       category: data.category,
-      errorMessage: null
     }));
+    setErrorMessage(null);
 
-    // 현재는 입력 폼 확인 단계이므로 스테이지 전환은 하지 않음
-    if (stage === PPT_PROCESS_STAGES.IDLE) {
-      setStage(PPT_PROCESS_STAGES.INPUT);
-    }
+    // 현재는 UI 구현 단계이므로 실제 API 연동 로직은 비워둠
+    // stage 전환은 외부에서 수동으로 하거나 추후 API 연동 시 처리
+    setStage(PPT_PROCESS_STAGES.INPUT);
   };
+
+  const handleReset = () => {
+    setStage(PPT_PROCESS_STAGES.IDLE);
+    setSessionData(null);
+    setErrorMessage(null);
+  };
+
+  const isProcessing = stage === PPT_PROCESS_STAGES.UPLOADING || stage === PPT_PROCESS_STAGES.GENERATING;
 
   return (
     <>
@@ -71,11 +82,44 @@ export function PptWorkspace() {
       <Page>
         <div className="ppt-app">
           <div className="ppt-grid">
-            {/* 왼쪽: 입력 영역 */}
-            <PptForm
-              onSubmit={handleGenerate}
-              isLoading={stage === PPT_PROCESS_STAGES.GENERATING || stage === PPT_PROCESS_STAGES.UPLOADING}
-            />
+            {/* 왼쪽: 입력 또는 결과 영역 */}
+            <main className="ppt-main-content">
+              <Stack spacing="lg">
+                {errorMessage && (
+                  <div className="alert alert--error" role="alert">
+                    {errorMessage}
+                  </div>
+                )}
+
+                {stage === PPT_PROCESS_STAGES.SUCCESS && sessionData ? (
+                  <PptResultView
+                    data={sessionData}
+                    onReset={handleReset}
+                  />
+                ) : (
+                  <PptForm
+                    onSubmit={handleGenerate}
+                    isLoading={isProcessing}
+                  />
+                )}
+                {/* 생성 중 프로그레스 플레이스홀더 */}
+                {isProcessing && (
+                  <div className="ppt-card" aria-busy="true">
+                    <Stack spacing="md">
+                      <div className="ppt-section-title">
+                        {stage === PPT_PROCESS_STAGES.UPLOADING ? "파일 업로드 중..." : "AI 슬라이드 생성 중..."}
+                      </div>
+                      <div className="progress-bar-bg">
+                        <div className="progress-bar progress-bar--loading"></div>
+                      </div>
+                      <p className="ppt-progress-hint">
+                        최대 1~2분이 소요될 수 있습니다. 브라우저를 닫지 마세요.
+                      </p>
+                    </Stack>
+                  </div>
+                )}
+              </Stack>
+            </main>
 
             {/* 오른쪽: 정보 및 상태 영역 */}
             <aside className="ppt-side-info">
@@ -94,15 +138,26 @@ export function PptWorkspace() {
 
                   <div className="ppt-section-title">생성 상태</div>
                   <div className="ppt-step-list">
-                    <div className={cx("ppt-step", stage === PPT_PROCESS_STAGES.IDLE && "active")}>
+                    <div className={cx(
+                      "ppt-step",
+                      stage === PPT_PROCESS_STAGES.IDLE && "active",
+                      (stage !== PPT_PROCESS_STAGES.IDLE && stage !== PPT_PROCESS_STAGES.ERROR) && "done"
+                    )}>
                       <div className="ppt-step-icon">1</div>
                       <span>콘텐츠 및 이미지 정밀 분석</span>
                     </div>
-                    <div className="ppt-step">
+                    <div className={cx(
+                      "ppt-step",
+                      stage === PPT_PROCESS_STAGES.GENERATING && "active",
+                      stage === PPT_PROCESS_STAGES.SUCCESS && "done"
+                    )}>
                       <div className="ppt-step-icon">2</div>
                       <span>디자인 자산 기반 구조 설계</span>
                     </div>
-                    <div className="ppt-step">
+                    <div className={cx(
+                      "ppt-step",
+                      stage === PPT_PROCESS_STAGES.SUCCESS && "active done"
+                    )}>
                       <div className="ppt-step-icon">3</div>
                       <span>HTML 인라인 슬라이드 렌더링</span>
                     </div>
