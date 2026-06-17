@@ -111,17 +111,15 @@ export function PptWorkspace() {
     <>
       <PortalHeader
         logo={
-          <Link href="/" className="text-decoration-none">
-            <Cluster className="cluster-center gap-sm">
-              <Image
-                src="/shared/eduallab-logo.png"
-                alt="에듀올랩"
-                width={120}
-                height={40}
-                className="brand__logo"
-              />
-              <span className="text-title-sm text-body">PPT·제안서</span>
-            </Cluster>
+          <Link href="/" className="brand text-decoration-none">
+            <Image
+              src="/shared/eduallab-logo.png"
+              alt="에듀올랩"
+              width={120}
+              height={40}
+              className="brand__logo"
+            />
+            <span className="brand__sub">PPT·제안서</span>
           </Link>
         }
       >

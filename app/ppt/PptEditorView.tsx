@@ -122,11 +122,16 @@ export function PptEditorView({ data, uiState, onUiStateChange }: PptEditorViewP
           <div className="ppt-canvas-wrapper">
             <div className="ppt-slide-canvas">
               <div className="ppt-canvas-inner">
-                <h1 className="text-title-lg">{activeSlide?.title}</h1>
-                <p className="text-subtitle">{activeSlide?.subtitle}</p>
+                <div className="ppt-slide-header">
+                  <div className="ppt-slide-num">{uiState.activePage}</div>
+                  <div>
+                    <h2 className="ppt-slide-title">{activeSlide?.title}</h2>
+                    <div className="ppt-slide-subtitle">{activeSlide?.subtitle}</div>
+                  </div>
+                </div>
                 <ul className="ppt-slide-body-list">
                   {activeSlide?.content?.main_points?.map((p, i) => (
-                    <li key={i} className="text-body">{p}</li>
+                    <li key={i} className="ppt-slide-body">{p}</li>
                   ))}
                 </ul>
               </div>
@@ -148,7 +153,6 @@ export function PptEditorView({ data, uiState, onUiStateChange }: PptEditorViewP
             <Button
               variant="ghost"
               size="sm"
-
               disabled={uiState.activePage >= slides.length}
               onClick={() => onUiStateChange({ activePage: uiState.activePage + 1 })}
             >

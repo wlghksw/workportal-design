@@ -3,7 +3,6 @@
 import { useState, useRef, useMemo, ChangeEvent } from "react";
 import {
   Stack,
-  Cluster,
   Input,
   Textarea,
   Button,
@@ -149,7 +148,7 @@ export function PptForm({ onSubmit, isLoading }: PptFormProps) {
   };
 
   return (
-    <section className="ppt-card">
+    <div className="ppt-card input-side">
       {/* 작업 모드 */}
       <div>
         <div className="ppt-section-title">
@@ -267,7 +266,7 @@ export function PptForm({ onSubmit, isLoading }: PptFormProps) {
           />
           <div className="ppt-drop-icon">📂</div>
           <div className="ppt-drop-text-main">문서 및 이미지를 드래그하세요</div>
-          <div className="ppt-drop-text-sub">PDF, DOCX, XLSX, JPG 지원</div>
+          <div className="ppt-drop-text-sub">{files.length > 0 ? `${files.length}개 파일 선택됨` : "PDF, DOCX, XLSX, JPG 지원"}</div>
         </div>
 
         {files.length > 0 && (
@@ -313,8 +312,9 @@ export function PptForm({ onSubmit, isLoading }: PptFormProps) {
       {/* 추가 지시사항 */}
       <div>
         <div className="ppt-section-title">추가 지시사항</div>
-        <Textarea
+        <textarea
           id="instructions"
+          className="chat-textarea"
           value={instructions}
           onChange={(e) => setInstructions(e.target.value)}
           placeholder="예: '데이터 위주로 구성해줘', '파스텔 톤 강조'"
@@ -323,15 +323,14 @@ export function PptForm({ onSubmit, isLoading }: PptFormProps) {
         />
       </div>
 
-      <Button
-        variant="primary"
-        size="lg"
-        fullWidth
-        disabled={!isValid || isLoading}
+      <button
+        className="btn-generate"
+        id="btn-generate"
         onClick={handleSubmit}
+        disabled={!isValid || isLoading}
       >
-        {isLoading ? "분석 및 생성 중..." : category === "report" && mode === "new" ? "공식 서면 보고서 생성" : "HTML 슬라이드 생성"}
-      </Button>
-    </section>
+        {isLoading ? "분석 및 생성 중..." : mode === "append" ? "기존 PPT에 이어서 추가 생성" : category === "report" ? "공식 서면 보고서 생성" : "HTML 슬라이드 생성"}
+      </button>
+    </div>
   );
 }
