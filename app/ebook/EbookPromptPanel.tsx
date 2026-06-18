@@ -1,10 +1,11 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Stack, cx } from "@/components";
 import {
   EbookLayoutMode,
-  EBOOK_LAYOUT_MODES
+  EBOOK_LAYOUT_MODES,
+  reportEbookActivity
 } from "@/features/ebook";
 
 interface EbookPromptPanelProps {
@@ -15,6 +16,7 @@ interface EbookPromptPanelProps {
   layoutMode: EbookLayoutMode;
   onLayoutModeChange: (mode: EbookLayoutMode) => void;
   onFileUpload: (file: File) => void;
+  onGenerateScript: () => void;
   selectedFileName?: string;
   isLoading: boolean;
 }
@@ -27,10 +29,12 @@ export function EbookPromptPanel({
   layoutMode,
   onLayoutModeChange,
   onFileUpload,
+  onGenerateScript,
   selectedFileName,
   isLoading
 }: EbookPromptPanelProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [copyStatus, setCopyStatus] = useState<string | null>(null);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" || e.key === " ") {
@@ -44,6 +48,17 @@ export function EbookPromptPanel({
     if (file) onFileUpload(file);
   };
 
+  const handleCopyPrompt = async (text: string, label: string) => {
+    if (!text) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopyStatus(`${label} 복사 완료!`);
+      reportEbookActivity("prompt_copy", label, text.slice(0, 100));
+    } catch (err) {
+      setCopyStatus("복사 실패");
+    }
+  };
+
   return (
     <Stack spacing="lg">
       {/* 프롬프트 출력 & 복사 컨테이너 */}
@@ -54,19 +69,39 @@ export function EbookPromptPanel({
             <div className="ebook-prompt-header">📝 1. 대본 생성 프롬프트</div>
             <div className="ebook-prompt-box" aria-label="대본 생성 프롬프트">{scriptPrompt || "프롬프트를 로드하는 중..."}</div>
             <div className="ebook-btn-row">
-              <button type="button" className="ebook-btn-action ebook-btn-copy" disabled={isLoading || !scriptPrompt}>✨ 대본 프롬프트 복사</button>
-              <button type="button" className="ebook-btn-action ebook-btn-script" disabled={isLoading || !scriptPrompt}>📝 AI 대본 즉시 생성</button>
+              <button
+                type="button"
+                className="ebook-btn-action ebook-btn-copy"
+                disabled={isLoading || !scriptPrompt}
+                onClick={() => handleCopyPrompt(scriptPrompt, "대본 프롬프트")}
+              >✨ 대본 프롬프트 복사</button>
+              <button
+                type="button"
+                className="ebook-btn-action ebook-btn-script"
+                disabled={isLoading || !scriptPrompt}
+                onClick={onGenerateScript}
+              >📝 AI 대본 즉시 생성</button>
             </div>
           </div>
           <div className="ebook-field">
             <div className="ebook-prompt-header">🎨 2. 그림 생성 프롬프트</div>
             <div className="ebook-prompt-box" aria-label="그림 생성 프롬프트">{imagePrompt || "프롬프트를 로드하는 중..."}</div>
             <div className="ebook-btn-row">
-              <button type="button" className="ebook-btn-action ebook-btn-copy" disabled={isLoading || !imagePrompt}>✨ 그림 프롬프트 복사</button>
-              <button type="button" className="ebook-btn-action ebook-btn-dalle" disabled={isLoading || !imagePrompt}>🎨 AI 이미지 즉시 생성</button>
+              <button
+                type="button"
+                className="ebook-btn-action ebook-btn-copy"
+                disabled={isLoading || !imagePrompt}
+                onClick={() => handleCopyPrompt(imagePrompt, "그림 프롬프트")}
+              >✨ 그림 프롬프트 복사</button>
+              <button
+                type="button"
+                className="ebook-btn-action ebook-btn-dalle"
+                disabled={isLoading || !imagePrompt}
+              >🎨 AI 이미지 즉시 생성</button>
             </div>
           </div>
         </div>
+        {copyStatus && <p className="text-caption text-center mt-2" role="status">{copyStatus}</p>}
       </fieldset>
 
       {/* ChatGPT 안내 가이드 및 링크 */}

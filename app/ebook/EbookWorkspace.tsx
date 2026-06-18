@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -16,6 +16,10 @@ import {
   EbookLayoutMode,
   EBOOK_GUIDE_RULES,
   createDefaultEbookUiState,
+  createDefaultEbookApiSettings,
+  buildEbookPrompt,
+  generateEbookScript,
+  reportEbookActivity,
 } from "@/features/ebook";
 import { EbookForm } from "./EbookForm";
 import { EbookPromptPanel } from "./EbookPromptPanel";
@@ -25,22 +29,81 @@ import { EbookPromptPanel } from "./EbookPromptPanel";
  */
 export function EbookWorkspace() {
   const [uiState, setUiState] = useState(createDefaultEbookUiState());
+  const [apiSettings, setApiSettings] = useState(createDefaultEbookApiSettings());
 
-  const handleFormSubmit = (data: {
+  const handleFormSubmit = async (data: {
     mode: EbookGenerationMode;
     title: string;
     fullStory: string;
     level: EbookEnglishLevel;
     apiSettings: EbookApiSettings;
   }) => {
+    if (uiState.isProcessing) return;
+
+    setApiSettings(data.apiSettings);
     setUiState(prev => ({
       ...prev,
       title: data.title,
       fullStory: data.fullStory,
       currentLevel: data.level,
-      generationMode: data.mode
+      generationMode: data.mode,
+      isProcessing: true,
+      errorMessage: null
     }));
-    // Prompt building logic will be implemented in future commits
+
+    try {
+      const res = await buildEbookPrompt({
+        title: data.title,
+        level: data.level,
+        full_story: data.fullStory
+      });
+
+      setUiState(prev => ({
+        ...prev,
+        scriptPrompt: res.script_prompt,
+        imagePrompt: res.image_prompt,
+        isProcessing: false
+      }));
+    } catch (err: unknown) {
+      setUiState(prev => ({
+        ...prev,
+        isProcessing: false,
+        errorMessage: err instanceof Error ? err.message : "프롬프트 생성에 실패했습니다."
+      }));
+    }
+  };
+
+  const handleGenerateScript = async () => {
+    if (uiState.isProcessing || !uiState.scriptPrompt) return;
+
+    setUiState(prev => ({
+      ...prev,
+      isProcessing: true,
+      errorMessage: null,
+    }));
+
+    try {
+      const script = await generateEbookScript({
+        script_prompt: uiState.scriptPrompt,
+        api_key: apiSettings.apiKey,
+        model: apiSettings.chatModel
+      });
+
+      setUiState(prev => ({
+        ...prev,
+        script,
+        jsonScriptText: JSON.stringify(script, null, 2),
+        isProcessing: false
+      }));
+
+      reportEbookActivity("script_generate", "AI 대본 자동 생성", uiState.title);
+    } catch (err: unknown) {
+      setUiState(prev => ({
+        ...prev,
+        isProcessing: false,
+        errorMessage: err instanceof Error ? err.message : "대본 생성에 실패했습니다."
+      }));
+    }
   };
 
   const handleJsonScriptChange = (value: string) => {
@@ -52,7 +115,6 @@ export function EbookWorkspace() {
   };
 
   const handleFileUpload = (file: File) => {
-    // Slicing logic will be implemented in future commits
     setUiState(prev => ({ ...prev, selectedFileName: file.name }));
   };
 
@@ -97,6 +159,7 @@ export function EbookWorkspace() {
                   layoutMode={uiState.layoutMode}
                   onLayoutModeChange={handleLayoutModeChange}
                   onFileUpload={handleFileUpload}
+                  onGenerateScript={handleGenerateScript}
                   selectedFileName={uiState.selectedFileName}
                   isLoading={uiState.isProcessing}
                 />
