@@ -71,6 +71,8 @@ export interface EbookUiState {
   currentStep: 1 | 2 | 3;
   errorMessage: string | null;
   script: EbookScript;
+  jsonScriptText?: string;
+  selectedFileName?: string;
   images: EbookSceneImage[];
   showResults: boolean;
   scriptPrompt: string;

@@ -1837,6 +1837,72 @@ legend.ppt-section-title {
 }
 .ebook-level-card.active { background: var(--primary); color: #fff; border-color: var(--primary); }
 
+/* E-book Prompt Builder & Input */
+.ebook-prompt-container {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
+}
+.ebook-prompt-header {
+  font-size: 0.75rem; font-weight: 700; color: var(--primary); margin-bottom: 5px;
+}
+.ebook-prompt-box {
+  background: var(--surface-subtle); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 0.8rem;
+  font-size: 0.75rem; color: var(--text-muted);
+  height: 100px; overflow-y: auto;
+  font-family: var(--font-family-mono); white-space: pre-wrap; word-break: break-all;
+}
+
+.ebook-btn-row { display: flex; gap: 8px; margin-top: 5px; }
+.ebook-btn-action {
+  flex: 1; border: none; padding: 0.6rem; border-radius: var(--radius-md);
+  font-weight: 700; cursor: pointer; font-size: 0.8rem; transition: 0.2s;
+  color: #fff; font-family: inherit;
+}
+.ebook-btn-copy { background: var(--primary); }
+.ebook-btn-copy:hover { opacity: 0.9; }
+.ebook-btn-script { background: #8b5cf6; }
+.ebook-btn-script:hover { background: #7c3aed; }
+.ebook-btn-dalle { background: #10b981; }
+.ebook-btn-dalle:hover { background: #059669; }
+
+.ebook-guide-box {
+  background: #fcfbf4; border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 1rem; font-size: 0.8rem; line-height: 1.6; color: var(--text-muted);
+}
+.ebook-guide-title { color: var(--primary); font-weight: 700; display: block; margin-bottom: 5px; }
+.ebook-guide-list { margin-left: 1.2rem; padding: 0; color: var(--text-muted); }
+.ebook-guide-link { color: var(--primary); font-weight: 700; text-decoration: underline; }
+
+.ebook-json-textarea {
+  width: 100%; height: 90px; padding: 0.8rem; border: 1px solid var(--border);
+  border-radius: var(--radius-md); font-size: 0.8rem; outline: none;
+  font-family: var(--font-family-mono); resize: none;
+}
+
+.ebook-mode-selector { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.ebook-mode-btn {
+  border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 0.6rem; cursor: pointer; background: #fff;
+  font-size: 0.8rem; font-weight: 700; color: var(--primary);
+  transition: 0.2s; text-align: center; font-family: inherit;
+}
+.ebook-mode-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+.ebook-drop-zone {
+  border: 2px dashed var(--border); border-radius: var(--radius-md);
+  padding: 1.5rem; text-align: center; background: var(--background);
+  cursor: pointer; position: relative; transition: 0.2s;
+}
+.ebook-drop-zone:hover { border-color: var(--primary); }
+.ebook-drop-icon { font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--primary); }
+.ebook-drop-main { font-size: 0.85rem; font-weight: 700; color: var(--primary); margin-bottom: 2px; }
+.ebook-drop-sub { font-size: 0.75rem; color: var(--text-muted); }
+
+@media (max-width: 640px) {
+  .ebook-prompt-container { grid-template-columns: 1fr; }
+  .ebook-mode-selector { grid-template-columns: 1fr; }
+}
+
 @media (max-width: 960px) {
   .ebook-grid { grid-template-columns: 1fr; }
 }

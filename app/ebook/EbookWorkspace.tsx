@@ -13,11 +13,12 @@ import {
   EbookGenerationMode,
   EbookEnglishLevel,
   EbookApiSettings,
-  EBOOK_PROCESS_STAGES,
+  EbookLayoutMode,
   EBOOK_GUIDE_RULES,
   createDefaultEbookUiState,
 } from "@/features/ebook";
 import { EbookForm } from "./EbookForm";
+import { EbookPromptPanel } from "./EbookPromptPanel";
 
 /**
  * E-book 서비스 메인 작업 영역
@@ -39,6 +40,20 @@ export function EbookWorkspace() {
       currentLevel: data.level,
       generationMode: data.mode
     }));
+    // Prompt building logic will be implemented in future commits
+  };
+
+  const handleJsonScriptChange = (value: string) => {
+    setUiState(prev => ({ ...prev, jsonScriptText: value }));
+  };
+
+  const handleLayoutModeChange = (mode: EbookLayoutMode) => {
+    setUiState(prev => ({ ...prev, layoutMode: mode }));
+  };
+
+  const handleFileUpload = (file: File) => {
+    // Slicing logic will be implemented in future commits
+    setUiState(prev => ({ ...prev, selectedFileName: file.name }));
   };
 
   return (
@@ -68,10 +83,24 @@ export function EbookWorkspace() {
           <div className="ebook-grid">
             {/* 왼쪽: 입력 영역 */}
             <main className="ebook-main-content">
-              <EbookForm
-                isLoading={uiState.isProcessing}
-                onSubmit={handleFormSubmit}
-              />
+              <Stack spacing="lg">
+                <EbookForm
+                  isLoading={uiState.isProcessing}
+                  onSubmit={handleFormSubmit}
+                />
+
+                <EbookPromptPanel
+                  scriptPrompt={uiState.scriptPrompt}
+                  imagePrompt={uiState.imagePrompt}
+                  jsonScript={uiState.jsonScriptText || ""}
+                  onJsonScriptChange={handleJsonScriptChange}
+                  layoutMode={uiState.layoutMode}
+                  onLayoutModeChange={handleLayoutModeChange}
+                  onFileUpload={handleFileUpload}
+                  selectedFileName={uiState.selectedFileName}
+                  isLoading={uiState.isProcessing}
+                />
+              </Stack>
             </main>
 
             {/* 오른쪽: 정보 및 상태 영역 */}
