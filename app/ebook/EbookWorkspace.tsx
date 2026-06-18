@@ -7,20 +7,39 @@ import {
   PortalHeader,
   Page,
   Stack,
-  Cluster,
   cx,
 } from "@/components";
 import {
+  EbookGenerationMode,
+  EbookEnglishLevel,
+  EbookApiSettings,
   EBOOK_PROCESS_STAGES,
   EBOOK_GUIDE_RULES,
   createDefaultEbookUiState,
 } from "@/features/ebook";
+import { EbookForm } from "./EbookForm";
 
 /**
  * E-book 서비스 메인 작업 영역
  */
 export function EbookWorkspace() {
-  const [uiState] = useState(createDefaultEbookUiState());
+  const [uiState, setUiState] = useState(createDefaultEbookUiState());
+
+  const handleFormSubmit = (data: {
+    mode: EbookGenerationMode;
+    title: string;
+    fullStory: string;
+    level: EbookEnglishLevel;
+    apiSettings: EbookApiSettings;
+  }) => {
+    setUiState(prev => ({
+      ...prev,
+      title: data.title,
+      fullStory: data.fullStory,
+      currentLevel: data.level,
+      generationMode: data.mode
+    }));
+  };
 
   return (
     <>
@@ -44,28 +63,19 @@ export function EbookWorkspace() {
 
       <Page>
         <div className="ebook-app">
-          <div className="ebook-grid">
-            {/* 왼쪽: 입력 영역 (Placeholder) */}
-            <main className="ebook-main-content">
-              <section className="ebook-card">
-                <div className="ebook-section-title">
-                  <span className="ebook-required-dot"></span>생성 방식 선택
-                </div>
-                <div className="ebook-placeholder">
-                  생성 방식 탭 및 입력 폼 준비 중...
-                </div>
+          <h1 className="sr-only">E-book 동화책 자동 생성 서비스</h1>
 
-                <div className="ebook-section-title">
-                  <span className="ebook-required-dot"></span>동화 정보 입력
-                </div>
-                <div className="ebook-placeholder ebook-placeholder--large">
-                  제목, 스토리, 난이도 설정 영역 준비 중...
-                </div>
-              </section>
+          <div className="ebook-grid">
+            {/* 왼쪽: 입력 영역 */}
+            <main className="ebook-main-content">
+              <EbookForm
+                isLoading={uiState.isProcessing}
+                onSubmit={handleFormSubmit}
+              />
             </main>
 
             {/* 오른쪽: 정보 및 상태 영역 */}
-            <aside className="ebook-side-info">
+            <aside className="ebook-side-info" aria-label="서비스 가이드 및 상태">
               <Stack spacing="lg">
                 <div className="ebook-card">
                   <div className="ebook-section-title">AI 동화 제작 가이드</div>

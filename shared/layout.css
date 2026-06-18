@@ -1776,6 +1776,67 @@ legend.ppt-section-title {
 .ebook-how-text-title { font-size: 0.8rem; font-weight: 700; color: var(--primary); }
 .ebook-how-text-desc { font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; }
 
+/* E-book Form Styles */
+.ebook-form-group {
+  border: 0; padding: 0; margin: 0; min-inline-size: 0;
+  display: flex; flex-direction: column; gap: 0.8rem;
+}
+
+.ebook-api-settings {
+  background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 1rem; margin-bottom: 0.5rem;
+}
+.ebook-api-toggle {
+  width: 100%; background: none; border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0; font-family: inherit;
+}
+.ebook-api-toggle-title {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.95rem; font-weight: 700; color: var(--primary);
+}
+.ebook-api-toggle-icon { font-size: 0.8rem; color: var(--text-muted); }
+.ebook-api-body { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
+
+.ebook-field { display: flex; flex-direction: column; gap: 6px; }
+.ebook-field label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-align: left; }
+.ebook-api-hint { font-size: 0.7rem; color: var(--text-muted); line-height: 1.4; margin-top: 2px; }
+
+.ebook-mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ebook-mode-card {
+  border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 1rem; cursor: pointer; transition: 0.2s;
+  display: flex; align-items: center; gap: 12px; background: #fff;
+  font-family: inherit;
+}
+.ebook-mode-card.active { border-color: var(--primary); background: var(--primary-soft); }
+.ebook-mode-icon { font-size: 1.2rem; }
+.ebook-mode-label { font-size: 0.85rem; font-weight: 700; color: var(--primary); }
+
+.ebook-input {
+  width: 100%; padding: 0.8rem; border: 1px solid var(--border);
+  border-radius: var(--radius-md); font-size: 0.85rem; outline: none;
+  transition: border-color 0.2s; font-family: inherit;
+}
+.ebook-input:focus { border-color: var(--primary); }
+.ebook-input--mono { font-family: var(--font-family-mono); }
+
+.ebook-textarea {
+  width: 100%; height: 120px; padding: 0.8rem; border: 1px solid var(--border);
+  border-radius: var(--radius-md); font-size: 0.85rem; resize: none; outline: none;
+  transition: border-color 0.2s; font-family: inherit;
+}
+.ebook-textarea:focus { border-color: var(--primary); }
+
+.ebook-level-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.ebook-level-card {
+  border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 0.8rem; text-align: center; cursor: pointer;
+  font-size: 0.8rem; font-weight: 700; color: var(--text-muted);
+  transition: 0.2s; background: #fff; font-family: inherit;
+}
+.ebook-level-card.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
 @media (max-width: 960px) {
   .ebook-grid { grid-template-columns: 1fr; }
 }
