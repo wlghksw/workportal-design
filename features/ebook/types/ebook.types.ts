@@ -73,6 +73,7 @@ export interface EbookUiState {
   script: EbookScript;
   jsonScriptText?: string;
   selectedFileName?: string;
+  selectedFile?: File;
   images: EbookSceneImage[];
   showResults: boolean;
   scriptPrompt: string;

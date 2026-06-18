@@ -17,6 +17,8 @@ interface EbookPromptPanelProps {
   onLayoutModeChange: (mode: EbookLayoutMode) => void;
   onFileUpload: (file: File) => void;
   onGenerateScript: () => void;
+  onGenerateImages: () => void;
+  onSliceImage: () => void;
   selectedFileName?: string;
   isLoading: boolean;
 }
@@ -30,6 +32,8 @@ export function EbookPromptPanel({
   onLayoutModeChange,
   onFileUpload,
   onGenerateScript,
+  onGenerateImages,
+  onSliceImage,
   selectedFileName,
   isLoading
 }: EbookPromptPanelProps) {
@@ -97,6 +101,7 @@ export function EbookPromptPanel({
                 type="button"
                 className="ebook-btn-action ebook-btn-dalle"
                 disabled={isLoading || !imagePrompt}
+                onClick={onGenerateImages}
               >🎨 AI 이미지 즉시 생성</button>
             </div>
           </div>
@@ -148,28 +153,43 @@ export function EbookPromptPanel({
           ))}
         </div>
 
-        <div
-          className="ebook-drop-zone"
-          onClick={() => !isLoading && fileInputRef.current?.click()}
-          onKeyDown={handleKeyDown}
-          role="button"
-          tabIndex={isLoading ? -1 : 0}
-          aria-label="생성된 16칸 이미지 선택 (클릭하거나 Enter/Space)"
-        >
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            accept="image/*"
-            hidden
-          />
-          <div className="ebook-drop-icon" aria-hidden="true">📂</div>
-          <div className="ebook-drop-main">
-            {selectedFileName || "생성된 16칸 이미지를 선택하거나 끌어다 놓으세요"}
+        <div className="ebook-upload-wrap">
+          <div
+            className="ebook-drop-zone"
+            onClick={() => !isLoading && fileInputRef.current?.click()}
+            onKeyDown={handleKeyDown}
+            role="button"
+            tabIndex={isLoading ? -1 : 0}
+            aria-label="생성된 16칸 이미지 선택 (클릭하거나 Enter/Space)"
+          >
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              accept="image/*"
+              hidden
+            />
+            <div className="ebook-drop-icon" aria-hidden="true">📂</div>
+            <div className="ebook-drop-main">
+              {selectedFileName || "생성된 16칸 이미지를 선택하거나 끌어다 놓으세요"}
+            </div>
+            <div className="ebook-drop-sub">
+              {selectedFileName ? "파일이 선택되었습니다." : "자동으로 텍스트 합성 및 1024px HQ 분할이 적용됩니다"}
+            </div>
           </div>
-          <div className="ebook-drop-sub">
-            {selectedFileName ? "파일이 선택되었습니다. 분할 처리를 시작하려면 다시 생성 버튼을 누르세요." : "자동으로 텍스트 합성 및 1024px HQ 분할이 적용됩니다"}
-          </div>
+
+          {selectedFileName && (
+            <div className="ebook-btn-row">
+              <button
+                type="button"
+                className="ebook-btn-action ebook-btn-script"
+                onClick={onSliceImage}
+                disabled={isLoading}
+              >
+                ✂️ 이미지 분할 실행 (16분할)
+              </button>
+            </div>
+          )}
         </div>
       </fieldset>
     </Stack>

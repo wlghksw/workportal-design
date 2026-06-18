@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -19,6 +19,8 @@ import {
   createDefaultEbookApiSettings,
   buildEbookPrompt,
   generateEbookScript,
+  generateFairytaleImages,
+  sliceEbookImage,
   reportEbookActivity,
 } from "@/features/ebook";
 import { EbookForm } from "./EbookForm";
@@ -48,6 +50,7 @@ export function EbookWorkspace() {
       currentLevel: data.level,
       generationMode: data.mode,
       isProcessing: true,
+      processingText: "프롬프트를 빌드하고 있습니다...",
       errorMessage: null
     }));
 
@@ -62,12 +65,14 @@ export function EbookWorkspace() {
         ...prev,
         scriptPrompt: res.script_prompt,
         imagePrompt: res.image_prompt,
-        isProcessing: false
+        isProcessing: false,
+        processingText: ""
       }));
     } catch (err: unknown) {
       setUiState(prev => ({
         ...prev,
         isProcessing: false,
+        processingText: "",
         errorMessage: err instanceof Error ? err.message : "프롬프트 생성에 실패했습니다."
       }));
     }
@@ -79,7 +84,9 @@ export function EbookWorkspace() {
     setUiState(prev => ({
       ...prev,
       isProcessing: true,
+      processingText: "ChatGPT가 대본을 집필하고 있습니다...",
       errorMessage: null,
+      currentStep: 1
     }));
 
     try {
@@ -93,7 +100,8 @@ export function EbookWorkspace() {
         ...prev,
         script,
         jsonScriptText: JSON.stringify(script, null, 2),
-        isProcessing: false
+        isProcessing: false,
+        processingText: ""
       }));
 
       reportEbookActivity("script_generate", "AI 대본 자동 생성", uiState.title);
@@ -101,7 +109,86 @@ export function EbookWorkspace() {
       setUiState(prev => ({
         ...prev,
         isProcessing: false,
+        processingText: "",
         errorMessage: err instanceof Error ? err.message : "대본 생성에 실패했습니다."
+      }));
+    }
+  };
+
+  const handleGenerateImages = async () => {
+    if (uiState.isProcessing || !uiState.imagePrompt) return;
+
+    setUiState(prev => ({
+      ...prev,
+      isProcessing: true,
+      processingText: "미술관에서 16칸 그림을 그리고 있습니다...",
+      errorMessage: null,
+      currentStep: 1
+    }));
+
+    try {
+      const res = await generateFairytaleImages({
+        image_prompt: uiState.imagePrompt,
+        api_key: apiSettings.apiKey,
+        model: apiSettings.imageModel,
+        story_script: uiState.jsonScriptText,
+        mode: uiState.layoutMode
+      });
+
+      setUiState(prev => ({
+        ...prev,
+        images: res.images,
+        isProcessing: false,
+        processingText: "",
+        currentStep: 3,
+        showResults: true
+      }));
+
+      reportEbookActivity("image_generate", "동화 이미지 DALL-E 생성", uiState.title);
+    } catch (err: unknown) {
+      setUiState(prev => ({
+        ...prev,
+        isProcessing: false,
+        processingText: "",
+        errorMessage: err instanceof Error ? err.message : "이미지 생성에 실패했습니다."
+      }));
+    }
+  };
+
+  const handleSliceImage = async () => {
+    if (uiState.isProcessing || !uiState.selectedFile) return;
+
+    setUiState(prev => ({
+      ...prev,
+      isProcessing: true,
+      processingText: "이미지를 분할하고 정밀 크롭하는 중...",
+      errorMessage: null,
+      currentStep: 2
+    }));
+
+    try {
+      const res = await sliceEbookImage({
+        file: uiState.selectedFile,
+        story_script: uiState.jsonScriptText,
+        mode: uiState.layoutMode
+      });
+
+      setUiState(prev => ({
+        ...prev,
+        images: res.images,
+        isProcessing: false,
+        processingText: "",
+        currentStep: 3,
+        showResults: true
+      }));
+
+      reportEbookActivity("image_slice", "동화 이미지 분할", uiState.selectedFileName);
+    } catch (err: unknown) {
+      setUiState(prev => ({
+        ...prev,
+        isProcessing: false,
+        processingText: "",
+        errorMessage: err instanceof Error ? err.message : "이미지 분할에 실패했습니다."
       }));
     }
   };
@@ -115,7 +202,11 @@ export function EbookWorkspace() {
   };
 
   const handleFileUpload = (file: File) => {
-    setUiState(prev => ({ ...prev, selectedFileName: file.name }));
+    setUiState(prev => ({
+      ...prev,
+      selectedFileName: file.name,
+      selectedFile: file
+    }));
   };
 
   return (
@@ -146,6 +237,12 @@ export function EbookWorkspace() {
             {/* 왼쪽: 입력 영역 */}
             <main className="ebook-main-content">
               <Stack spacing="lg">
+                {uiState.errorMessage && (
+                  <div className="alert alert--error" role="alert">
+                    {uiState.errorMessage}
+                  </div>
+                )}
+
                 <EbookForm
                   isLoading={uiState.isProcessing}
                   onSubmit={handleFormSubmit}
@@ -160,6 +257,8 @@ export function EbookWorkspace() {
                   onLayoutModeChange={handleLayoutModeChange}
                   onFileUpload={handleFileUpload}
                   onGenerateScript={handleGenerateScript}
+                  onGenerateImages={handleGenerateImages}
+                  onSliceImage={handleSliceImage}
                   selectedFileName={uiState.selectedFileName}
                   isLoading={uiState.isProcessing}
                 />
@@ -228,6 +327,14 @@ export function EbookWorkspace() {
             </aside>
           </div>
         </div>
+
+        {/* 로딩 오버레이 */}
+        {uiState.isProcessing && (
+          <div className="loading-overlay" aria-busy="true">
+            <div className="spinner"></div>
+            <div className="loading-text">{uiState.processingText}</div>
+          </div>
+        )}
       </Page>
     </>
   );
