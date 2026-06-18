@@ -1674,6 +1674,112 @@ legend.ppt-section-title {
   .ppt-slide-view { box-shadow: none; page-break-after: always; break-after: page; }
 }
 
+/* --- E-book Service Legacy Parity --- */
+.ebook-app {
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.ebook-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  align-items: start;
+}
+
+.ebook-card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.ebook-section-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ebook-required-dot {
+  width: 5px; height: 5px;
+  background: var(--primary);
+  border-radius: 50%;
+}
+
+.ebook-placeholder {
+  padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius-md);
+  font-size: 0.85rem; color: var(--text-muted); font-style: italic;
+  min-height: 80px; display: flex; align-items: center; justify-content: center;
+  text-align: center;
+}
+.ebook-placeholder--large {
+  min-height: 200px; padding: 2rem;
+}
+
+.ebook-rules-box {
+  background: var(--surface-subtle);
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.ebook-rules-list {
+  list-style: none; padding: 0;
+  font-size: 0.75rem; color: var(--text-muted);
+  line-height: 1.8;
+}
+.ebook-rules-list li::before {
+  content: '•'; color: var(--primary);
+  font-weight: bold; margin-right: 8px;
+}
+
+.ebook-step-list {
+  display: flex; flex-direction: column; gap: 0.8rem; margin-top: 10px;
+}
+.ebook-step {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 0.8rem; color: var(--text-muted);
+}
+.ebook-step-icon {
+  width: 24px; height: 24px; border-radius: 50%;
+  border: 1px solid #ddd;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; flex-shrink: 0;
+}
+.ebook-step.active { color: var(--primary); font-weight: 700; }
+.ebook-step.active .ebook-step-icon {
+  border-color: var(--primary); background: #eef6f9;
+}
+.ebook-step.done { color: #aaa; }
+.ebook-step.done .ebook-step-icon {
+  background: #e8f5e9; border-color: #4caf50; color: #4caf50;
+}
+
+.ebook-how-list { display: flex; flex-direction: column; gap: 0.8rem; }
+.ebook-how-step { display: flex; gap: 10px; align-items: flex-start; }
+.ebook-how-num {
+  font-family: 'Outfit', sans-serif;
+  color: var(--primary); font-weight: 800; font-size: 1.1rem;
+}
+.ebook-how-text-title { font-size: 0.8rem; font-weight: 700; color: var(--primary); }
+.ebook-how-text-desc { font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; }
+
+@media (max-width: 960px) {
+  .ebook-grid { grid-template-columns: 1fr; }
+}
+
 /* --- Guide Page Styles --- */
 .guide-page { background: var(--background); }
 .guide-layout { display: flex; gap: var(--space-5); align-items: flex-start; }
