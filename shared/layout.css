@@ -2089,3 +2089,55 @@ legend.ebook-section-title {
   width: 100%;
 }
 
+
+/* ==========================================================================
+   5. News (교육 뉴스)
+   ========================================================================== */
+.news-app {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-6) 60px;
+}
+
+.news-header {
+  margin-bottom: var(--space-8);
+  text-align: center;
+}
+
+.news-header-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.02em;
+  margin: 0 0 12px;
+}
+
+.news-header-desc {
+  font-size: 16px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.news-list {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .news-list {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-5);
+  }
+}
+
+.news-empty {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--text-muted);
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px dashed var(--border-strong);
+  font-size: 15px;
+  line-height: 1.6;
+}
