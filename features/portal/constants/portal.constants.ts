@@ -1,12 +1,16 @@
 import { ServiceData } from "../types/portal.types";
 
+const API_BASE = (process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080").replace(/\/$/, "");
+
 export const SERVICES: ServiceData[] = [
   {
     id: "bidding",
     title: "입찰 공고",
     description: "공공·민간 입찰 공고 수집 · 점수화 · 알림",
     host: "bid.platformers.kr",
-    href: "/services/bidding/index.php",
+    href: process.env.NODE_ENV === "production" 
+      ? "https://bid.platformers.kr" 
+      : `${API_BASE}/services/bidding/index.php`,
     searchKeywords: "입찰 공고 bid",
     newTab: false,
     iconType: "bidding",
@@ -28,7 +32,9 @@ export const SERVICES: ServiceData[] = [
     title: "교육 뉴스",
     description: "RSS · NewsAPI 기반 교육 분야 뉴스 수집",
     host: "news.platformers.kr",
-    href: "/services/news-api/preview.html",
+    href: process.env.NODE_ENV === "production"
+      ? "https://news.platformers.kr"
+      : `${API_BASE}/services/news-api/preview.html`,
     searchKeywords: "뉴스 news 교육",
     newTab: false,
     iconType: "news",
@@ -61,7 +67,9 @@ export const SERVICES: ServiceData[] = [
     title: "크레용스쿨 대시보드",
     description: "크레용스쿨 제품·콘텐츠 통합 대시보드",
     host: "crayon.platformers.kr",
-    href: "/services/dashboard/index.html",
+    href: process.env.NODE_ENV === "production"
+      ? "https://crayon.platformers.kr"
+      : `${API_BASE}/services/dashboard/index.html`,
     searchKeywords: "crayon 크레용스쿨 대시보드",
     newTab: false,
     iconType: "crayon",
