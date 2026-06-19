@@ -1776,7 +1776,9 @@ export default function RootLayout({
 [완료] 9. 교육 뉴스레터 서비스(/newsletter) 도메인 로직 및 UI Next.js 이전 완수
 [완료] 10. 회의록 자동화 서비스(/meeting) Next.js 마이그레이션 (Chunk 업로드 · Polling · 녹음 복구)
 [완료] 11. PPT 제안서 메이커 서비스(/ppt) Next.js 마이그레이션 (파일 분석 · 3-Pane 에디터 · 발표자 뷰어)
-[예정] 12. E-Book 동화책 메이커 서비스 React 전환 및 전사적 연동
+[완료] 12. E-Book 동화책 메이커 서비스(/ebook) Next.js 마이그레이션 (프롬프트 빌드 · DALL-E 이미지 생성 · 16컷 결과 편집)
+[예정] 13. 잔여 정적 서비스(bidding, news-api 등) 및 대시보드(dashboard) Next.js 플랫폼 통합
+[예정] 14. E-book UI에 대한 추가 접근성 심화 점검 및 e2e 테스트 시나리오 작성
 ```
 
 ---
@@ -1811,7 +1813,7 @@ export default function RootLayout({
 - [x] WorkPortal 로그인 페이지 (app/login/page.tsx) 및 인증 로직 구현
 - [x] WorkPortal 사용 이력 페이지 (app/activity/page.tsx) 및 필터/페이징 구현
 - [x] AI PPT 제안서 서비스 (app/ppt/page.tsx) 전체 마이그레이션 (에디터/뷰어 포함)
-
+- [x] AI E-Book 동화 서비스 (app/ebook/page.tsx) 전체 마이그레이션 (입력폼 · 프롬프트/대본 생성 · 이미지 생성 · 결과 편집)
 
 ### React UI Components (Implementation)
 

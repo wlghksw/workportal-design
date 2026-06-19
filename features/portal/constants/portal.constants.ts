@@ -72,7 +72,7 @@ export const SERVICES: ServiceData[] = [
     title: "e-book",
     description: "16컷 동화 이미지 분할 · 편집 · ZIP·Teams 출력",
     host: "fairytale.platformers.kr",
-    href: "/services/ebook/index.html",
+    href: "/ebook",
     searchKeywords: "ebook e-book fairytale 동화",
     newTab: false,
     iconType: "fairytale",
