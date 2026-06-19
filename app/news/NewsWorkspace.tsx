@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { PortalHeader, Page, Stack } from "@/components";
 import type { NewsUiState } from "@/features/news";
+import { getNewsList } from "@/features/news";
 
 import { NewsList } from "./NewsList";
 
@@ -12,12 +13,38 @@ import { NewsList } from "./NewsList";
  * 교육 뉴스 메인 작업 영역
  */
 export function NewsWorkspace() {
-  // 추후 API 데이터와 연동할 상태 객체
-  const [uiState] = useState<NewsUiState>({
-    isLoading: false,
+  const [uiState, setUiState] = useState<NewsUiState>({
+    isLoading: true,
     error: null,
     data: null,
   });
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    async function fetchData() {
+      try {
+        const data = await getNewsList();
+        if (!isCancelled) {
+          setUiState({ isLoading: false, error: null, data });
+        }
+      } catch (err) {
+        if (!isCancelled) {
+          setUiState({
+            isLoading: false,
+            error: err instanceof Error ? err : new Error("알 수 없는 오류가 발생했습니다."),
+            data: null,
+          });
+        }
+      }
+    }
+
+    void fetchData();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
 
   return (
     <>
@@ -53,15 +80,13 @@ export function NewsWorkspace() {
 
           <main className="news-main-content">
             <Stack spacing="lg">
-              {uiState.error && (
+              {uiState.isLoading ? (
+                <div className="news-empty" role="status" aria-live="polite" aria-busy="true">
+                  뉴스를 불러오는 중입니다...
+                </div>
+              ) : uiState.error ? (
                 <div className="alert alert-error" role="alert">
                   {uiState.error.message}
-                </div>
-              )}
-
-              {uiState.isLoading ? (
-                <div className="news-empty" aria-busy="true">
-                  뉴스를 불러오는 중입니다...
                 </div>
               ) : (
                 <NewsList items={uiState.data?.items} />
