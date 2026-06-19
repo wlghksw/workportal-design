@@ -77,6 +77,7 @@ export function NewsCard({ item, index }: NewsCardProps) {
           rel="noopener noreferrer"
         >
           {title}
+          <span className="sr-only"> (새 창에서 열림)</span>
         </a>
       ) : (
         <h2 className="news-card-title">{title}</h2>
@@ -90,7 +91,7 @@ export function NewsCard({ item, index }: NewsCardProps) {
           href={href}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label={`${title} 원문 보기`}
+          aria-label={`${title} 원문 보기 (새 창에서 열림)`}
         >
           원문 보기
           <svg
