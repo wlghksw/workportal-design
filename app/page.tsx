@@ -549,6 +549,20 @@ export default function WorkPortalHomePage() {
                           <time className="portal-notice__date">서비스</time>
                         </Link>
                       </li>
+                      <li>
+                        <Link
+                          href="/guide?service=fairytale"
+                          className="portal-notice__link"
+                        >
+                          <span className="portal-notice__title">
+                            동화책(e-book) 편집
+                          </span>
+                          <span className="portal-notice__desc">
+                            16컷 동화 이미지 분할 · 편집 및 다운로드
+                          </span>
+                          <time className="portal-notice__date">서비스</time>
+                        </Link>
+                      </li>
                     </ul>
                   )}
                 </Card.Body>
