@@ -14,6 +14,7 @@ import {
   EbookEnglishLevel,
   EbookApiSettings,
   EbookLayoutMode,
+  EbookScript,
   EBOOK_GUIDE_RULES,
   createDefaultEbookUiState,
   createDefaultEbookApiSettings,
@@ -25,6 +26,7 @@ import {
 } from "@/features/ebook";
 import { EbookForm } from "./EbookForm";
 import { EbookPromptPanel } from "./EbookPromptPanel";
+import { EbookResultView } from "./EbookResultView";
 
 /**
  * E-book 서비스 메인 작업 영역
@@ -209,6 +211,18 @@ export function EbookWorkspace() {
     }));
   };
 
+  const handleScriptChange = (newScript: EbookScript) => {
+    setUiState(prev => ({
+      ...prev,
+      script: newScript,
+      jsonScriptText: JSON.stringify(newScript, null, 2)
+    }));
+  };
+
+  const handleReset = () => {
+    setUiState(createDefaultEbookUiState());
+  };
+
   return (
     <>
       <PortalHeader
@@ -262,6 +276,14 @@ export function EbookWorkspace() {
                   selectedFileName={uiState.selectedFileName}
                   isLoading={uiState.isProcessing}
                 />
+
+                {uiState.showResults && uiState.images.length > 0 && (
+                  <EbookResultView
+                    images={uiState.images}
+                    script={uiState.script}
+                    onScriptChange={handleScriptChange}
+                  />
+                )}
               </Stack>
             </main>
 
