@@ -226,6 +226,7 @@ export function EbookWorkspace() {
   return (
     <>
       <PortalHeader
+        className="site-header--service"
         logo={
           <Link href="/" className="brand text-decoration-none">
             <Image
