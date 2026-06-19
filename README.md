@@ -18,8 +18,8 @@ pnpm install
 pnpm dev
 ```
 - **URL**: [http://localhost:3000](http://localhost:3000)
-- **주요 기능**: 통합 업무 포탈(Home), **회의록 자동화(/meeting)**, **교육 뉴스레터(/newsletter)**, **AI PPT 제안서(/ppt)**, **이용 가이드(/guide)**, **로그인(/login)**, **사용 이력(/activity)**, 공통 React 컴포넌트 라이브러리
-- **특이 사항**: PPT 제안서 서비스는 AI 분석, 3-Pane 에디터, 발표자 모드 뷰어 및 PDF 다운로드를 포함한 전체 흐름이 마이그레이션되었습니다.
+- **주요 기능**: 통합 업무 포탈(Home), **회의록 자동화(/meeting)**, **교육 뉴스레터(/newsletter)**, **AI PPT 제안서(/ppt)**, **AI E-Book 동화(/ebook)**, **이용 가이드(/guide)**, **로그인(/login)**, **사용 이력(/activity)**, 공통 React 컴포넌트 라이브러리
+- **특이 사항**: E-Book 동화 및 PPT 제안서 서비스는 AI 분석을 포함한 전체 흐름이 Next.js 라우트로 마이그레이션되었습니다.
 - **API 연동**: `.env.local` 파일을 생성하고 `NEXT_PUBLIC_API_BASE_URL=http://localhost:8080` 설정을 추가하면 백엔드 기능을 활용할 수 있습니다. (예시는 `.env.example` 참고)
 
 ### 2. 레거시 정적 미리보기 (기존 HTML/CSS 수정용)
