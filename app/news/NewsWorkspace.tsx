@@ -6,6 +6,8 @@ import Link from "next/link";
 import { PortalHeader, Page, Stack } from "@/components";
 import type { NewsUiState } from "@/features/news";
 
+import { NewsList } from "./NewsList";
+
 /**
  * 교육 뉴스 메인 작업 영역
  */
@@ -61,16 +63,8 @@ export function NewsWorkspace() {
                 <div className="news-empty" aria-busy="true">
                   뉴스를 불러오는 중입니다...
                 </div>
-              ) : uiState.data?.items && uiState.data.items.length > 0 ? (
-                <div className="news-list" aria-label="기사 목록">
-                  {/* 뉴스 카드 맵핑 영역 (추후 구현) */}
-                </div>
               ) : (
-                <div className="news-empty">
-                  표시할 기사가 없습니다.
-                  <br />
-                  (아직 API 연동 전입니다)
-                </div>
+                <NewsList items={uiState.data?.items} />
               )}
             </Stack>
           </main>
