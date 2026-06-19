@@ -1,12 +1,18 @@
 import { ServiceData } from "../types/portal.types";
 
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL 
+  ? process.env.NEXT_PUBLIC_API_BASE_URL.replace(/\/$/, "") 
+  : "";
+
 export const SERVICES: ServiceData[] = [
   {
     id: "bidding",
     title: "입찰 공고",
     description: "공공·민간 입찰 공고 수집 · 점수화 · 알림",
     host: "bid.platformers.kr",
-    href: "/services/bidding/index.php",
+    href: process.env.NODE_ENV === "production" 
+      ? "https://bid.platformers.kr" 
+      : `${API_BASE}/services/bidding/index.php`,
     searchKeywords: "입찰 공고 bid",
     newTab: false,
     iconType: "bidding",
