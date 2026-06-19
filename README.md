@@ -18,7 +18,7 @@ pnpm install
 pnpm dev
 ```
 - **URL**: [http://localhost:3000](http://localhost:3000)
-- **주요 기능**: 통합 업무 포탈(Home), **회의록 자동화(/meeting)**, **교육 뉴스레터(/newsletter)**, **AI PPT 제안서(/ppt)**, **AI E-Book 동화(/ebook)**, **이용 가이드(/guide)**, **로그인(/login)**, **사용 이력(/activity)**, 공통 React 컴포넌트 라이브러리
+- **주요 기능**: 통합 업무 포탈(Home), **회의록 자동화(/meeting)**, **교육 뉴스레터(/newsletter)**, **AI PPT 제안서(/ppt)**, **AI E-Book 동화(/ebook)**, **교육 뉴스(/news)**, **이용 가이드(/guide)**, **로그인(/login)**, **사용 이력(/activity)**, 공통 React 컴포넌트 라이브러리
 - **특이 사항**: E-Book 동화 및 PPT 제안서 서비스는 AI 분석을 포함한 전체 흐름이 Next.js 라우트로 마이그레이션되었습니다.
 - **API 연동**: `.env.local` 파일을 생성하고 `NEXT_PUBLIC_API_BASE_URL=http://localhost:8080` 설정을 추가하면 백엔드 기능을 활용할 수 있습니다. (예시는 `.env.example` 참고)
 
@@ -136,11 +136,22 @@ pnpm dev
 | http://localhost:3000/services/meeting/ui-page.html | `services/meeting/ui-page.html` — 화면 구조·인라인 스크립트 |
 | | `services/meeting/theme-light.css` — **메인 스타일시트** |
 
-### 뉴스 수집 목록
+### 뉴스 수집 (교육 뉴스) - 마이그레이션 완료
 
-| 미리보기 URL | 수정 파일 |
-|--------------|-----------|
-| http://localhost:3000/services/news-api/preview.html | `services/news-api/preview.html` — 카드 목록 UI (인라인 스타일) |
+**이전 상태 요약**
+- **라우트**: React + Next.js + TypeScript 기반 `/news` 로 이전 완료.
+- **API 연동**: 기존 외부 API endpoint(`https://news.platformers.kr/v1/news`) 유지.
+- **구현 범위**: 뉴스 목록 렌더링, 로딩/에러/빈 상태 처리 UI, 반응형 그리드 및 웹 접근성(웹표준 마크업, 외부 링크 시각적/보조기기 지원) 개선.
+- **검증 명령어**: `pnpm lint`, `pnpm build`, `grep` 검증 통과.
+
+**후속 작업 (예정)**
+- 필요 시 뉴스 카테고리 필터나 검색 기능 추가 (현재는 전체 목록 조회만 구현됨).
+- 운영 환경 배포 시 외부 프록시 또는 API 연동 안정성 추가 점검.
+
+| 버전 | 미리보기 URL | 수정 파일 |
+|------|--------------|-----------|
+| **신규 (Next.js)** | http://localhost:3000/news | `app/news/*`, `features/news/*` |
+| 레거시 (HTML) | http://localhost:3000/services/news-api/preview.html | `services/news-api/preview.html` |
 
 ### 크레용스쿨 대시보드 (React — 별도 실행)
 
@@ -179,7 +190,8 @@ npm run dev
 | PPT | http://localhost:3000/services/ppt/templates/index.html |
 | E-Book | http://localhost:3000/services/ebook/index.html |
 | 회의록 | http://localhost:3000/services/meeting/ui-page.html |
-| 뉴스 수집 | http://localhost:3000/services/news-api/preview.html |
+| 뉴스 (신규) | http://localhost:3000/news |
+| 뉴스 (레거시) | http://localhost:3000/services/news-api/preview.html |
 
 ## 협업 범위 (가능)
 

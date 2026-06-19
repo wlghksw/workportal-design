@@ -32,9 +32,7 @@ export const SERVICES: ServiceData[] = [
     title: "교육 뉴스",
     description: "RSS · NewsAPI 기반 교육 분야 뉴스 수집",
     host: "news.platformers.kr",
-    href: process.env.NODE_ENV === "production"
-      ? "https://news.platformers.kr"
-      : `${API_BASE}/services/news-api/preview.html`,
+    href: "/news",
     searchKeywords: "뉴스 news 교육",
     newTab: false,
     iconType: "news",
