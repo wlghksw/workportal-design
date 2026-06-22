@@ -1,17 +1,6 @@
 "use client";
 
-import {
-  PortalHeader,
-  Page,
-  Section,
-  Grid,
-  Card,
-  CardBody,
-  Badge,
-  Button,
-  Stack,
-  cx,
-} from "@/components";
+import { cx } from "@/components";
 import {
   SERVICES,
   ServiceId,
@@ -24,9 +13,6 @@ import Link from "next/link";
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 
 // --- Types & Constants ---
-type ViewType = "dashboard" | "guide";
-type BoardTabType = "recent" | "guide";
-
 const API_BASE = (process.env.NEXT_PUBLIC_API_BASE_URL || "").replace(
   /\/$/,
   ""
@@ -181,10 +167,54 @@ function fmtDateTime(iso: string) {
   });
 }
 
+// Service additional info mappings based on user prompt
+const SERVICE_INFO: Record<string, { badge: string; desc: string; flows: string[]; domain: string }> = {
+  bidding: {
+    badge: "조달",
+    desc: "공공·민간 입찰 정보를 자동으로 수집해 드려요",
+    flows: ["공고 자동 수집", "검수·분류", "알림 발송"],
+    domain: "bid.platformers.kr"
+  },
+  meeting: {
+    badge: "AI",
+    desc: "녹음 파일만 올리면 회의록이 자동으로 만들어져요",
+    flows: ["녹취 업로드", "AI 분석", "회의록 완성"],
+    domain: "meeting.platformers.kr"
+  },
+  news: {
+    badge: "뉴스",
+    desc: "교육 분야 최신 뉴스를 한 곳에서 확인하세요",
+    flows: ["뉴스 자동 수집", "카테고리 분류", "피드 제공"],
+    domain: "news.platformers.kr"
+  },
+  newsletter: {
+    badge: "발송",
+    desc: "링크만 넣으면 뉴스레터가 완성돼요",
+    flows: ["링크 입력", "레이아웃 생성", "메일 발송"],
+    domain: "newsletter.platformers.kr"
+  },
+  ppt: {
+    badge: "AI",
+    desc: "문서를 업로드하면 PPT 제안서가 완성돼요",
+    flows: ["문서 업로드", "AI 변환", "PPT 다운로드"],
+    domain: "ppt.platformers.kr"
+  },
+  crayon: {
+    badge: "대시보드",
+    desc: "크레용스쿨 콘텐츠를 한눈에 관리하세요",
+    flows: ["데이터 수집", "통계 분석", "대시보드 표시"],
+    domain: "crayon.platformers.kr"
+  },
+  fairytale: {
+    badge: "출판",
+    desc: "동화 이미지를 e-book으로 손쉽게 만들어요",
+    flows: ["이미지 업로드", "자동 편집", "파일 출력"],
+    domain: "fairytale.platformers.kr"
+  }
+};
+
 // --- Main Page Component ---
 export default function WorkPortalHomePage() {
-  const [activeView, setActiveView] = useState<ViewType>("dashboard");
-  const [activeBoardTab, setActiveBoardTab] = useState<BoardTabType>("recent");
   const [searchQuery, setSearchQuery] = useState("");
   const [me, setMe] = useState<AuthState | null>(null);
   const [healths, setHealths] = useState<HealthStatus[]>([]);
@@ -240,15 +270,12 @@ export default function WorkPortalHomePage() {
     }
   }, [apiFetch]);
 
-  // Initial load
   useEffect(() => {
     loadMe();
     refreshHealth();
     loadHomeRecent();
 
-    // Polling health status every 30 seconds as in legacy app.js
     const healthInterval = setInterval(refreshHealth, 30_000);
-
     return () => clearInterval(healthInterval);
   }, [loadMe, refreshHealth, loadHomeRecent]);
 
@@ -268,7 +295,6 @@ export default function WorkPortalHomePage() {
   const handleLogout = async () => {
     try {
       await apiFetch("/api/auth/logout", { method: "POST" });
-      // UI를 자연스럽게 갱신하기 위해 상태 초기화
       setMe((prev) =>
         prev
           ? {
@@ -278,7 +304,6 @@ export default function WorkPortalHomePage() {
             }
           : null
       );
-      // 최근 사용 내역 갱신
       void loadHomeRecent();
     } catch (e) {
       console.error("logout failed", e);
@@ -297,403 +322,217 @@ export default function WorkPortalHomePage() {
   };
 
   return (
-    <>
-      <PortalHeader
-        logo={
-          <Image
-            src="/shared/eduallab-logo.png"
-            alt="에듀올랩"
-            width={120}
-            height={40}
-            className="brand__logo"
-          />
-        }
-        title="통합 업무 포탈"
-        search={
-          <form
-            className="site-search"
-            onSubmit={handleSearchSubmit}
-            role="search"
-          >
-            <input
-              type="search"
-              placeholder="서비스 검색"
-              aria-label="서비스 검색"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              autoComplete="off"
-            />
-            <button type="submit" className="site-search__btn" aria-label="검색">
-              <svg
-                className="site-search__icon"
-                width="22"
-                height="22"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.25"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <circle cx="11" cy="11" r="7" />
-                <path d="M20 20l-3.5-3.5" />
-              </svg>
-            </button>
-          </form>
-        }
-        actions={
-          <div className="site-header__actions">
-            {me?.loggedIn ? (
-              <>
-                <span className="topbar__user">
-                  {me.user?.displayName || me.user?.name || "user"}
-                </span>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  className="topbar__btn"
-                  onClick={handleLogout}
-                >
-                  로그아웃
-                </Button>
-              </>
-            ) : me?.authEnabled ? (
-              <Link href="/login" className="topbar__btn topbar__btn--login">
-                로그인
-              </Link>
-            ) : null}
-          </div>
-        }
-      >
-        <nav className="site-nav" aria-label="주요 메뉴">
-          <button
-            className={cx("site-nav__item tab", activeView === "dashboard" && "is-active")}
-            onClick={() => setActiveView("dashboard")}
-            type="button"
-          >
-            홈
-          </button>
-          <Link
-            href="/guide"
-            className="site-nav__item tab"
-          >
-            가이드
+    <div className="saas-layout">
+      {/* 좌측 고정 사이드바 */}
+      <aside className="saas-sidebar">
+        <div className="saas-sidebar__header">
+          <Image src="/shared/eduallab-logo.png" alt="에듀올랩" width={100} height={32} />
+          <span className="saas-sidebar__title">통합 업무 포털</span>
+        </div>
+
+        <nav className="saas-sidebar__nav">
+          <Link href="/" className="saas-nav-item is-active">
+            <span className="saas-nav-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            </span> 홈
           </Link>
-          <Link href="/activity" className="site-nav__item tab">
-            사용 이력
+          <a href="#services" className="saas-nav-item">
+            <span className="saas-nav-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            </span> 전체 서비스
+          </a>
+          <Link href="/guide" className="saas-nav-item">
+            <span className="saas-nav-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+            </span> 이용 가이드
+          </Link>
+          <Link href="/activity" className="saas-nav-item">
+            <span className="saas-nav-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            </span> 사용 이력
           </Link>
         </nav>
-      </PortalHeader>
 
-      <Page className="portal-home">
-        {activeView === "dashboard" && (
-          <Stack spacing="lg" className="portal-home__content-wrap">
-            {/* 히어로 영역 */}
-            <section className="portal-hero" aria-label="소개">
-              <div className="portal-hero__content">
-                <p className="portal-hero__eyebrow">에듀올랩 업무 자동화</p>
-                <h1 className="portal-hero__title">통합 업무 포탈</h1>
-                <p className="portal-hero__sub">
-                  한 번의 로그인으로 입찰·회의록·뉴스·제안서·대시보드·e-book 등
-                  업무 서비스를 이용할 수 있습니다.
-                </p>
-              </div>
-              <div className="portal-hero__deco" aria-hidden="true"></div>
-            </section>
-
-            {/* 소식/안내 보드 */}
-            <Section aria-label="최근 소식 및 이용 안내">
-              <Card variant="default">
-                <Card.Header className="portal-board__head">
-                  <div className="portal-board__tabs" role="tablist">
-                    <button
-                      type="button"
-                      id="tab-recent"
-                      className={cx(
-                        "portal-board__tab",
-                        activeBoardTab === "recent" && "is-active"
-                      )}
-                      onClick={() => setActiveBoardTab("recent")}
-                      role="tab"
-                      aria-controls="panel-recent"
-                      aria-selected={activeBoardTab === "recent"}
-                    >
-                      최근 사용
-                    </button>
-                    <button
-                      type="button"
-                      id="tab-guide"
-                      className={cx(
-                        "portal-board__tab",
-                        activeBoardTab === "guide" && "is-active"
-                      )}
-                      onClick={() => setActiveBoardTab("guide")}
-                      role="tab"
-                      aria-controls="panel-guide"
-                      aria-selected={activeBoardTab === "guide"}
-                    >
-                      이용 안내
-                    </button>
+        <div className="saas-sidebar__status">
+          <h3 className="saas-status-title">서비스 상태</h3>
+          <ul className="saas-status-list">
+            {SERVICES.map((s) => {
+              const h = healths.find((x) => x.id === s.id);
+              const isUp = h ? h.status === "up" : false;
+              return (
+                <li key={s.id} className="saas-status-item">
+                  <span className="saas-status-name">{s.title}</span>
+                  <div className="saas-status-indicator">
+                    <span className={cx("status-dot", isUp && "status-dot--up")} />
+                    <span className="status-text">{isUp ? "정상" : "확인 중"}</span>
                   </div>
-                  <Link
-                    href="/activity"
-                    className="portal-board__more"
-                    title="사용 이력 전체 보기"
-                    aria-label="사용 이력 전체 보기"
-                  >
-                    +
-                  </Link>
-                </Card.Header>
-                <Card.Body>
-                  {activeBoardTab === "recent" ? (
-                    <ul
-                      id="panel-recent"
-                      className="portal-notice"
-                      role="tabpanel"
-                      aria-labelledby="tab-recent"
-                    >
-                      {isRecentLoading ? (
-                        <li className="portal-notice__empty">불러오는 중…</li>
-                      ) : recentActivities.length > 0 ? (
-                        recentActivities.map((row, idx) => (
-                          <li key={idx}>
-                            <Link
-                              href="/activity"
-                              className="portal-notice__link"
-                              aria-label={`${row.label || row.action} 상세 보기`}
-                            >
-                              <span className="portal-notice__title">
-                                {row.label || row.action || "기능 사용"}
-                              </span>
-                              <span className="portal-notice__desc">
-                                {row.displayName || row.user || "—"} ·{" "}
-                                {row.serviceName || row.service}
-                                {row.detail ? ` · ${row.detail}` : ""}
-                              </span>
-                              <time className="portal-notice__date">
-                                {fmtDateTime(row.ts)}
-                              </time>
-                            </Link>
-                          </li>
-                        ))
-                      ) : (
-                        <li className="portal-notice__empty">
-                          아직 기록이 없습니다. 입찰·회의록을 사용하면 여기에
-                          표시됩니다.
-                        </li>
-                      )}
-                    </ul>
-                  ) : (
-                    <ul
-                      id="panel-guide"
-                      className="portal-notice portal-notice--guide"
-                      role="tabpanel"
-                      aria-labelledby="tab-guide"
-                    >
-                      <li>
-                        <Link
-                          href="/guide?service=newsletter"
-                          className="portal-notice__link"
-                          aria-label="이용 안내: 로그인 후 서비스 이용"
-                        >
-                          <span className="portal-notice__title">
-                            로그인 후 서비스 이용
-                          </span>
-                          <span className="portal-notice__desc">
-                            포털에서 로그인하면 연동된 업무 서비스에 별도
-                            비밀번호 없이 접속할 수 있습니다.
-                          </span>
-                          <time className="portal-notice__date">안내</time>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/guide?service=newsletter"
-                          className="portal-notice__link"
-                        >
-                          <span className="portal-notice__title">
-                            뉴스레터 발송 가이드
-                          </span>
-                          <span className="portal-notice__desc">
-                            네이버 블로그 기반 소식지 자동 생성 및 대량 발송 서비스 가이드
-                          </span>
-                          <time className="portal-notice__date">서비스</time>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/guide?service=meeting"
-                          className="portal-notice__link"
-                        >
-                          <span className="portal-notice__title">
-                            회의록 자동화
-                          </span>
-                          <span className="portal-notice__desc">
-                            녹음 업로드 후 요약·결정사항·Teams 공유
-                          </span>
-                          <time className="portal-notice__date">서비스</time>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/guide?service=ppt"
-                          className="portal-notice__link"
-                        >
-                          <span className="portal-notice__title">
-                            PPT·제안서 생성
-                          </span>
-                          <span className="portal-notice__desc">
-                            문서 업로드 후 HTML·PPT 제안서 자동 생성
-                          </span>
-                          <time className="portal-notice__date">서비스</time>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          href="/guide?service=fairytale"
-                          className="portal-notice__link"
-                        >
-                          <span className="portal-notice__title">
-                            동화책(e-book) 편집
-                          </span>
-                          <span className="portal-notice__desc">
-                            16컷 동화 이미지 분할 · 편집 및 다운로드
-                          </span>
-                          <time className="portal-notice__date">서비스</time>
-                        </Link>
-                      </li>
-                    </ul>
-                  )}
-                </Card.Body>
-              </Card>
-            </Section>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
 
-            {/* 서비스 그리드 및 사이드바 레이아웃 */}
-            <div className="portal-layout">
-              <header className="portal-layout__title">
-                <h2 className="portal-section-title">업무 서비스 바로가기</h2>
-              </header>
-
-              <div className="portal-layout__main">
-                {filteredServices.length > 0 ? (
-                  <div className="portal-services">
-                    {filteredServices.map((service, index) => {
-                      const health = healths.find((h) => h.id === service.id);
-                      return (
-                        <a
-                          key={service.id}
-                          href={service.href}
-                          ref={index === 0 ? firstResultRef : null}
-                          aria-label={`${service.title} 서비스 열기`}
-                          className="portal-tile-wrapper"
-                          style={{ textDecoration: "none", color: "inherit" }}
-                        >
-                          <article className="portal-tile">
-                            <div
-                              className={cx(
-                                "portal-tile__icon",
-                                `portal-tile__icon--${service.iconType}`
-                              )}
-                              aria-hidden="true"
-                            >
-                              <ServiceIcon id={service.id} />
-                            </div>
-                            <div className="portal-tile__body">
-                              <div className="portal-tile__head">
-                                <h3 className="portal-tile__title">
-                                  {service.title}
-                                </h3>
-                                <Badge
-                                  variant={
-                                    health?.status === "up"
-                                      ? "success"
-                                      : health?.status === "down"
-                                        ? "danger"
-                                        : "default"
-                                  }
-                                  soft
-                                  size="sm"
-                                  className={cx(
-                                    !health && "badge--muted",
-                                    health?.status === "up" && "badge--ok",
-                                    health?.status === "down" && "badge--bad"
-                                  )}
-                                >
-                                  {!health
-                                    ? "확인 중…"
-                                    : health.status === "up"
-                                      ? "정상"
-                                      : health.status === "down"
-                                        ? "응답 없음"
-                                        : "확인 불가"}
-                                </Badge>
-                              </div>
-                              <p className="portal-tile__desc">
-                                {service.description}
-                              </p>
-                              <p className="portal-tile__host">{service.host}</p>
-                            </div>
-                            <span
-                              className="portal-tile__arrow"
-                              aria-hidden="true"
-                            >
-                              →
-                            </span>
-                          </article>
-                        </a>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="activity-empty">검색 결과가 없습니다.</div>
-                )}
-              </div>
-
-              <aside className="portal-layout__side">
-                <section className="portal-sidecard">
-                  <header className="portal-sidecard__head">
-                    <h3 className="portal-sidecard__title">서비스 상태</h3>
-                    <span className="portal-sidecard__sub">
-                      {isHealthLoading ? "확인 중…" : "갱신됨"}
-                    </span>
-                  </header>
-                  <ul className="portal-status">
-                    {SERVICES.map((s) => {
-                      const h = healths.find((x) => x.id === s.id);
-                      return (
-                        <li key={s.id} className="portal-status__item">
-                          <span
-                            className={cx(
-                              "portal-status__dot",
-                              h?.status === "up" && "is-up",
-                              h?.status === "down" && "is-down"
-                            )}
-                            aria-hidden="true"
-                          />
-                          <div className="portal-status__info">
-                            <span className="portal-status__name">
-                              {s.title}
-                            </span>
-                            <span className="portal-status__host">{s.host}</span>
-                          </div>
-                          <span className="portal-status__meta">
-                            {!h
-                              ? "확인 중…"
-                              : h.status === "up"
-                                ? `정상 · ${h.ms ?? "-"}ms`
-                                : "응답 없음"}
-                          </span>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </section>
-              </aside>
+        <div className="saas-sidebar__footer">
+          <div className="saas-admin-info">
+            <div className="admin-avatar">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
             </div>
-          </Stack>
-        )}
-      </Page>
-    </>
+            <div className="admin-text">
+              <span className="admin-name">관리자</span>
+              <span className="admin-email">admin@edulab.kr</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      {/* 우측 메인 영역 */}
+      <main className="saas-main">
+        {/* 상단 검색바 */}
+        <header className="saas-topbar">
+          <form className="saas-search" onSubmit={handleSearchSubmit}>
+            <svg className="saas-search__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input
+              type="text"
+              placeholder="서비스 이름이나 기능으로 검색..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="saas-search__input"
+            />
+          </form>
+          <div className="saas-topbar__actions">
+            <button className="saas-btn-icon" aria-label="알림">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+            </button>
+            {me?.loggedIn ? (
+              <button className="saas-btn-outline" onClick={handleLogout}>로그아웃</button>
+            ) : me?.authEnabled ? (
+              <Link href="/login" className="saas-btn-outline">로그인</Link>
+            ) : null}
+          </div>
+        </header>
+
+        <div className="saas-content">
+          {/* Hero 영역 */}
+          <section className="saas-hero">
+            <div className="saas-hero__text">
+              <span className="saas-hero__badge">에듀랩 업무 자동화 플랫폼</span>
+              <h1 className="saas-hero__title">통합 업무 포털</h1>
+              <p className="saas-hero__desc">
+                한 번의 로그인으로 입찰·회의록·뉴스·제안서·대시보드 등 모든 업무 서비스를 이용할 수 있습니다.
+              </p>
+            </div>
+            <div className="saas-hero__stats">
+              <div className="saas-stat-card">
+                <span className="stat-val">7</span>
+                <span className="stat-label">등록 서비스</span>
+              </div>
+              <div className="saas-stat-card">
+                <span className="stat-val">7</span>
+                <span className="stat-label">정상 운영</span>
+              </div>
+              <div className="saas-stat-card">
+                <span className="stat-val">AI</span>
+                <span className="stat-label">자동화</span>
+              </div>
+            </div>
+          </section>
+
+          {/* 처음 사용 안내 영역 */}
+          <section className="saas-onboarding">
+            <div className="saas-onboarding__header">
+              <div className="saas-onboarding__title-wrap">
+                <div className="icon-play">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M5 3l14 9-14 9V3z"/></svg>
+                </div>
+                <h2>처음 사용하시나요?</h2>
+              </div>
+              <Link href="/guide" className="saas-link">자세한 가이드 보기 →</Link>
+            </div>
+            <div className="saas-onboarding__steps">
+              <div className="saas-step">
+                <span className="step-num">01</span>
+                <span className="step-title">서비스 선택</span>
+                <p className="step-desc">아래 카드에서 사용할 서비스를 클릭하세요.</p>
+              </div>
+              <div className="saas-step">
+                <span className="step-num">02</span>
+                <span className="step-title">파일·링크 업로드</span>
+                <p className="step-desc">서비스에 맞는 파일이나 링크를 입력합니다.</p>
+              </div>
+              <div className="saas-step">
+                <span className="step-num">03</span>
+                <span className="step-title">결과 확인·다운로드</span>
+                <p className="step-desc">AI가 자동으로 처리한 결과물을 받으세요.</p>
+              </div>
+            </div>
+          </section>
+
+          {/* 최근 사용 기록 */}
+          <section className="saas-recent">
+            <div className="saas-recent__card">
+              <svg className="icon-clock" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              <div className="saas-recent__text">
+                <p className="saas-recent__msg">최근 사용 기록이 없습니다.</p>
+                <p className="saas-recent__sub">아래 서비스를 클릭해 처음으로 이용해 보세요.</p>
+              </div>
+            </div>
+          </section>
+
+          {/* 업무 서비스 카드 목록 */}
+          <section id="services" className="saas-services">
+            <header className="saas-services__header">
+              <h2>업무 서비스</h2>
+              <p>카드를 클릭하면 해당 서비스로 바로 이동합니다</p>
+            </header>
+
+            <div className="saas-services__grid">
+              {filteredServices.map((service, idx) => {
+                const info = SERVICE_INFO[service.id] || { badge: "", desc: service.description, flows: [], domain: service.host };
+                const h = healths.find((x) => x.id === service.id);
+                const isUp = h ? h.status === "up" : false;
+
+                return (
+                  <a href={service.href} key={service.id} ref={idx === 0 ? firstResultRef : null} className="saas-card">
+                    <div className="saas-card__top">
+                      <div className="saas-card__header">
+                        <div className={cx("saas-card__icon", `saas-card__icon--${service.iconType}`)}>
+                          <ServiceIcon id={service.id} />
+                        </div>
+                        <span className="saas-card__badge">{info.badge}</span>
+                      </div>
+                      <h3 className="saas-card__title">{service.title}</h3>
+                      <p className="saas-card__desc">{info.desc}</p>
+                    </div>
+
+                    <div className="saas-card__middle">
+                      <div className="saas-flow">
+                        {info.flows.map((flow, i) => (
+                          <div key={i} className="saas-flow__item">
+                            <span className="saas-flow__chip">{flow}</span>
+                            {i < info.flows.length - 1 && <span className="saas-flow__arrow">→</span>}
+                          </div>
+                        ))}
+                      </div>
+                      <span className="saas-card__link">자세히 보기</span>
+                    </div>
+
+                    <div className="saas-card__bottom">
+                      <div className="saas-card__status">
+                        <span className={cx("status-dot", isUp && "status-dot--up")}></span>
+                        <span className="saas-card__domain">{info.domain}</span>
+                      </div>
+                      <span className={cx("saas-card__btn", `saas-card__btn--${service.iconType}`)}>바로가기</span>
+                    </div>
+                  </a>
+                );
+              })}
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
   );
 }
