@@ -169,6 +169,7 @@ body, html {
 .saas-sidebar__footer {
   padding: 14px;
   border-top: 1px solid var(--border);
+  margin-top: auto;
 }
 
 .saas-admin-info {
