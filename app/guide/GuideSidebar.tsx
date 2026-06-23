@@ -1,8 +1,44 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { GUIDE_MENU, GUIDE_TOC, GuideCategoryId } from "@/features/portal";
 
 export function GuideSidebar({ activeId }: { activeId: GuideCategoryId }) {
   const toc = GUIDE_TOC[activeId] || [];
+  const [activeTocId, setActiveTocId] = useState<string>("");
+
+  useEffect(() => {
+    const tocIds = toc
+      .filter((item) => !item.isHeader)
+      .map((item) => item.id);
+
+    if (tocIds.length === 0) return;
+
+    setActiveTocId(tocIds[0]);
+
+    const THRESHOLD = 96;
+
+    let ticking = false;
+    const handleScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        let current = tocIds[0];
+        for (const id of tocIds) {
+          const el = document.getElementById(id);
+          if (el && el.getBoundingClientRect().top < THRESHOLD) {
+            current = id;
+          }
+        }
+        setActiveTocId(current);
+        ticking = false;
+      });
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [activeId, toc]);
 
   return (
     <aside className="guide-panel">
@@ -13,7 +49,7 @@ export function GuideSidebar({ activeId }: { activeId: GuideCategoryId }) {
             <Link
               key={item.id}
               href={`/guide?service=${item.id}`}
-              className={`guide-service-item${activeId === item.id ? " is-active" : ""}`}
+              className={`guide-service-item guide-service-item--${item.id}${activeId === item.id ? " is-active" : ""}`}
             >
               <span className={`guide-service-icon guide-service-icon--${item.id}`}>
                 <GuideServiceIcon id={item.id} />
@@ -25,20 +61,30 @@ export function GuideSidebar({ activeId }: { activeId: GuideCategoryId }) {
       </div>
 
       {toc.length > 0 && (
-        <div className="guide-panel__section">
-          <p className="guide-panel__label">목차</p>
-          <nav className="guide-toc-list">
-            {toc.map((item) => (
-              <a
-                key={item.id}
-                href={`#${item.id}`}
-                className={`guide-toc-item${item.isHeader ? " is-header" : ""}`}
-              >
-                {item.label}
-              </a>
-            ))}
-          </nav>
-        </div>
+        <>
+          <div className="guide-panel__divider" />
+          <div className="guide-panel__section">
+            <p className="guide-panel__label">목차</p>
+            <nav className="guide-toc-list">
+              {toc.map((item) => (
+                <a
+                  key={item.id}
+                  href={item.isHeader ? undefined : `#${item.id}`}
+                  onClick={!item.isHeader ? () => setActiveTocId(item.id) : undefined}
+                  className={[
+                    "guide-toc-item",
+                    item.isHeader ? "is-header" : "",
+                    !item.isHeader && activeTocId === item.id ? "is-active" : "",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                >
+                  {item.label}
+                </a>
+              ))}
+            </nav>
+          </div>
+        </>
       )}
     </aside>
   );

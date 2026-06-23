@@ -91,24 +91,22 @@ export default async function GuidePage({ searchParams }: GuidePageProps) {
           </div>
         </header>
 
-        <div className="saas-content">
-          <div className="guide-layout">
-            <GuideSidebar activeId={activeId} />
+        <div className="guide-page-layout">
+          <GuideSidebar activeId={activeId} />
 
-            <div className="guide-body">
-              <Suspense fallback={<div className="guide-loading">가이드 로딩 중...</div>}>
-                {serviceData ? (
-                  <GuideContent service={serviceData} />
-                ) : (
-                  <div className="guide-empty">
-                    <p>준비 중인 가이드입니다.</p>
-                    <Link href="/guide?service=newsletter" className="saas-link">
-                      뉴스레터 가이드 보기 →
-                    </Link>
-                  </div>
-                )}
-              </Suspense>
-            </div>
+          <div className="guide-page-content">
+            <Suspense fallback={<div className="guide-loading">가이드 로딩 중...</div>}>
+              {serviceData ? (
+                <GuideContent service={serviceData} />
+              ) : (
+                <div className="guide-empty">
+                  <p>준비 중인 가이드입니다.</p>
+                  <Link href="/guide?service=newsletter" className="saas-link">
+                    뉴스레터 가이드 보기 →
+                  </Link>
+                </div>
+              )}
+            </Suspense>
           </div>
         </div>
       </main>

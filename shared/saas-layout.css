@@ -898,29 +898,30 @@ body, html {
 /* ========================
    GUIDE LAYOUT
 ======================== */
-.guide-layout {
+
+/* 가이드 페이지 전체 레이아웃: 패널(사이드바) + 콘텐츠 */
+.guide-page-layout {
   display: flex;
-  gap: 24px;
+  flex: 1;
   align-items: flex-start;
 }
 
-/* Guide panel (left sidebar inside content) */
+/* Guide panel — 고정 사이드바 (topbar 아래 전체 높이) */
 .guide-panel {
-  width: 224px;
+  width: 232px;
   flex-shrink: 0;
+  background: #ffffff;
+  border-right: 1px solid var(--border);
   position: sticky;
-  top: 86px;
+  top: 62px;
+  height: calc(100vh - 62px);
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 10px;
 }
 
 .guide-panel__section {
-  background: #ffffff;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 16px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  padding: 20px 12px 16px;
 }
 
 .guide-panel__label {
@@ -929,7 +930,13 @@ body, html {
   color: var(--text-muted);
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  margin: 0 0 10px 2px;
+  margin: 0 2px 10px;
+}
+
+.guide-panel__divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0 12px;
 }
 
 .guide-service-list {
@@ -949,6 +956,7 @@ body, html {
   font-size: 13px;
   font-weight: 500;
   transition: background 0.15s, color 0.15s;
+  position: relative;
 }
 
 .guide-service-item:hover {
@@ -961,6 +969,31 @@ body, html {
   color: var(--primary);
   font-weight: 700;
 }
+
+.guide-service-item.is-active::before {
+  content: '';
+  position: absolute;
+  left: -12px;
+  top: 7px;
+  bottom: 7px;
+  width: 3px;
+  background: var(--primary);
+  border-radius: 0 3px 3px 0;
+}
+
+.guide-service-item--newsletter:hover,
+.guide-service-item--newsletter.is-active { background: #fffbeb; color: #f59e0b; }
+.guide-service-item--meeting:hover,
+.guide-service-item--meeting.is-active    { background: #f0fdf4; color: #22c55e; }
+.guide-service-item--fairytale:hover,
+.guide-service-item--fairytale.is-active  { background: #fef2f2; color: #ef4444; }
+.guide-service-item--ppt:hover,
+.guide-service-item--ppt.is-active        { background: #f5f3ff; color: #8b5cf6; }
+
+.guide-service-item--newsletter.is-active::before { background: #f59e0b; }
+.guide-service-item--meeting.is-active::before    { background: #22c55e; }
+.guide-service-item--fairytale.is-active::before  { background: #ef4444; }
+.guide-service-item--ppt.is-active::before        { background: #8b5cf6; }
 
 .guide-service-icon {
   width: 28px;
@@ -981,8 +1014,6 @@ body, html {
   display: flex;
   flex-direction: column;
   gap: 1px;
-  max-height: 340px;
-  overflow-y: auto;
 }
 
 .guide-toc-item {
@@ -994,10 +1025,11 @@ body, html {
   color: var(--text-sub);
   line-height: 1.4;
   transition: background 0.12s, color 0.12s;
+  position: relative;
 }
 
 .guide-toc-item:hover {
-  background: var(--surface-subtle);
+  background: var(--gray-100);
   color: var(--primary);
 }
 
@@ -1007,14 +1039,32 @@ body, html {
   color: var(--text-muted);
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  padding: 8px 10px 4px;
+  padding: 10px 10px 4px;
   pointer-events: none;
 }
 
-/* Guide body (right) */
-.guide-body {
+.guide-toc-item.is-active {
+  color: var(--primary);
+  font-weight: 600;
+  background: var(--primary-soft);
+}
+
+.guide-toc-item.is-active::before {
+  content: '';
+  position: absolute;
+  left: -12px;
+  top: 5px;
+  bottom: 5px;
+  width: 3px;
+  background: var(--primary);
+  border-radius: 0 3px 3px 0;
+}
+
+/* Guide 콘텐츠 영역 (패널 오른쪽) */
+.guide-page-content {
   flex: 1;
   min-width: 0;
+  padding: 28px 36px;
 }
 
 /* Guide hero */
@@ -1103,6 +1153,7 @@ body, html {
 /* Guide section */
 .guide-section {
   margin-bottom: 24px;
+  scroll-margin-top: 80px;
 }
 
 .guide-section-header {
@@ -1144,6 +1195,7 @@ body, html {
   overflow: hidden;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
   margin-bottom: 12px;
+  scroll-margin-top: 80px;
 }
 
 .guide-card-header {
@@ -1453,12 +1505,18 @@ body, html {
   .saas-content {
     padding: 20px;
   }
-  .guide-layout {
+  .guide-page-layout {
     flex-direction: column;
   }
   .guide-panel {
     width: 100%;
+    height: auto;
     position: static;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+  .guide-page-content {
+    padding: 20px;
   }
   .guide-flow-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -1474,5 +1532,8 @@ body, html {
   }
   .saas-topbar {
     padding: 0 16px;
+  }
+  .guide-flow-grid {
+    grid-template-columns: 1fr;
   }
 }

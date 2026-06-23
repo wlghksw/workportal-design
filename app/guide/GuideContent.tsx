@@ -108,7 +108,7 @@ function GuideSection({
       )}
 
       {section.cards.map((card) => (
-        <div key={card.id} className="guide-card">
+        <div key={card.id} id={card.id} className="guide-card">
           {card.title && (
             <div className="guide-card-header">
               <h3 className="guide-card-title">{card.title}</h3>
