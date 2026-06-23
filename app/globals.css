@@ -7,6 +7,7 @@
 @import url("../shared/badges.css");
 @import url("../shared/layout.css");
 @import url("../shared/portal-header.css");
+@import url("../shared/saas-layout.css");
 
 /* Base reset for Next.js app */
 body {
