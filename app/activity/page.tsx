@@ -11,8 +11,8 @@ export default function ActivityPage() {
           <Image
             src="/shared/eduallab-logo.png"
             alt="에듀올랩"
-            width={100}
-            height={32}
+            width={130}
+            height={42}
           />
         </div>
 

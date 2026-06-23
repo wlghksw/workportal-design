@@ -338,7 +338,7 @@ export default function WorkPortalHomePage() {
       {/* 좌측 고정 사이드바 */}
       <aside className="saas-sidebar">
         <div className="saas-sidebar__header">
-          <Image src="/shared/eduallab-logo.png" alt="에듀올랩" width={100} height={32} />
+          <Image src="/shared/eduallab-logo.png" alt="에듀올랩" width={130} height={42} />
         </div>
 
         <nav className="saas-sidebar__nav">
