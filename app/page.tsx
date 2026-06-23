@@ -421,7 +421,7 @@ export default function WorkPortalHomePage() {
               <span className="saas-hero__badge">에듀랩 업무 자동화 플랫폼</span>
               <h1 className="saas-hero__title">통합 업무 포털</h1>
               <p className="saas-hero__desc">
-                한 번의 로그인으로 입찰·회의록·뉴스·제안서·대시보드 등 모든 업무 서비스를 이용할 수 있습니다.
+                한 번의 로그인으로 입찰·회의록·뉴스·제안서·대시보드 등<br />모든 업무 서비스를 이용할 수 있습니다.
               </p>
             </div>
             <div className="saas-hero__stats">
@@ -454,18 +454,24 @@ export default function WorkPortalHomePage() {
             <div className="saas-onboarding__steps">
               <div className="saas-step">
                 <span className="step-num">01</span>
-                <span className="step-title">서비스 선택</span>
-                <p className="step-desc">아래 카드에서 사용할 서비스를 클릭하세요.</p>
+                <div className="saas-step__content">
+                  <span className="step-title">서비스 선택</span>
+                  <p className="step-desc">아래 카드에서 사용할 서비스를 클릭하세요.</p>
+                </div>
               </div>
               <div className="saas-step">
                 <span className="step-num">02</span>
-                <span className="step-title">파일·링크 업로드</span>
-                <p className="step-desc">서비스에 맞는 파일이나 링크를 입력합니다.</p>
+                <div className="saas-step__content">
+                  <span className="step-title">파일·링크 업로드</span>
+                  <p className="step-desc">서비스에 맞는 파일이나 링크를 입력합니다.</p>
+                </div>
               </div>
               <div className="saas-step">
                 <span className="step-num">03</span>
-                <span className="step-title">결과 확인·다운로드</span>
-                <p className="step-desc">AI가 자동으로 처리한 결과물을 받으세요.</p>
+                <div className="saas-step__content">
+                  <span className="step-title">결과 확인·다운로드</span>
+                  <p className="step-desc">AI가 자동으로 처리한 결과물을 받으세요.</p>
+                </div>
               </div>
             </div>
           </section>
@@ -491,40 +497,49 @@ export default function WorkPortalHomePage() {
             <div className="saas-services__grid">
               {filteredServices.map((service, idx) => {
                 const info = SERVICE_INFO[service.id] || { badge: "", desc: service.description, flows: [], domain: service.host };
-                const h = healths.find((x) => x.id === service.id);
-                const isUp = h ? h.status === "up" : false;
 
                 return (
-                  <a href={service.href} key={service.id} ref={idx === 0 ? firstResultRef : null} className="saas-card">
-                    <div className="saas-card__top">
+                  <a href={service.href} key={service.id} ref={idx === 0 ? firstResultRef : null} className={cx("saas-card", `saas-card--${service.iconType}`)}>
+                    <div className="saas-card__body">
+                      {/* 아이콘 + 타이틀 가로 배치 */}
                       <div className="saas-card__header">
                         <div className={cx("saas-card__icon", `saas-card__icon--${service.iconType}`)}>
                           <ServiceIcon id={service.id} />
                         </div>
-                        <span className="saas-card__badge">{info.badge}</span>
+                        <div className="saas-card__header-right">
+                          <div className="saas-card__title-row">
+                            <h3 className="saas-card__title">{service.title}</h3>
+                            <span className="saas-card__badge">{info.badge}</span>
+                          </div>
+                          <p className="saas-card__desc">{info.desc}</p>
+                        </div>
                       </div>
-                      <h3 className="saas-card__title">{service.title}</h3>
-                      <p className="saas-card__desc">{info.desc}</p>
-                    </div>
 
-                    <div className="saas-card__middle">
-                      <div className="saas-flow">
+                      {/* 처리 흐름 chip */}
+                      <div className="saas-card__flow">
                         {info.flows.map((flow, i) => (
-                          <div key={i} className="saas-flow__item">
-                            <span className="saas-flow__chip">{flow}</span>
-                            {i < info.flows.length - 1 && <span className="saas-flow__arrow">→</span>}
+                          <div key={i} className="saas-card__flow-item">
+                            <span className="saas-card__chip">{flow}</span>
+                            {i < info.flows.length - 1 && <span className="saas-card__arrow">→</span>}
                           </div>
                         ))}
                       </div>
-                      <span className="saas-card__link">자세히 보기</span>
-                    </div>
 
-                    <div className="saas-card__bottom">
+                      {/* 상태 정보 */}
                       <div className="saas-card__status">
-                        <span className={cx("status-dot", isUp && "status-dot--up")}></span>
+                        <svg className="saas-card__status-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                          <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                        <span className="saas-card__status-label">운영 중</span>
+                        <span className="saas-card__status-sep">·</span>
                         <span className="saas-card__domain">{info.domain}</span>
                       </div>
-                      <span className={cx("saas-card__btn", `saas-card__btn--${service.iconType}`)}>바로가기</span>
+                    </div>
+
+                    {/* 하단 CTA */}
+                    <div className="saas-card__cta saas-card__cta--soft">
+                      서비스 바로가기 →
                     </div>
                   </a>
                 );
