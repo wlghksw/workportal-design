@@ -912,14 +912,11 @@
 
 /* --- Meeting Service Legacy Parity --- */
 .meeting-app {
-  max-width: var(--layout-max);
-  margin: 16px auto;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
   overflow: hidden;
-  min-height: calc(100vh - 120px);
 }
 
 .meeting-layout {
@@ -1056,7 +1053,6 @@
   .meeting-layout { grid-template-columns: 1fr; }
   .meeting-sidebar { border-right: none; border-bottom: 1px solid var(--border); }
   .meeting-meta-grid { grid-template-columns: 1fr; }
-  .meeting-app { margin: 0; border-radius: 0; min-height: 100vh; }
 }
 
 /* --- Newsletter Service Legacy Parity --- */

@@ -1,16 +1,10 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import Image from "next/image";
-import Link from "next/link";
 import {
-  PortalHeader,
-  Page,
   Stack,
-  Cluster,
   Card,
   Button,
-  Badge,
   cx
 } from "@/components";
 import {
@@ -217,145 +211,115 @@ export function MeetingWorkspace() {
   const isProcessing = stage === MEETING_PROCESS_STAGES.PROCESSING || stage === MEETING_PROCESS_STAGES.UPLOADING;
 
   return (
-    <>
-      <PortalHeader
-        logo={
-          <Link href="/" className="text-decoration-none">
-            <Cluster className="cluster-center gap-sm">
-              <Image
-                src="/shared/eduallab-logo.png"
-                alt="에듀올랩"
-                width={120}
-                height={40}
-                className="brand__logo"
-              />
-              <span className="text-title-sm text-body">회의록 자동화</span>
-            </Cluster>
-          </Link>
-        }
-      >
-        <nav className="site-nav" aria-label="주요 메뉴">
-          <Link href="/" className="site-nav__item tab">
-            워크포탈 홈
-          </Link>
-          <Link href="/guide?service=meeting" className="site-nav__item tab">
-            이용 가이드
-          </Link>
-        </nav>
-      </PortalHeader>
-
-      <Page>
-        <div className="meeting-app">
-          <div className="meeting-layout">
-            {/* 사이드바: 최근 회의 목록 */}
-            <aside className="meeting-sidebar">
-              <div className="meeting-sidebar__header">최근 회의</div>
-              <div className="meeting-history-empty">
-                <p className="empty">저장된 기록이 없습니다.</p>
-              </div>
-            </aside>
-
-            {/* 메인 콘텐츠 */}
-            <main className="meeting-content">
-              <Stack spacing="lg">
-                {errorMessage && (
-                  <div className="alert alert-error" role="alert">
-                    {errorMessage}
-                  </div>
-                )}
-
-                {stage === MEETING_PROCESS_STAGES.SUCCESS && (
-                  <div className="alert alert-success" role="status">
-                    회의록 생성이 완료되었습니다. 아래에서 내용을 확인하세요.
-                  </div>
-                )}
-
-                {/* 메타 정보 입력 */}
-                <MeetingForm data={meta} onChange={handleMetaChange} disabled={isProcessing} />
-
-                {/* 입력 방식 탭 */}
-                <Stack spacing="md">
-                  <nav className="meeting-tabs" aria-label="입력 방식 선택">
-                    {MEETING_TABS.map((tab) => (
-                      <button
-                        key={tab.id}
-                        type="button"
-                        className={cx("meeting-tab", activeTab === tab.id && "active")}
-                        onClick={() => setActiveTab(tab.id)}
-                        disabled={isProcessing || isRecording}
-                      >
-                        {tab.icon} {tab.label}
-                      </button>
-                    ))}
-                  </nav>
-
-                  <div className="meeting-input-zone-wrap">
-                    {activeTab === "record" ? (
-                      <MeetingRecorder
-                        onFileAdd={(f) => handleFilesAdd([f])}
-                        onValidationError={setErrorMessage}
-                        onRecordingStateChange={setIsRecording}
-                        disabled={isProcessing}
-                      />
-                    ) : activeTab === "upload" ? (
-                      <MeetingUploadZone
-                        files={files}
-                        onFilesAdd={handleFilesAdd}
-                        onFileRemove={handleFileRemove}
-                        onFileMove={handleFileMove}
-                        onValidationError={setErrorMessage}
-                        disabled={isProcessing || isRecording}
-                      />
-                    ) : (
-                      <div className="meeting-record-zone">
-                        <p>⚡ 실시간으로 전사 및 요약을 확인합니다.</p>
-                        <p className="text-caption mt-2">실시간 모드는 추후 지원 예정입니다.</p>
-                      </div>
-                    )}
-                  </div>
-                </Stack>
-
-                {/* 액션 버튼 */}
-                <Button
-                  variant="primary"
-                  fullWidth
-                  size="lg"
-                  disabled={!isValid || isProcessing || isRecording}
-                  onClick={handleSubmit}
-                  className="btn block"
-                >
-                  {isProcessing ? "처리 중..." : isRecording ? "녹음 중에는 생성할 수 없습니다" : `회의록 생성 ${meta.postToTeams ? "& Teams 공유" : ""}${files.length > 1 ? ` (${files.length}개 파일)` : ""}`}
-                </Button>
-
-                {/* 진행 상태 */}
-                {isProcessing && (
-                  <div className="meeting-progress-wrap">
-                    <Card variant="soft">
-                      <Card.Body aria-busy="true">
-                        <Stack spacing="sm">
-                          <div className="progress-bar-bg">
-                            <div className="progress-bar progress-bar--loading"></div>
-                          </div>
-                          <p className="text-caption text-center">{progress.text}</p>
-                        </Stack>
-                      </Card.Body>
-                    </Card>
-                  </div>
-                )}
-
-                {/* 결과 영역 */}
-                {stage === MEETING_PROCESS_STAGES.SUCCESS && result && (
-                  <MeetingResultView
-                    result={result}
-                    meta={meta}
-                    onReset={handleReset}
-                  />
-                )}
-              </Stack>
-            </main>
+    <div className="meeting-app">
+      <div className="meeting-layout">
+        {/* 사이드바: 최근 회의 목록 */}
+        <aside className="meeting-sidebar">
+          <div className="meeting-sidebar__header">최근 회의</div>
+          <div className="meeting-history-empty">
+            <p className="empty">저장된 기록이 없습니다.</p>
           </div>
-        </div>
-      </Page>
-    </>
+        </aside>
+
+        {/* 메인 콘텐츠 */}
+        <main className="meeting-content">
+          <Stack spacing="lg">
+            {errorMessage && (
+              <div className="alert alert-error" role="alert">
+                {errorMessage}
+              </div>
+            )}
+
+            {stage === MEETING_PROCESS_STAGES.SUCCESS && (
+              <div className="alert alert-success" role="status">
+                회의록 생성이 완료되었습니다. 아래에서 내용을 확인하세요.
+              </div>
+            )}
+
+            {/* 메타 정보 입력 */}
+            <MeetingForm data={meta} onChange={handleMetaChange} disabled={isProcessing} />
+
+            {/* 입력 방식 탭 */}
+            <Stack spacing="md">
+              <nav className="meeting-tabs" aria-label="입력 방식 선택">
+                {MEETING_TABS.map((tab) => (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    className={cx("meeting-tab", activeTab === tab.id && "active")}
+                    onClick={() => setActiveTab(tab.id)}
+                    disabled={isProcessing || isRecording}
+                  >
+                    {tab.icon} {tab.label}
+                  </button>
+                ))}
+              </nav>
+
+              <div className="meeting-input-zone-wrap">
+                {activeTab === "record" ? (
+                  <MeetingRecorder
+                    onFileAdd={(f) => handleFilesAdd([f])}
+                    onValidationError={setErrorMessage}
+                    onRecordingStateChange={setIsRecording}
+                    disabled={isProcessing}
+                  />
+                ) : activeTab === "upload" ? (
+                  <MeetingUploadZone
+                    files={files}
+                    onFilesAdd={handleFilesAdd}
+                    onFileRemove={handleFileRemove}
+                    onFileMove={handleFileMove}
+                    onValidationError={setErrorMessage}
+                    disabled={isProcessing || isRecording}
+                  />
+                ) : (
+                  <div className="meeting-record-zone">
+                    <p>⚡ 실시간으로 전사 및 요약을 확인합니다.</p>
+                    <p className="text-caption mt-2">실시간 모드는 추후 지원 예정입니다.</p>
+                  </div>
+                )}
+              </div>
+            </Stack>
+
+            {/* 액션 버튼 */}
+            <Button
+              variant="primary"
+              fullWidth
+              size="lg"
+              disabled={!isValid || isProcessing || isRecording}
+              onClick={handleSubmit}
+              className="btn block"
+            >
+              {isProcessing ? "처리 중..." : isRecording ? "녹음 중에는 생성할 수 없습니다" : `회의록 생성 ${meta.postToTeams ? "& Teams 공유" : ""}${files.length > 1 ? ` (${files.length}개 파일)` : ""}`}
+            </Button>
+
+            {/* 진행 상태 */}
+            {isProcessing && (
+              <div className="meeting-progress-wrap">
+                <Card variant="soft">
+                  <Card.Body aria-busy="true">
+                    <Stack spacing="sm">
+                      <div className="progress-bar-bg">
+                        <div className="progress-bar progress-bar--loading"></div>
+                      </div>
+                      <p className="text-caption text-center">{progress.text}</p>
+                    </Stack>
+                  </Card.Body>
+                </Card>
+              </div>
+            )}
+
+            {/* 결과 영역 */}
+            {stage === MEETING_PROCESS_STAGES.SUCCESS && result && (
+              <MeetingResultView
+                result={result}
+                meta={meta}
+                onReset={handleReset}
+              />
+            )}
+          </Stack>
+        </main>
+      </div>
+    </div>
   );
 }

@@ -247,9 +247,11 @@ export default function WorkPortalHomePage() {
       if (r.ok) {
         const data: AuthState = await r.json();
         setMe(data);
+      } else {
+        setMe({ loggedIn: false, authEnabled: false });
       }
-    } catch (e) {
-      console.error("me load failed", e);
+    } catch {
+      setMe({ loggedIn: false, authEnabled: false });
     }
   }, [apiFetch]);
 
@@ -260,8 +262,8 @@ export default function WorkPortalHomePage() {
         const data: HealthStatus[] = await r.json();
         setHealths(data);
       }
-    } catch (e) {
-      console.warn("health check failed", e);
+    } catch {
+      setHealths([]);
     } finally {
       setIsHealthLoading(false);
     }
@@ -275,8 +277,8 @@ export default function WorkPortalHomePage() {
         const data: { items?: ActivityItem[] } = await r.json();
         setRecentActivities(data.items || []);
       }
-    } catch (e) {
-      console.error("recent activity load failed", e);
+    } catch {
+      setRecentActivities([]);
     } finally {
       setIsRecentLoading(false);
     }
@@ -317,8 +319,8 @@ export default function WorkPortalHomePage() {
           : null
       );
       void loadHomeRecent();
-    } catch (e) {
-      console.error("logout failed", e);
+    } catch {
+      setMe({ loggedIn: false, authEnabled: false });
     }
   };
 
